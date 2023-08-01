@@ -1,0 +1,328 @@
+ 
+package gui.sgomodel.entities;
+
+import java.io.Serializable;
+
+import gui.sgo.MVRConsultaForm;
+import gui.sgomodel.services.ReceberService;
+
+public class Cliente implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Integer codigoCli;
+	private String nomeCli;
+	private String ruaCli;
+	private Integer numeroCli;
+	private String complementoCli;
+	private String bairroCli;
+	private String cidadeCli;
+	private String ufCli;
+	private String cepCli;
+	private Integer ddd01Cli;
+	private Integer telefone01Cli;
+	private Integer ddd02Cli;
+	private Integer telefone02Cli;
+	private String emailCli;
+ 	private char pessoaCli;
+	private String cpfCli;
+ 	private String cnpjCli;
+	private Double valorClass;
+	private Double percentualClass;
+	private char letraClass;
+	private Integer visitaClass;
+
+	public Cliente( ) {
+	}
+
+	public Cliente(Integer codigoCli, String nomeCli, String ruaCli, Integer numeroCli, String complementoCli,
+			String bairroCli, String cidadeCli, String ufCli, String cepCli, Integer ddd01Cli, Integer telefone01Cli,
+			Integer ddd02Cli, Integer telefone02Cli, String emailCli, char pessoaCli, String cpfCli,
+			String cnpjCli, Double valorClass, Double percentualClass, char letraClass, Integer visitaClass) {
+ 		this.codigoCli = codigoCli;
+		this.nomeCli = nomeCli;
+		this.ruaCli = ruaCli;
+		this.numeroCli = numeroCli;
+		this.complementoCli = complementoCli;
+		this.bairroCli = bairroCli;
+		this.cidadeCli = cidadeCli;
+		this.ufCli = ufCli;
+		this.cepCli = cepCli;
+		this.ddd01Cli = ddd01Cli;
+		this.telefone01Cli = telefone01Cli;
+		this.ddd02Cli = ddd02Cli;
+		this.telefone02Cli = telefone02Cli;
+		this.emailCli = emailCli;
+ 		this.pessoaCli = pessoaCli;
+		this.cpfCli = cpfCli;
+ 		this.cnpjCli = cnpjCli;
+		this.valorClass = valorClass;
+		this.percentualClass = percentualClass;
+		this.letraClass = letraClass;
+		this.visitaClass = visitaClass;
+	}
+
+	public Integer getCodigoCli() {
+		return codigoCli;
+	}
+
+	public void setCodigoCli(Integer codigoCli) {
+		this.codigoCli = codigoCli;
+	}
+
+	public String getNomeCli() {
+		return nomeCli;
+	}
+
+	public void setNomeCli(String nomeCli) {
+		this.nomeCli = nomeCli;
+	}
+
+	public String getRuaCli() {
+		return ruaCli;
+	}
+
+	public void setRuaCli(String ruaCli) {
+		this.ruaCli = ruaCli;
+	}
+
+	public Integer getNumeroCli() {
+		return numeroCli;
+	}
+
+	public void setNumeroCli(Integer numeroCli) {
+		this.numeroCli = numeroCli;
+	}
+
+	public String getComplementoCli() {
+		return complementoCli;
+	}
+
+	public void setComplementoCli(String complementoCli) {
+		this.complementoCli = complementoCli;
+	}
+
+	public String getBairroCli() {
+		return bairroCli;
+	}
+
+	public void setBairroCli(String bairroCli) {
+		this.bairroCli = bairroCli;
+	}
+
+	public String getCidadeCli() {
+		return cidadeCli;
+	}
+
+	public void setCidadeCli(String cidadeCli) {
+		this.cidadeCli = cidadeCli;
+	}
+
+	public String getUfCli() {
+		return ufCli;
+	}
+
+	public void setUfCli(String ufCli) {
+		this.ufCli = ufCli;
+	}
+
+	public String getCepCli() {
+		return cepCli;
+	}
+
+	public void setCepCli(String cepCli) {
+		this.cepCli = cepCli;
+	}
+
+	public Integer getDdd01Cli() {
+		return ddd01Cli;
+	}
+
+	public void setDdd01Cli(Integer ddd01Cli) {
+		this.ddd01Cli = ddd01Cli;
+	}
+
+	public Integer getTelefone01Cli() {
+		return telefone01Cli;
+	}
+
+	public void setTelefone01Cli(Integer telefone01Cli) {
+		this.telefone01Cli = telefone01Cli;
+	}
+
+	public Integer getDdd02Cli() {
+		return ddd02Cli;
+	}
+
+	public void setDdd02Cli(Integer ddd02Cli) {
+		this.ddd02Cli = ddd02Cli;
+	}
+
+	public Integer getTelefone02Cli() {
+		return telefone02Cli;
+	}
+
+	public void setTelefone02Cli(Integer telefone02Cli) {
+		this.telefone02Cli = telefone02Cli;
+	}
+
+	public String getEmailCli() {
+		return emailCli;
+	}
+
+	public void setEmailCli(String emailCli) {
+		this.emailCli = emailCli;
+	}
+
+ 	public char getPessoaCli() {
+		return pessoaCli;
+	}
+
+	public void setPessoaCli(char pessoaCli) {
+		this.pessoaCli = pessoaCli;
+	}
+
+	public String getCpfCli() {
+		return cpfCli;
+	}
+
+	public void setCpfCli(String cpfCli) {
+		this.cpfCli = cpfCli;
+	}
+
+ 	public String getCnpjCli() {
+		return cnpjCli;
+	}
+
+	public void setCnpjCli(String cnpjCli) {
+		this.cnpjCli = cnpjCli;
+	}
+
+	public Double getValorClass() {
+		if (valorClass == null) {
+			valorClass = 0.00;
+		}
+		return valorClass;
+	}
+
+	public void setValorClass(Double valorClass) {
+		if (valorClass == null) {
+			valorClass = 0.00;
+		}
+		this.valorClass = valorClass;
+	}
+
+	public Double getPercentualClass() {
+		if (percentualClass == null) {
+			percentualClass = 0.00;
+		}
+		return percentualClass;
+	}
+
+	public void setPercentualClass(Double percentualClass) {
+		if (percentualClass == null) {
+			percentualClass = 0.00;
+		}
+		this.percentualClass = percentualClass;
+	}
+
+	public char getLetraClass() {
+		return letraClass;
+	}
+
+	public void setLetraClass(char letraClass) {
+		this.letraClass = letraClass;
+	}
+	
+	public Integer getVisitaClass() {
+		if (visitaClass == null) {
+			visitaClass = 0;
+		}
+		return visitaClass;
+	}
+
+	public void setVisitaClass(Integer qtdV) {
+		if (visitaClass == null) {
+			visitaClass = 0;
+		}
+		this.visitaClass += qtdV;
+	}
+
+	public void sumTotalReceberCli() {
+		if (valorClass == null) {
+			valorClass = 0.00;
+		}
+		ReceberService recService = new ReceberService();
+		valorClass = recService.sumPagoCli(codigoCli);
+	}
+	
+	public void percClassCli() {
+		if (valorClass > 0) {
+			percentualClass = (valorClass * 100) / MVRConsultaForm.clienteTotalReceberOs;
+		}	
+	}
+	
+	public void letraClassCli() {
+		letraClass = 'A';
+		MVRConsultaForm.clientePercentualAcum += percentualClass;
+		if (MVRConsultaForm.clientePercentualAcum > 80.00) {
+			if (MVRConsultaForm.clientePercentualAcum < 90.01) {
+				letraClass = 'B';
+			} else {
+				letraClass = 'C';
+			}
+		}
+	}	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((cnpjCli == null) ? 0 : cnpjCli.hashCode());
+		result = prime * result + ((codigoCli == null) ? 0 : codigoCli.hashCode());
+		result = prime * result + ((cpfCli == null) ? 0 : cpfCli.hashCode());
+		result = prime * result + pessoaCli;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cliente other = (Cliente) obj;
+		if (cnpjCli == null) {
+			if (other.cnpjCli != null)
+				return false;
+		} else if (!cnpjCli.equals(other.cnpjCli))
+			return false;
+		if (codigoCli == null) {
+			if (other.codigoCli != null)
+				return false;
+		} else if (!codigoCli.equals(other.codigoCli))
+			return false;
+		if (cpfCli == null) {
+			if (other.cpfCli != null)
+				return false;
+		} else if (!cpfCli.equals(other.cpfCli))
+			return false;
+		if (pessoaCli != other.pessoaCli)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Cliente [codigoCli=" + codigoCli + ", nomeCli=" + nomeCli + ", ruaCli=" + ruaCli + ", numeroCli="
+				+ numeroCli + ", complementoCli=" + complementoCli + ", bairroCli=" + bairroCli + ", cidadeCli="
+				+ cidadeCli + ", ufCli=" + ufCli + ", cepCli=" + cepCli + ", ddd01Cli=" + ddd01Cli + ", telefone01Cli="
+				+ telefone01Cli + ", ddd02Cli=" + ddd02Cli + ", telefone02Cli=" + telefone02Cli + ", emailCli="
+				+ emailCli + ", pessoaCli=" + pessoaCli + ", cpfCli=" + cpfCli + ", cnpjCli=" + cnpjCli
+				+ ", valorClass=" + valorClass + ", percentualClass=" + percentualClass + ", letraClass=" + letraClass
+				+ ", visitaClass=" + visitaClass + "]";
+	}
+
+}
