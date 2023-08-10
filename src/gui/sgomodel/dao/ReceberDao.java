@@ -22,4 +22,5 @@ public interface ReceberDao {
   	List<Receber> findPeriodoPago();
    	List<Receber> findByIdClienteAberto(Integer cod);
    	List<Receber> findByIdClientePago(Integer cod);
+   	List<Receber> findAll();
  }

@@ -501,7 +501,6 @@ public class ClienteCadastroFormController implements Initializable {
  /*
   * transforma string da tela p/ o tipo no bco de dados 
   */
-  	@SuppressWarnings("unused")
 	public void updateFormData() throws ParseException {
  		if (entity == null) {
  			throw new IllegalStateException("Entidade esta nula");

@@ -63,6 +63,10 @@ public class ReceberService {
    		return dao.findByIdClientePago(cod);
 	} 
 	
+	public List<Receber> findAll() {
+   		return dao.findAll();
+	} 
+	
 // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
 	public void insert(Receber obj) {

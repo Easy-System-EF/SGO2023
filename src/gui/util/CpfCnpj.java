@@ -12,8 +12,8 @@ package gui.util;
  *  flagv = 0;
  *  CpfCnpj.Cpf(flagv, cpfV);
  *  CpfCnpj.Cnpj(flagv, cnpjV);
- *  if (CpfCnpj.Cpf(flagv, cpfV) == false) => INVÁLIDO 
- *  if (CpfCnpj.Cnpj(flagv, cpfV) == false) => INVÁLIDO 
+ *  if (CpfCnpj.Cpf(flagv, cpfV) == false) => INVï¿½LIDO 
+ *  if (CpfCnpj.Cnpj(flagv, cpfV) == false) => INVï¿½LIDO 
  */		
  
 public class CpfCnpj {
@@ -41,7 +41,7 @@ public class CpfCnpj {
   		for (i = 0 ; i < vetor12.length ; i++ )
 		{	int n = Integer.parseInt(vetor12[i]);
  			soma = soma + (n * ii);
- 			int a = n * ii;
+// 			int a = n * ii;
    			if	(ii == 9 )
  			{	ii = 1;
  				flag = 1;
@@ -104,7 +104,7 @@ public class CpfCnpj {
   		for (i = 0 ; i < 9 ; i++ )
 		{	int n = Integer.parseInt(cpfV[i]);
  			soma = soma + (n * ii);
- 			int a = n * ii;
+// 			int a = n * ii;
   			ii -= 1;
  			if (ii == 1)
  			{	resto = soma % 11;
@@ -147,9 +147,8 @@ public class CpfCnpj {
  	}
  	
  	private static void inverteCnpj12(String[] cnpjV) {
- 		i = 0;
 		ii = 11;
-		for (i = i ; i < 12 ; i ++)
+		for (i = 0 ; i < 12 ; i ++)
 		{	vetor12[i] = cnpjV[ii]; 
 			ii -= 1;
 		}
@@ -157,8 +156,7 @@ public class CpfCnpj {
   	}	
 	
  	private static void inverteCnpj13(String[] vetor12) {
- 		i = 0;
-  		for (i = i ; i < vetor12.length + 1 ; i ++)
+  		for (i = 0 ; i < vetor12.length + 1 ; i ++)
 		{	if (i == 0)
 			{	vetor13[i] = String.valueOf(d1);
 			}	else

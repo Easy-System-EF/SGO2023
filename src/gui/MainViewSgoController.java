@@ -7,6 +7,9 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import application.MainSgo;
+import gui.copia.Copia;
+import gui.copia.CopiaService;
+import gui.copia.CopiaSgoController;
 import gui.listerneres.DataChangeListener;
 import gui.sgcp.CompromissoCadastroListController;
 import gui.sgcp.FornecedorCadastroListController;
@@ -77,7 +80,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainViewSgoController implements Initializable, DataChangeListener {
- 
+	
 	@FXML
 	private MenuItem menuItemFornecedor;
 
@@ -162,6 +165,9 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 	@FXML
 	private MenuItem menuItemConsultaMaterialMVRList;
 	
+	@FXML
+	private MenuItem menuItemBackUp;
+
 	@FXML
 	private MenuItem menuItemSobre;
 
@@ -701,6 +707,20 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 			temLogar();
 		} else {	
 		loadView("/gui/Sobre.fxml", x -> {
+		});}
+	}
+
+	@FXML
+	public void onMenuItemBackUpAction() {
+		classe = "BackUp ";
+		if (senha != "Ok") {
+			temLogar();
+		} else {	
+			loadView("/gui/copia/CopiaList.fxml", (CopiaSgoController controller) -> {
+				controller.user = user;
+				controller.setBackUpService(new CopiaService());
+				controller.setEntity(new Copia());
+				controller.updateTableView();
 		});}
 	}
 

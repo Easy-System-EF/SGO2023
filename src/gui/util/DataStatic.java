@@ -14,7 +14,10 @@ import java.util.Date;
 public class DataStatic {
 
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	static SimpleDateFormat sdfTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	static DateTimeFormatter dtfTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
 	public static LocalDate criaLocalAtual() {
 		LocalDate dtN = LocalDate.now();
@@ -33,6 +36,11 @@ public class DataStatic {
 	
 	public static LocalDate converteFormataString(String data) {
 		LocalDate dtFS = LocalDate.parse(data, dtf);
+		return dtFS;
+	}
+	
+	public static LocalDate converteTimeFormataString(String data) {
+		LocalDate dtFS = LocalDate.parse(data, dtfTime);
 		return dtFS;
 	}
 	

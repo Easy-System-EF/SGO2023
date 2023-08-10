@@ -333,6 +333,36 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			DB.closeResultSet(rs);
 		}
 	}
+
+	@Override
+	public List<Adiantamento> findAll() {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"SELECT * " + 
+						"FROM adiantamento " +
+						"ORDER BY - DataAdi ");
+
+			rs = st.executeQuery();
+
+			List<Adiantamento> list = new ArrayList<>();
+
+			while (rs.next()) {
+				Adiantamento obj = instantiateAdiantamento(rs);
+				list.add(obj);
+			}
+			return list;
+		} 
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} 
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
 	@Override
 	public void zeraAll() {
 		PreparedStatement st = null; 
@@ -374,8 +404,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 		adiantamento.setAnoFun(rs.getInt("AnoFun"));
 		adiantamento.setCargoFun(rs.getNString("CargoFun"));
 		adiantamento.setSituacaoFun(rs.getString("SituacaoFun"));
-		adiantamento.setSalarioFun(rs.getDouble("SalarioFun"));
-		
+		adiantamento.setSalarioFun(rs.getDouble("SalarioFun"));		
 		return adiantamento;
 	}
 }

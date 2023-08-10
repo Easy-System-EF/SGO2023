@@ -56,6 +56,11 @@
                         <MenuItem fx:id="menuItemConsultaClienteMVRList" mnemonicParsing="false" onAction="#onMenuItemConsultaClienteMVRAction" text="Cliente MVR" />
                         <MenuItem fx:id="menuItemConsultaMaterialMVRList" mnemonicParsing="false" onAction="#onMenuItemConsultaMaterialMVRAction" text="Material MVR" />
                      </items></Menu>
+                  <Menu mnemonicParsing="false" text="BackUp">
+                    <items>
+                      <MenuItem fx:id="menuItemBackUp" mnemonicParsing="false" onAction="#onMenuItemBackUpAction" text="BackUp" />
+                    </items>
+                  </Menu>
                   <Menu fx:id="Ajuda" mnemonicParsing="false" text="Ajuda">
                      <items>
                         <MenuItem fx:id="menuItemSobre" mnemonicParsing="false" onAction="#onMenuItemSobreAction" text="Sobre" />

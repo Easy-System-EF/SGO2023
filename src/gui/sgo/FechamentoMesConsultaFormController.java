@@ -115,9 +115,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	int dd = 0;
 	int df = 0;
 	private final int ddInicial = 01;
-	@SuppressWarnings("unused")
 	private final int mmInicial = 01;
-	@SuppressWarnings("unused")
 	private final int aaInicial = 2000;
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 // data inicial e final - aberto e pago	

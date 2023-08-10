@@ -518,4 +518,34 @@ public class ReceberDaoJDBC implements ReceberDao {
 			DB.closeStatement(st);
 		}
 	}
+	@Override
+	public List<Receber> findAll() {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+
+					"SELECT *, parPeriodo.* " + 
+							"FROM receber " + 
+								"INNER JOIN parPeriodo " +
+									"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " +
+								"ORDER BY DataVencimentoRec, ParcelaRec");
+
+			rs = st.executeQuery();
+
+			List<Receber> list = new ArrayList<>();
+
+			while (rs.next()) {
+				ParPeriodo per = instantiateParPeriodo(rs);
+				Receber obj = instantiateReceber(rs, per);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
 }

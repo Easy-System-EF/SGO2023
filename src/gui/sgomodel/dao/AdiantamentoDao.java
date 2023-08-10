@@ -15,6 +15,7 @@ public interface AdiantamentoDao {
  	List<Adiantamento> findPesquisaFun(String str);
  	List<Adiantamento> findByOs(Integer idOs);
  	List<Adiantamento> findByBalcao(Integer idBalcao);
+ 	List<Adiantamento> findAll();
 	Double findByTotalCom(Integer mes, Integer ano, Integer codFun);
 	Double findByTotalAdi(Integer mes, Integer ano, Integer codFun);
 }

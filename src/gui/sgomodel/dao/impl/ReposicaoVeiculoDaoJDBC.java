@@ -49,6 +49,7 @@ public class ReposicaoVeiculoDaoJDBC implements ReposicaoVeiculoDao {
  			st.setInt(9,  obj.getKmTrocaRep());
  			st.setInt(10,  obj.getProximaKmRep());
  			st.setDate(11, new java.sql.Date(obj.getProximaDataRep().getTime()));
+
  			int rowsaffectad = st.executeUpdate();
 			
 			if (rowsaffectad > 0)

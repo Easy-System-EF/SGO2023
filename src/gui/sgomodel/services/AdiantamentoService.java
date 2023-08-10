@@ -46,6 +46,10 @@ public class AdiantamentoService {
 		return dao.findByBalcao(idBalcao);
 	}
 
+	public List<Adiantamento> findAll() {
+		return dao.findAll();
+	}
+
 // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
 	public void saveOrUpdate(Adiantamento obj) {
