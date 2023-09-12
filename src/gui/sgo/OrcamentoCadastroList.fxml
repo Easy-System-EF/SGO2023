@@ -47,9 +47,9 @@
             <TableColumn fx:id="tableColumnPlacaOrc" prefWidth="56.0" text="Placa" />
             <TableColumn fx:id="tableColumnKmFinalOrc" editable="false" prefWidth="56.0" text="Km atual" />
             <TableColumn fx:id="tableColumnTotalOrc" editable="false" prefWidth="51.0" text="Total" />
-            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="48.0" text=" " />
-            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="56.0" text=" " />
-            <TableColumn fx:id="tableColumnList" prefWidth="50.0" text=" " />
+            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="57.0" text=" " />
+            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="60.0" text=" " />
+            <TableColumn fx:id="tableColumnList" prefWidth="49.0" text=" " />
         </columns>
          <effect>
             <Blend />

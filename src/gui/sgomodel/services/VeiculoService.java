@@ -32,8 +32,12 @@ public class VeiculoService {
 		}
 	}
 
+	public void insertBackUp(Veiculo obj) {
+		dao.insertBackUp(obj);
+	}
+
 // removendo
-	public void remove(Veiculo obj) {
-		dao.deleteById(obj.getPlacaVei());
+	public void remove(String placa) {
+		dao.deleteById(placa);
 	}
 }

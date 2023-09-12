@@ -115,7 +115,7 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 		nomeTitulo = "Contas Recebidas por Cliente";
 		opcao = "c";
 		classe = "Cliente";
-  		createDialogOpcao(objCli, objPer, "/sgo/gui/PesquisaAlphaForm.fxml", (parentStage), 
+  		createDialogOpcao(objCli, objPer, "/gui/sgo/PesquisaAlphaForm.fxml", (parentStage), 
   				(RecClienteFormController contC) -> {
   			contC.setDestino("List");
   			contC.setSituacao("Recebido");
@@ -126,7 +126,7 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 			contC.subscribeDataChangeListener(this);
 			contC.updateFormData();
  		});
-		updateTableView();
+//		updateTableView();
 	}
  	
 	@FXML
@@ -143,7 +143,7 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 		contP.subscribeDataChangeListener(this);
 		contP.updateFormData();
   		});
-		updateTableView();
+//		updateTableView();
   	}
   
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -188,24 +188,18 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
  		List<Receber> list = new ArrayList<>();
  		if (opcao == "t") {
  			list = service.findAllPago();
- 			if (list.size() == 0) {
- 				Alerts.showAlert("Contas Recebidas ", "Recebidas", "Não existe pagamento ", AlertType.INFORMATION);
- 			}	
- 		} else {
- 			if (opcao == "c" && codCli != null) {
- 				list = service.findByIdClientePago(codCli);
- 	 			if (list.size() == 0) {
- 	 				Alerts.showAlert("Contas Recebidas por Cliente ", "Cliente", "Não existe recebimentos para o Cliente ", AlertType.INFORMATION);
- 	 			}	
- 			} else {
- 				if (opcao == "p") {
- 	 				list = service.findPeriodoPago();
- 	 	 			if (list.size() == 0) {
- 	 	 				Alerts.showAlert("Contas Recebidas por período ", "Período ", "Não há recebimentos no período ", AlertType.INFORMATION);
- 	 	 			}	
- 				}
- 			}
  		}
+ 		if (codCli != null) {
+ 			if (opcao == "c") {
+ 				list = service.findByIdClientePago(codCli);
+ 			}	
+ 		} 
+		if (opcao == "p") {
+			list = service.findPeriodoPago();
+		}	
+		if (list.size() == 0) {
+			Alerts.showAlert(null, "Contas Recebidas ", "Não há registro para opção ", AlertType.INFORMATION);
+		}	
   		labelTitulo.setText(String.format("%s ", nomeTitulo));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);

@@ -60,14 +60,48 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 					int codigo = rs.getInt(1);
 					obj.setNumeroBal(codigo);
 				} else {
-					throw new DbException(classe + "Erro!!! sem inclus�o");
+					throw new DbException(classe + "Erro!!! sem inclusão");
 				}
 			}
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
+		}
+	}
+
+	@Override
+	public void insertBackUp(Balcao obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"INSERT INTO balcao " + "(NumeroBal, DataBal, FuncionarioBal, DescontoBal, TotalBal, " +
+							"PagamentoBal, DataPrimeiroPagamentoBal, NnfBal, ObservacaoBal, " + 
+							"MesBal, AnoBal, FuncionarioIdBal ) "
+							+ "VALUES " + 
+							"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+
+			st.setInt(1, obj.getNumeroBal());
+			st.setDate(2, new java.sql.Date(obj.getDataBal().getTime()));
+			st.setString(3, obj.getFuncionarioBal());
+			st.setDouble(4, obj.getDescontoBal());
+			st.setDouble(5, obj.getTotalBal());
+			st.setInt(6, obj.getPagamentoBal());
+			st.setDate(7, new java.sql.Date(obj.getDataPrimeiroPagamentoBal().getTime()));
+			st.setInt(8, obj.getNnfBal());
+			st.setString(9, obj.getObservacaoBal());
+			st.setInt(10, obj.getMesBal());
+			st.setInt(11, obj.getAnoBal());
+			st.setInt(12, obj.getFuncionario().getCodigoFun());
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão" + e.getMessage());
+		} finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
 		}
 	}
 
@@ -111,8 +145,8 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
 		}
 	}
 
@@ -126,7 +160,7 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 			st.executeUpdate();
 			
 		} catch (SQLException e) {
-			throw new DbException(classe + "Erro!!! na� exclu�do " + e.getMessage());
+			throw new DbException(classe + "Erro!!! não excluído " + e.getMessage());
 		} finally {
 			DB.closeStatement(st);
 		}
@@ -156,7 +190,7 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	}
@@ -194,7 +228,45 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Balcao> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					 "SELECT balcao.*, funcionario.* " +
+							   "FROM balcao " +
+						 		 "INNER JOIN funcionario " +
+					 				 "ON balcao.FuncionarioIdBal = funcionario.CodigoFun " +
+								 "ORDER BY NumeroBal");
+			
+			rs = st.executeQuery();
+			
+ 			List<Balcao> list = new ArrayList<>();
+ 			Funcionario fun = new Funcionario();
+  			Map<Integer, Funcionario> mapFun = new HashMap<>();
+ 			
+			while (rs.next()) 
+ 			{ 	fun = mapFun.get(rs.getInt("FuncionarioIdBal"));
+  			    if (fun == null)
+  			    { 	fun = instantiateFuncionario(rs);
+  			    	mapFun.put(rs.getInt("FuncionarioIdBal"),fun);
+  			    }
+ 			    Balcao obj = instantiateBalcao(rs, fun);
+  				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -236,7 +308,7 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 

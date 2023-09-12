@@ -18,6 +18,10 @@ public class CargoService {
    		return dao.findAll();
 	} 
 	
+	public List<Cargo> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public Cargo findById(Integer cod) {
    		return dao.findById(cod);
 	} 
@@ -32,8 +36,12 @@ public class CargoService {
 		}
 	}
 
+	public void insertBackUp(Cargo obj) {
+		dao.insertBackUp(obj);
+	}
+
 // removendo
-	public void remove(Cargo obj) {
-		dao.deleteById(obj.getCodigoCargo());
+	public void remove(int cod) {
+		dao.deleteById(cod);
 	}
 }

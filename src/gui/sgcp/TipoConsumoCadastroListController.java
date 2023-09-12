@@ -63,7 +63,8 @@ public class TipoConsumoCadastroListController implements Initializable, DataCha
 	private Label labelUser;
 
 	String classe = "Tipo Consumo ";
-	public String user = "usu�rio";	
+	public String user = "usuário";	
+	public Integer nivel = null;	
 	
  	
 // carrega aqui os fornecedores Updatetableview (metodo)
@@ -113,7 +114,7 @@ public class TipoConsumoCadastroListController implements Initializable, DataCha
  */  
  	public void updateTableView() {
  		if (service == null) {
-			throw new IllegalStateException("Servi�o est� vazio");
+			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
 		List<TipoConsumo> list = service.findAll();
@@ -214,24 +215,29 @@ public class TipoConsumoCadastroListController implements Initializable, DataCha
 		            button.setOnAction(event -> removeEntity(obj)); 
 		        } 
 		    });
- 		} 
-
+	}
+	
 	private void removeEntity(TipoConsumo obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirma��o", "Tem certeza que deseja excluir");
-		if (result.get() == ButtonType.OK) {
-			if (service == null) {
-				throw new IllegalStateException("Servi�o est� vazio");
+		if (nivel == 1 || nivel == 9) {
+			Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir");
+			if (result.get() == ButtonType.OK) {
+				if (service == null) {
+					throw new IllegalStateException("Serviço está vazio");
+				}
+				try {
+					service.remove(obj.getCodigoTipo());
+					updateTableView();
+				}
+				catch (DbException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}
+				catch (DbIntegrityException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}	
 			}
-			try {
-				service.remove(obj.getCodigoTipo());
-				updateTableView();
-			}
-			catch (DbException e) {
-				Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
- 			}
-			catch (DbIntegrityException e) {
-				Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
-			}
-		}
+        } else {
+        	Alerts.showAlert(null, "Exclusão - Acesso negado ", null, AlertType.WARNING);
+        }	
 	}
 }
+

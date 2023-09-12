@@ -30,7 +30,7 @@ public class SituacaoDaoJDBC implements SituacaoDao {
 		ResultSet rs = null;
   		try {
 			st = conn.prepareStatement(
-					"INSERT INTO login " +
+					"INSERT INTO Situacao " +
 				      "(NomeSit)" + 
   				      "VALUES " +
 				      "(?)",
@@ -56,6 +56,32 @@ public class SituacaoDaoJDBC implements SituacaoDao {
   		}
  		catch (SQLException e) {
 			throw new DbException (e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Situacao obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO Situacao " +
+				      "(NumeroSit, NomeSit)" + 
+  				      "VALUES " +
+				      "(?,?)",
+ 					 Statement.RETURN_GENERATED_KEYS); 
+ 
+ 			st.setInt(1, obj.getNumeroSit());
+ 			st.setString(2, obj.getNomeSit());
+			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
 		}
 		finally {
 			DB.closeResultSet(rs);
@@ -131,6 +157,7 @@ public class SituacaoDaoJDBC implements SituacaoDao {
 			DB.closeResultSet(rs);
 		}
  	}
+	
 	@Override
 	public List<Situacao> findAll() {
 		PreparedStatement st = null; 
@@ -139,6 +166,36 @@ public class SituacaoDaoJDBC implements SituacaoDao {
 			st = conn.prepareStatement( 
 					"SELECT * FROM situacao " +
 					"ORDER BY NomeSit");
+			
+			rs = st.executeQuery();
+			
+			List<Situacao> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	if (rs != null)
+				{	Situacao obj = instantiateSituacao(rs);
+ 					list.add(obj);
+				}	
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Situacao> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM situacao " +
+					"ORDER BY NumeroSit");
 			
 			rs = st.executeQuery();
 			

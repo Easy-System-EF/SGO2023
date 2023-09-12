@@ -18,6 +18,10 @@ public class FuncionarioService {
    		return dao.findAll(aa, mm);
 	} 
 	
+	public List<Funcionario> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Funcionario> findPesquisa(String str, int aa, int mm) {
    		return dao.findPesquisa(str, aa, mm);
 	} 
@@ -39,14 +43,14 @@ public class FuncionarioService {
 			dao.update(obj);
 		}
 	}
-
-// removendo
-	public void remove(Funcionario obj) {
-		dao.deleteById(obj.getCodigoFun());
+	
+	public void insertBackup(Funcionario obj) {
+		dao.insertBackup(obj);
 	}
 
-	public void zeraAll() {
-   		dao.zeraAll();
-	} 
-	
+// removendo
+	public void remove(int cod) {
+		dao.deleteById(cod);
+	}
+
 }

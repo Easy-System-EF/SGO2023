@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,34 @@ public class MesesDaoJDBC implements MesesDao {
 	
 	public MesesDaoJDBC (Connection conn) {
 		this.conn = conn;
+	}
+
+	@Override
+	public void insert(Meses obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"Insert INTO meses " + 
+						"(NomeMes ) " +
+							"VALUES " +
+					 	"(? ) ",
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setString(1, obj.getNomeMes());
+			st.executeUpdate();
+			rs = st.getGeneratedKeys();
+
+			while (rs.next()) {
+				int cod = rs.getInt(1);
+				obj.setNumeroMes(cod);
+			}			
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override

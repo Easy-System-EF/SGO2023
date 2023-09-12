@@ -180,8 +180,11 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
   				(ParFornecedorFormController contF) -> {
 			contF.setFornecedor(obj3);
 			contF.setService(new FornecedorService());
+			contF.loadAssociatedObjects();
+			contF.subscribeDataChangeListener(this);
+			contF.updateFormData();
  		});
-		updateTableViewPago();
+//		updateTableViewPago();
 	}
  	
 	@FXML
@@ -294,31 +297,21 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 		List<Parcela> list = new ArrayList<>();
  		if (opcao == 'o') {
 			list = parService.findAllPago();
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela paga ", AlertType.INFORMATION);
-	 		}
 		}
  		if (opcao == 'q') {
 			list = parService.findPeriodoPago();
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela paga ", AlertType.INFORMATION);
-	 		}
 		}
  		if (opcao == 'g') {
  			if (codigo != null) {
  				list = parService.findByIdFornecedorPago(codigo); 
- 				if (list.size() == 0) {
- 					Alerts.showAlert("Parcela ", null, "Não há parcela paga ", AlertType.INFORMATION);
- 					codigo = null;
- 				}
  			}	
 		}
  		if (opcao == 'u') {
 			list = parService.findByIdTipoPago(codTipo);
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela paga ", AlertType.INFORMATION);
-	 		}
 		}
+ 		if (list.size() == 0) {
+			Alerts.showAlert(null, "Contas a pagas ", "Não há parcela paga ", AlertType.INFORMATION);
+ 		}
 
  		DecimalFormat df = new DecimalFormat("##,##0.00");
  	   	String resultadoParStr = ""; 

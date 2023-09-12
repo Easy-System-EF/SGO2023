@@ -16,6 +16,10 @@ public class ParPeriodoService {
  		return dao.findAll();
 	}
 	
+	public List<ParPeriodo> findAllId(){
+ 		return dao.findAllId();
+	}
+	
 	public ParPeriodo findById(int cod) {
    		return dao.findById(cod);
 	} 
@@ -23,9 +27,13 @@ public class ParPeriodoService {
  // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
 	public void update(ParPeriodo obj) {
-		dao.update(obj);
- 	}
- 
+		if (obj.getIdPeriodo() == null) {
+			dao.insert(obj);
+		} else {
+			dao.update(obj);
+		}
+	}	
+
 // removendo
 	public void remove() {
    			dao.deleteByAll();

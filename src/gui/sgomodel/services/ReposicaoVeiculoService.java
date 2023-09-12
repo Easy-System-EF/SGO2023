@@ -18,6 +18,10 @@ public class ReposicaoVeiculoService {
    		return dao.findAllData();
 	} 
 	
+	public List<ReposicaoVeiculo> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<ReposicaoVeiculo> findByPlaca(String placa, Integer km) {
    		return dao.findByPlaca(placa, km);
 	} 

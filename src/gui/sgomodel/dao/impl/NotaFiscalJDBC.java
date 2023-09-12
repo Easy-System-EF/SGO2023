@@ -62,7 +62,33 @@ public class NotaFiscalJDBC implements NotaFiscalDao {
 		}
 	}
  
-
+	@Override
+	public void insertBackUp(NotaFiscal obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO notaFiscal " +
+				      "(CodigoNf, NumeroNF, BalcaoNF, OsNF )" + 
+  				      "VALUES " +
+				      "(?, ?, ?, ? )"); 
+ 
+ 			st.setInt(1, obj.getCodigoNF());
+ 			st.setInt(2, obj.getNumeroNF());
+ 			st.setInt(3, obj.getBalcaoNF());
+ 			st.setInt(4, obj.getOsNF());
+			 
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
 	@Override
 	public void deleteById(Integer nf) {
 		PreparedStatement st = null;
@@ -107,7 +133,7 @@ public class NotaFiscalJDBC implements NotaFiscalDao {
 		try {
 			st = conn.prepareStatement( 
 					"SELECT * FROM notaFiscal " +
-					"ORDER BY - NumeroNF ");
+					"ORDER BY - CodigoNF ");
 			
 			rs = st.executeQuery();
 			

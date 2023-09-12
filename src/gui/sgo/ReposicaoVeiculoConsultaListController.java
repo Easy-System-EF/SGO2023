@@ -83,7 +83,7 @@ public class ReposicaoVeiculoConsultaListController implements Initializable, Da
 	public String user = "";
  	 		
 // auxiliar 	
- 	public static Integer nivel = null;
+ 	public Integer nivel = null;
  	String classe = "Reposição cons List ";
  	String nomeTitulo = "Consulta Reposição do Veículo ";
  	String opcao = "a";
@@ -229,12 +229,10 @@ public class ReposicaoVeiculoConsultaListController implements Initializable, Da
 		            button.setOnAction(event -> removeEntity(obj)); 
 		        } 
 		    });
-		} 
-
+	}
+	
 	private void removeEntity(ReposicaoVeiculo obj) {
-		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
-		} else {
+		if (nivel == 1 || nivel == 9) {
 			Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir?");
 			if (result.get() == ButtonType.OK) {
 				if (service == null) {
@@ -246,8 +244,10 @@ public class ReposicaoVeiculoConsultaListController implements Initializable, Da
 				}
 				catch (DbIntegrityException e) {
 					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
-				}	
-			}
-		}
+				}
+			}	
+        } else {
+        	Alerts.showAlert(null, "Exclusão - Acesso negado ", null, AlertType.WARNING);
+        }	
 	}
- }
+}

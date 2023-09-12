@@ -18,6 +18,10 @@ public class GrupoService {
    		return dao.findAll();
 	} 
 	
+	public List<Grupo> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public Grupo findById(Integer cod) {
    		return dao.findById(cod);
 	} 
@@ -36,8 +40,12 @@ public class GrupoService {
 		}
 	}
 
+	public void insertBackUp(Grupo obj) {
+		dao.insertBackUp(obj);
+	}
+
 // removendo
-	public void remove(Grupo obj) {
-		dao.deleteById(obj.getCodigoGru());
+	public void remove(int cod) {
+		dao.deleteById(cod);
 	}
 }

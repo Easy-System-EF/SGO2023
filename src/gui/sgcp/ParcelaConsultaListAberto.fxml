@@ -56,9 +56,9 @@
       </ToolBar>
       <TableView fx:id="tableViewParcela" blendMode="DARKEN" prefHeight="64.0" prefWidth="678.0">
         <columns>
-            <TableColumn fx:id="tableColumnFornecedor" editable="false" prefWidth="195.0" text="Fornecedor" />
-            <TableColumn fx:id="tableColumnNNF" editable="false" prefWidth="55.0" text="NNF" />
-            <TableColumn fx:id="tableColumnVencimento" editable="false" prefWidth="63.0" text="Vencto" />
+            <TableColumn fx:id="tableColumnFornecedor" editable="false" prefWidth="176.0" text="Fornecedor" />
+            <TableColumn fx:id="tableColumnNNF" editable="false" prefWidth="49.0" text="NNF" />
+            <TableColumn fx:id="tableColumnVencimento" editable="false" prefWidth="88.0" text="Vencto" />
             <TableColumn fx:id="tableColumnParcela" editable="false" prefWidth="33.0" text="Parc" />
             <TableColumn fx:id="tableColumnValor" editable="false" prefWidth="59.0" text="Valor" />
             <TableColumn fx:id="tableColumnJuros" editable="false" prefWidth="47.0" text="Juros" />

@@ -1,3 +1,4 @@
+
 package gui.sgcpmodel.services;
 
 import java.util.List;
@@ -14,6 +15,10 @@ public class FornecedorService {
 
 //    criar no fornecedorlist uma dependencia no forn controlador para esse metodo, 
 //	carregando e mostrando na view		
+	public List<Fornecedor> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Fornecedor> findAll() {
    		return dao.findAll();
 	} 
@@ -34,6 +39,10 @@ public class FornecedorService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(Fornecedor obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

@@ -173,7 +173,10 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
  	 	Date dataHoje = new Date();
  		Calendar cal = Calendar.getInstance();
  		cal.setTime(dataHoje);
- 		int mesHj = cal.get(Calendar.MONTH) + 1;
+ 		int mesHj = cal.get(Calendar.MONTH);
+ 		if (mesHj == 0) {
+ 			mesHj = 12;
+ 		}
  		int anoHj = cal.get(Calendar.YEAR);
  		List<Adiantamento> list = new ArrayList<>();
 		list = service.findMesTipo(mesHj, anoHj, tipo);
@@ -258,7 +261,7 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
 
 	private void removeEntity(Adiantamento obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operaçaoo não permitida", AlertType.INFORMATION);
 		} else {
 			Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir");
 			if (result.get() == ButtonType.OK) {

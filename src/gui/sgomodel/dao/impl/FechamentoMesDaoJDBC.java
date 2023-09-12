@@ -72,8 +72,8 @@ public class FechamentoMesDaoJDBC implements FechamentoMesDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
 		}
 	}
  
@@ -117,7 +117,7 @@ public class FechamentoMesDaoJDBC implements FechamentoMesDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -137,7 +137,7 @@ public class FechamentoMesDaoJDBC implements FechamentoMesDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 

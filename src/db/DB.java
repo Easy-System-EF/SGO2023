@@ -68,5 +68,14 @@ public class DB {
 		}
 	}
 
+	public static void closeConnection(Connection conn) {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				throw new DbException("6 " + e.getMessage());
+			}
+		}
+	}
 }
  

@@ -7,9 +7,11 @@ import gui.sgcpmodel.entities.Compromisso;
 public interface CompromissoDao {
 
 	void insert(Compromisso obj);
+	void insertBackUp(Compromisso obj);
 	void update(Compromisso obj);
  	void deleteById(int cod, int nnf);
   	List<Compromisso> findAll();
+  	List<Compromisso> findAllId();
   	List<Compromisso> findPesquisa(String str);
  	List<Compromisso> findByFor(int cod);
  	Compromisso findById(int cod, int nnf);

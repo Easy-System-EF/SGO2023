@@ -317,30 +317,21 @@ public class ParcelaPrintRelatorioAbertoController implements Initializable, Dat
  		List<Parcela> list = new ArrayList<>();
   		if (opcao == 'o') {
  			list = parService.findAllAberto();
-			if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela em aberto ", AlertType.INFORMATION);
-			}	
   		}
   		if (opcao == 'p') {
  			list = parService.findPeriodoAberto();
-			if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela em aberto ", AlertType.INFORMATION);
-			}	
  		}
   		if (opcao == 'f') {
   			if (codigo != null) {
   				list = parService.findByIdFornecedorAberto(codigo);
-  				if (list.size() == 0) {
-  					Alerts.showAlert("Parcela ", null, "Não há parcela em aberto ", AlertType.INFORMATION);
-  				}	
   			}
  		}
   		if (opcao == 't') {
 			list = parService.findByIdTipoAberto(codTipo);
-			if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela em aberto ", AlertType.INFORMATION);
-			}	
  		}
+		if (list.size() == 0) {
+			Alerts.showAlert(null, "Não há parcela em aberto ", null, AlertType.INFORMATION);
+		}	
 
  		DecimalFormat df = new DecimalFormat("##,##0.00");
  	   	String resultadoParStr = ""; 

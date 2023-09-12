@@ -79,6 +79,48 @@ public class MaterialDaoJDBC implements MaterialDao {
 		}
 	}
  
+ 	@Override
+	public void insertBackUp(Material obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO material " 
+					
+				      + "(CodigoMat, GrupoMat, NomeMat, EstMinMat, SaldoMat, SaidaCmmMat, CmmMat, " 
+					  + "PrecoMat, VendaMat, vidaKmMat, vidaMesMat, PercentualClass, LetraClass, "
+					  + "DataCadastroMat, GrupoId ) "  
+  				      + "VALUES " +
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+
+  			st.setInt(1, obj.getCodigoMat());
+  			st.setInt(2, obj.getGrupoMat());
+			st.setString(3, obj.getNomeMat());
+			st.setDouble(4, obj.getEstMinMat());
+			st.setDouble(5, obj.getSaldoMat());
+			st.setDouble(6, obj.getSaidaCmmMat());
+			st.setDouble(7, obj.getCmmMat());
+			st.setDouble(8, obj.getPrecoMat());
+			st.setDouble(9, obj.getVendaMat());
+			st.setInt(10, obj.getVidaKmMat());
+			st.setInt(11, obj.getVidaMesMat());
+			st.setDouble(12, obj.getPercentualClass());
+			st.setString(13, String.valueOf(obj.getLetraClass()));
+			st.setDate(14, new java.sql.Date(obj.getDataCadastroMat().getTime()));
+			st.setInt(15, obj.getGrupo().getCodigoGru());
+  
+ 			st.executeUpdate();
+			
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
 	@Override
 	public void update(Material obj) {
 		PreparedStatement st = null;
@@ -188,6 +230,45 @@ public class MaterialDaoJDBC implements MaterialDao {
  							"INNER JOIN grupo "  +
 								"ON material.GrupoId = grupo.CodigoGru " + 
  					"ORDER BY NomeMat");
+ 			
+			rs = st.executeQuery();
+			
+			List<Material> list = new ArrayList<>();
+			Map<Integer, Grupo> mapGru = new HashMap<>();
+			
+			while (rs.next())
+			{	Grupo gru = mapGru.get(rs.getInt("GrupoId"));
+				if (gru == null)
+				{	gru = instantiateGrupo(rs);
+					mapGru.put(rs.getInt("GrupoId"), gru);
+				}	
+				Material obj = instantiateMaterial(rs, gru);
+				list.add(obj);
+   			}
+			return list;
+			
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Material> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+
+					"SELECT *, grupo.* " +  
+						"FROM material " +
+ 							"INNER JOIN grupo "  +
+								"ON material.GrupoId = grupo.CodigoGru " + 
+ 					"ORDER BY CodigoMat");
  			
 			rs = st.executeQuery();
 			

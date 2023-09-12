@@ -281,12 +281,12 @@ public class ParcelaPrintRelatorioPagoController implements Initializable, DataC
  			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelNada.setText(user);
- 		if (opcao == 'o')
-   		{	porPeriodo();	
+ 		if (opcao == 'o') {
+   			porPeriodo();	
    		}
   		somaTotal();
    		tableViewParcelaPago.setItems(obsListPar);
-     	}
+     }
  	
  	private void porPeriodo() {
  		try {

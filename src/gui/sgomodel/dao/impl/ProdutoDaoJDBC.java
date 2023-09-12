@@ -215,6 +215,45 @@ public class ProdutoDaoJDBC implements ProdutoDao {
 	} 
 	
 	@Override
+	public List<Produto> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+
+					"SELECT *, grupo.* " +  
+						"FROM produto " +
+ 							"INNER JOIN grupo "  +
+								"ON produto.GrupoIdProd = grupo.CodigoGru " + 
+ 					"ORDER BY CodigoProd");
+ 			
+			rs = st.executeQuery();
+			
+			List<Produto> list = new ArrayList<>();
+			Map<Integer, Grupo> mapGru = new HashMap<>();
+			
+			while (rs.next())
+			{	Grupo gru = mapGru.get(rs.getInt("GrupoIdProd"));
+				if (gru == null)
+				{	gru = instantiateGrupo(rs);
+					mapGru.put(rs.getInt("GrupoIdProd"), gru);
+				}	
+				Produto obj = instantiateProduto(rs, gru);
+				list.add(obj);
+   			}
+			return list;
+			
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
 	public List<Produto> findMVR() {
 		PreparedStatement st = null; 
 		ResultSet rs = null;

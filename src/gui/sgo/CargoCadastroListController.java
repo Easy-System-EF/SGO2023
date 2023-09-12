@@ -76,6 +76,7 @@ public class CargoCadastroListController implements Initializable, DataChangeLis
 // auxiliar
  	String classe = "Cargo F ";
 	public String user = "usuário";		
+	public Integer nivel = null;		
 
 	/* 
   * ActionEvent - referencia p/ o controle q receber o evento c/ acesso ao stage
@@ -226,25 +227,30 @@ public class CargoCadastroListController implements Initializable, DataChangeLis
 		            setGraphic(button); 
 		            button.setOnAction(event -> removeEntity(obj)); 
 		        } 
-		    });
- 		} 
-
+		    }); 
+     }	
+	
+	
 	private void removeEntity(Cargo obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir");
-		if (result.get() == ButtonType.OK) {
-			if (service == null) {
-				throw new IllegalStateException("Serviço está vazio");
+		if (nivel == 1 || nivel == 9) {
+			Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir");
+			if (result.get() == ButtonType.OK) {
+				if (service == null) {
+					throw new IllegalStateException("Serviço está vazio");
+				}
+				try {
+					service.remove(obj.getCodigoCargo());
+					updateTableView();
+				}
+				catch (DbException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}
+				catch (DbIntegrityException e) {
+					Alerts.showAlert("Erro removendo objeto", null, e.getMessage(), AlertType.ERROR);
+				}	
 			}
-			try {
-				service.remove(obj);
-				updateTableView();
-			}
-			catch (DbException e) {
-				Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
- 			}
-			catch (DbIntegrityException e) {
-				Alerts.showAlert("Erro removendo objeto", null, e.getMessage(), AlertType.ERROR);
-			}
+        } else {
+        	Alerts.showAlert(null, "Exclusão" , "Acesso negado ", AlertType.WARNING);
 		}
 	}
 }

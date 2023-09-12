@@ -38,13 +38,13 @@
       </ToolBar>
       <TableView fx:id="tableViewCliente" blendMode="DARKEN" prefHeight="443.0" prefWidth="715.0">
         <columns>
-          <TableColumn fx:id="tableColumnCodigoCli" editable="false" prefWidth="43.0" text="Código" />
-            <TableColumn fx:id="tableColumnNomeCli" editable="false" prefWidth="220.0" text="Nome" />
-            <TableColumn fx:id="tableColumnDdd01Cli" editable="false" prefWidth="30.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefone01Cli" editable="false" prefWidth="63.0" text="Telefone" />
+          <TableColumn fx:id="tableColumnCodigoCli" editable="false" prefWidth="57.0" text="Código" />
+            <TableColumn fx:id="tableColumnNomeCli" editable="false" prefWidth="195.0" text="Nome" />
+            <TableColumn fx:id="tableColumnDdd01Cli" editable="false" prefWidth="34.0" text="DDD" />
+            <TableColumn fx:id="tableColumnTelefone01Cli" editable="false" prefWidth="70.0" text="Telefone" />
             <TableColumn fx:id="tableColumnDdd02Cli" editable="false" minWidth="0.0" prefWidth="30.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefone02Cli" editable="false" prefWidth="63.0" text="Telefone" />
-            <TableColumn fx:id="tableColumnEmailCli" editable="false" minWidth="0.0" prefWidth="133.0" text="Email" />
+            <TableColumn fx:id="tableColumnTelefone02Cli" editable="false" prefWidth="73.0" text="Telefone" />
+            <TableColumn fx:id="tableColumnEmailCli" editable="false" minWidth="0.0" prefWidth="123.0" text="Email" />
             <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="51.0" text=" " />
             <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="51.0" text=" " />
         </columns>

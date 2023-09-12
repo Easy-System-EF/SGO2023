@@ -201,12 +201,14 @@ public class FolhaMesConsultaFormController implements Initializable {
  					classe = "Funcionario Dados 2 ";
  					funcionario = funService.findById(a.getCodigoFun());
 					if (a.getTipoAdi().equals("C")) {
-						Double com = adService.findByTotalCom(mes, ano, a.getCodigoFun());
-						funcionario.setComissaoFun(com);
+						if (a.getComissaoAdi() != null) {
+							funcionario.setComissaoFun(a.getComissaoAdi());
+						}	
 					}
 					if (a.getTipoAdi().equals("A")) {
-						Double adi = adService.findByTotalAdi(mes, ano, a.getCodigoFun());
-						funcionario.setAdiantamentoFun(adi);
+						if (a.getValeAdi() != null) {
+							funcionario.setAdiantamentoFun(a.getValeAdi());
+						}	
 					}	
  					funService.saveOrUpdate(funcionario);
 				}	

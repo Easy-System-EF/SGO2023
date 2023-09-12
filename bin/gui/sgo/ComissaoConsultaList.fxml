@@ -46,8 +46,8 @@
             <TableColumn fx:id="tableColumnBalAdi" editable="false" prefWidth="76.0" text="Balcão" />
             <TableColumn fx:id="tableColumnOSAdi" editable="false" prefWidth="70.0" text="OS" />
             <TableColumn fx:id="tableColumnDataAdi" editable="false" prefWidth="81.0" text="Data" />
-            <TableColumn fx:id="tableColumnCargoAdi" editable="false" minWidth="0.0" prefWidth="99.0" text="Cargo" />
-            <TableColumn fx:id="tableColumnSituacaoAdi" editable="false" minWidth="0.0" prefWidth="79.0" text="Situação" />
+            <TableColumn fx:id="tableColumnCargoAdi" editable="false" minWidth="0.0" prefWidth="109.0" text="Cargo" />
+            <TableColumn fx:id="tableColumnSituacaoAdi" editable="false" minWidth="0.0" prefWidth="69.0" text="Situação" />
             <TableColumn fx:id="tableColumnValorAdi" editable="false" prefWidth="58.0" text="Valor" />
         </columns>
          <effect>

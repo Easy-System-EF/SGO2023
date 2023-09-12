@@ -92,7 +92,7 @@ public class MaterialCadastroListController implements Initializable, DataChange
  		 Stage parentStage = Utils.currentStage(event);
 // instanciando novo obj depto e injetando via
  		 Material obj = new Material();
- 		 createDialogForm(obj, "/gui/sgo//MaterialCadastroForm.fxml", parentStage);
+ 		 createDialogForm(obj, "/gui/sgo/MaterialCadastroForm.fxml", parentStage);
    	}
  	
 // injeta a dependencia com set (invers�o de controle de inje�ao)	
@@ -240,7 +240,7 @@ public class MaterialCadastroListController implements Initializable, DataChange
 
 	private void removeEntity(Material obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operaçaoo não permitida", AlertType.INFORMATION);
 		} else {
 			Optional<ButtonType> result = Alerts.showConfirmation("Confirmção", "Tem certeza que deseja excluir?");
 			if (result.get() == ButtonType.OK) {
@@ -248,7 +248,7 @@ public class MaterialCadastroListController implements Initializable, DataChange
 					throw new IllegalStateException("Serviço está vazio");
 				}
 				try {
-					service.remove(obj);
+					service.remove(obj.getCodigoMat());
 					updateTableView();
 				}	
 				catch (DbIntegrityException e) {

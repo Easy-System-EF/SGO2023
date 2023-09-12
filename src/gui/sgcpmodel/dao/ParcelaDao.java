@@ -8,6 +8,7 @@ import gui.sgcpmodel.entities.Parcela;
 public interface ParcelaDao {
 
 	void insert(Parcela obj);
+	void insertBackUp(Parcela obj);
 	void update(Parcela obj);
  	void deleteByNnf(int nnf, int codFor);
  	Double findSumAberto(Date dti, Date dtf);
@@ -15,6 +16,7 @@ public interface ParcelaDao {
  	Double findSumAll(int ano, int mes);
   	Parcela findByIdForn(int cod);
   	List<Parcela> findAll();
+  	List<Parcela> findAllId();
   	List<Parcela> findAllAberto();
   	List<Parcela> findAllPago();
   	List<Parcela> findPeriodoAberto();

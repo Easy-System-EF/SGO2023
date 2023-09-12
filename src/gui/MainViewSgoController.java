@@ -10,6 +10,9 @@ import application.MainSgo;
 import gui.copia.Copia;
 import gui.copia.CopiaService;
 import gui.copia.CopiaSgoController;
+import gui.copia.Restaura;
+import gui.copia.RestauraService;
+import gui.copia.RestauraSgoController;
 import gui.listerneres.DataChangeListener;
 import gui.sgcp.CompromissoCadastroListController;
 import gui.sgcp.FornecedorCadastroListController;
@@ -169,6 +172,9 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 	private MenuItem menuItemBackUp;
 
 	@FXML
+	private MenuItem menuItemRestaura;
+
+	@FXML
 	private MenuItem menuItemSobre;
 
 	@FXML
@@ -234,6 +240,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new CompromissoService(), new ParcelaService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -246,6 +254,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 		} else {	
 		loadView("/gui/sgcp/TipoConsumoCadastroList.fxml", (TipoConsumoCadastroListController controller) -> {
 			controller.user = user;
+			controller.nivel = nivel;
 			controller.setTipoConsumoService(new TipoConsumoService());
 			controller.updateTableView();
 			// view2 p/ funcionar mock
@@ -279,6 +288,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 		} else {	
 		loadView("/gui/sgo/GrupoCadastroList.fxml", (GrupoCadastroListController controller) -> {
 			controller.user = user;
+			controller.nivel = nivel;
 			controller.setGrupoService(new GrupoService());
 			controller.updateTableView();
 		});}
@@ -309,9 +319,12 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 			if (nivel == 1 || nivel == 9) {
 				loadView("/gui/sgo/CargoCadastroList.fxml", (CargoCadastroListController controller) -> {
 					controller.user = user;
+					controller.nivel = nivel;
 					controller.setCargoService(new CargoService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -346,6 +359,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setTipo("A");
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -364,6 +379,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new MaterialService(), new EntradaService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -384,6 +401,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new OrcamentoService(), new OrcVirtualService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -406,6 +425,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 							new AdiantamentoService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -447,6 +468,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new ParPeriodoService(), new ParcelaService());
 					controller.updateTableViewAberto();
 		}); 
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -466,6 +489,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new ParPeriodoService(), new ParcelaService());
 					controller.updateTableViewPago();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}
 	}
@@ -485,6 +510,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setReceberService(new ReceberService());
 					controller.updateTableViewAberto();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -505,6 +532,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setReceberService(new ReceberService());
 					controller.updateTableViewPago();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -523,6 +552,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setParcelaService(new ParcelaService());
 					controller.updateTableViewAberto();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -541,6 +572,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setParcelaService(new ParcelaService());
 					controller.updateTableViewPago();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -558,6 +591,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setReceberService(new ReceberService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -575,6 +610,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setReceberService(new ReceberService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -587,6 +624,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 		} else {	
  		loadView("/gui/sgo/ReposicaoVeiculoConsultaList.fxml", (ReposicaoVeiculoConsultaListController contRV) -> {
 			contRV.user = user;
+			contRV.nivel = nivel;
   			contRV.setReposicaoVeiculoService(new ReposicaoVeiculoService());
    			contRV.updateTableView();
 		});}
@@ -620,6 +658,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new AdiantamentoService());
 					controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -636,6 +676,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.user = user;
 					controller.setServices(new FolhaMesService());
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -653,6 +695,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.setServices(new FechamentoMesService());
 		   			controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -674,6 +718,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 						e.printStackTrace();
 					}
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -695,6 +741,8 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 						e.printStackTrace();
 					}
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
 		}	
 	}
@@ -723,6 +771,29 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 				controller.updateTableView();
 		});}
 	}
+
+	@FXML
+	public void onMenuItemRestauraAction() {
+		classe = "Restaura ";
+		if (senha != "Ok") {
+			temLogar();
+		} else {	
+			if (senha == "Ok") {
+				if (nivel == 1 || nivel == 9) {
+					loadView("/gui/copia/RestauraList.fxml", (RestauraSgoController controller) -> {
+						controller.user = user;
+						controller.setRestauraService(new RestauraService());
+						controller.setEntity(new Restaura());
+						controller.service.zeraAll();
+						controller.updateTableView();
+					});
+				} else {
+					Alerts.showAlert(null, "Atenção", "usuário sem acesso", AlertType.WARNING);
+				}
+				
+				}
+			}	
+		}
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {

@@ -22,6 +22,10 @@ public class TipoConsumoService {
    		return dao.findAll();
 	} 
 	
+	public List<TipoConsumo> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public TipoConsumo findById(int cod) {
    		return dao.findById(cod);
 	} 
@@ -34,6 +38,10 @@ public class TipoConsumoService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(TipoConsumo obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

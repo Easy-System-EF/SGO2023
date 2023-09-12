@@ -16,6 +16,10 @@ public class CompromissoService {
  		return dao.findAll();
 	}
 	
+	public List<Compromisso> findAllId(){
+ 		return dao.findAll();
+	}
+	
 	public List<Compromisso> findPesquisa(String str) {
    		return dao.findPesquisa(str);
 	} 
@@ -38,13 +42,17 @@ public class CompromissoService {
 	
  // inserindo ou atualizando	
 	public void saveOrUpdate(Compromisso obj) {
- 			if (obj.getIdCom() == null) {
- 				dao.insert(obj);
- 			} else {
- 				dao.update(obj);
- 			}
-  	}
-		
+			if (obj.getIdCom() == null) {
+				dao.insert(obj);
+			} else {
+				dao.update(obj);
+			}
+	}
+	
+	public void insertBackUp(Compromisso obj) {
+		dao.insertBackUp(obj);
+	}
+	
 // removendo 	
 	public void remove(int cod, int nnf) {
  		dao.deleteById(cod, nnf);	

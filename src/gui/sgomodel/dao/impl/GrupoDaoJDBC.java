@@ -55,6 +55,32 @@ public class GrupoDaoJDBC implements GrupoDao {
 			}	
   		}
  		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Grupo obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO grupo " +
+				      "(CodigoGru, NomeGru)" + 
+  				      "VALUES " +
+				      "(?,?)",
+ 					 Statement.RETURN_GENERATED_KEYS); 
+ 
+ 			st.setInt(1, obj.getCodigoGru());
+ 			st.setString(2, obj.getNomeGru());
+			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
 			throw new DbException (e.getMessage());
 		}
 		finally {
@@ -160,6 +186,7 @@ public class GrupoDaoJDBC implements GrupoDao {
 			DB.closeResultSet(rs);
 		}
  	}
+	
 	@Override
 	public List<Grupo> findAll() {
 		PreparedStatement st = null; 
@@ -168,6 +195,36 @@ public class GrupoDaoJDBC implements GrupoDao {
 			st = conn.prepareStatement( 
 					"SELECT * FROM grupo " +
 					"ORDER BY NomeGru");
+			
+			rs = st.executeQuery();
+			
+			List<Grupo> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	if (rs != null)
+				{	Grupo obj = instantiateGrupos(rs);
+ 					list.add(obj);
+				}	
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Grupo> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM grupo " +
+					"ORDER BY CodigoGru");
 			
 			rs = st.executeQuery();
 			

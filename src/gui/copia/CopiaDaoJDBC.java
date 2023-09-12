@@ -28,16 +28,16 @@ public class CopiaDaoJDBC implements CopiaDao {
 		try {
 			st = conn.prepareStatement(
 					"INSERT INTO backUp " +
-							"(DataIBackUp, UserBackUp, DataFBackUp )" +
+							"(DataIBackUp, UserBackUp, DataFBackUp, unidadeBackUp )" +
 								"VALUES " + 
-							"(?, ?, ? )",
+							"(?, ?, ?, ? )",
 							Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getDataIBackUp());
 			st.setString(2, obj.getUserBackUp());
 			st.setString(3, obj.getDataFBackUp());
+			st.setString(4, obj.getUnidadeBackUp());
 
-			st.executeUpdate();
  			int rowsaffectad = st.executeUpdate();
 			
 			if (rowsaffectad > 0) {
@@ -65,7 +65,7 @@ public class CopiaDaoJDBC implements CopiaDao {
 			st = conn.prepareStatement(
 					"SELECT * " + 
 						"FROM BackUp " +
-						"ORDER BY - dataIBackUp ");
+						"ORDER BY - IdBackUp ");
 
 			rs = st.executeQuery();
 
@@ -109,6 +109,7 @@ public class CopiaDaoJDBC implements CopiaDao {
 		backUp.setDataIBackUp(rs.getString("DataIBackUp"));
 		backUp.setUserBackUp(rs.getString("UserBackUp"));
 		backUp.setDataFBackUp(rs.getString("DataFBackUp"));
+		backUp.setUnidadeBackUp(rs.getString("UnidadeBackUp"));
 		return backUp;
 	}
 }

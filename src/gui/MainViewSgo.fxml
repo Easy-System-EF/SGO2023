@@ -59,6 +59,7 @@
                   <Menu mnemonicParsing="false" text="BackUp">
                     <items>
                       <MenuItem fx:id="menuItemBackUp" mnemonicParsing="false" onAction="#onMenuItemBackUpAction" text="BackUp" />
+                        <MenuItem fx:id="menuItemRestaura" mnemonicParsing="false" onAction="#onMenuItemRestauraAction" text="Restaura" />
                     </items>
                   </Menu>
                   <Menu fx:id="Ajuda" mnemonicParsing="false" text="Ajuda">

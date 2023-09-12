@@ -180,8 +180,11 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
   				(ParFornecedorFormController contF) -> {
 			contF.setFornecedor(obj3);
 			contF.setService(new FornecedorService());
+			contF.loadAssociatedObjects();
+			contF.subscribeDataChangeListener(this);
+			contF.updateFormData();
  		});
-  		updateTableViewAberto();
+//  		updateTableViewAberto();
 	}
  	
 	@FXML
@@ -195,7 +198,7 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
   		contT.setPeriodo(obj1);
   		contT.setPeriodoService(new ParPeriodoService(), new TipoConsumoService());
   		});
-  		updateTableViewAberto();
+//  		updateTableViewAberto();
   		}
   
 	// inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -281,34 +284,23 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
 		for (ParPeriodo per : listPer) {
 			codTipo = per.getTipoConsumo().getCodigoTipo();
 		}
-
 		List<Parcela> list = new ArrayList<>();
 		if (opcao == 'o') {
 			list = parService.findAllAberto();
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela (período) em aberto ", AlertType.INFORMATION);
-	 		}
 		}
  		if (opcao == 'p') {
 			list = parService.findPeriodoAberto();
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela (período) em aberto ", AlertType.INFORMATION);
-	 		}
 		}
  		if (opcao == 'f') {
  			if (codigo != null) {
  				list = parService.findByIdFornecedorAberto(codigo);
- 				if (list.size() == 0) {
- 					Alerts.showAlert("Parcela ", null, "Não há parcela (fornecedor) em aberto ", AlertType.INFORMATION);
- 					codigo = null;
- 				}
  			}	
 		}
  		if (opcao == 't') {
 			list = parService.findByIdTipoAberto(codTipo);
-	 		if (list.size() == 0) {
-				Alerts.showAlert("Parcela ", null, "Não há parcela (tipo) em aberto ", AlertType.INFORMATION);
-	 		}
+ 		}
+ 		if (list.size() == 0) {
+			Alerts.showAlert(null, "Contas a Pagar ", "Não há parcela(s) em aberto ", AlertType.INFORMATION);
  		}
  		DecimalFormat df = new DecimalFormat("##,##0.00");
  	   	String resultadoParStr = ""; 

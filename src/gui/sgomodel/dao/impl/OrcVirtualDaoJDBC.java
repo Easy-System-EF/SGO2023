@@ -75,6 +75,39 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 	}
  
 	@Override
+	public void insertBackUp(OrcVirtual obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO orcVirtual " +
+				      "(NumeroVir, NomeMatVir, QuantidadeMatVir, PrecoMatVir, TotalMatVir, NumeroOrcVir, "
+				      + "NumeroBalVir, MaterialId, custoMatVir )"
+  				      + "VALUES " +
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
+
+			st.setInt(1, obj.getNumeroVir());
+			st.setString(2, obj.getMaterial().getNomeMat());
+  			st.setDouble(3, obj.getQuantidadeMatVir()); 
+   			st.setDouble(4, obj.getPrecoMatVir());
+ 			st.setDouble(5, obj.getTotalMatVir());
+ 			st.setInt(6, obj.getNumeroOrcVir());
+ 			st.setInt(7, obj.getNumeroBalVir());
+ 			st.setInt(8, obj.getMaterial().getCodigoMat());
+ 			st.setDouble(9, obj.getCustoMatVir());
+  			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + "sem inclusão" + e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
 	public void update(OrcVirtual obj) {
 		PreparedStatement st = null;
   		try {
@@ -134,8 +167,7 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 		ResultSet rs = null;
    		try {
 			st = conn.prepareStatement(
-					"select orcVirtual.TotalMatVir, orcVirtual.NumeroOrcVir, " +
-					  "sum(TotalMatVir) AS total from orcVirtual WHERE NumeroOrcVir = ? "); 
+					"SELECT SUM(TotalMatVir) AS 'total' FROM orcVirtual WHERE NumeroOrcVir = ? "); 
 			
 			st.setInt(1, numOrc);
 			rs = st.executeQuery();
@@ -149,6 +181,30 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
  			DB.closeStatement(st);
 		}
 		return totOrc;
+	}
+
+	@Override
+	public Double findByTotalBal(Integer numBal) {
+		Double totBal = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					"SELECT SUM(TotalMatVir) AS 'total' FROM orcVirtual WHERE NumeroBalVir = ? "); 
+			
+			st.setInt(1, numBal);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totBal = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+ 			DB.closeResultSet(rs);
+		}
+		return totBal;
 	}
 
 	@Override
@@ -166,31 +222,6 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
  		finally {
  			DB.closeStatement(st);
 		}
-	}
-
-	@Override
-	public Double findByTotalBal(Integer numBal) {
-		Double totBal = null;
-		PreparedStatement st = null;
-		ResultSet rs = null;
-   		try {
-			st = conn.prepareStatement(
-					"select orcVirtual.TotalMatVir, orcVirtual.NumeroBalVir, " +
-					  "sum(TotalMatVir) AS total from orcVirtual WHERE NumeroBalVir = ? "); 
-			
-			st.setInt(1, numBal);
-			rs = st.executeQuery();
-			while (rs.next()) {
-				totBal = rs.getDouble("total");
-			}	
-   		}
- 		catch (SQLException e) {
-			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
- 		finally {
- 			DB.closeStatement(st);
- 			DB.closeResultSet(rs);
-		}
-		return totBal;
 	}
 
 	@Override
@@ -221,6 +252,44 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 							+ "INNER JOIN material "
 								+ "ON orcVirtual.MaterialId = material.CodigoMat " 
 					+ "ORDER BY - NumeroOrcVir");
+			
+			rs = st.executeQuery();
+			
+			List<OrcVirtual> list = new ArrayList<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+			
+			while (rs.next())
+			{	@SuppressWarnings("unlikely-arg-type")
+			Material mat = mapMat.get("MaterialId");
+				if (mat == null)
+				{	mat = instantiateMaterial(rs);
+					mapMat.put(rs.getInt("MaterialId"), mat);
+				}
+				OrcVirtual orcVir = instantiateOrcVirtual(rs, mat);
+				list.add(orcVir);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<OrcVirtual> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT *, material.* " 
+						+ "FROM orcVirtual " 
+							+ "INNER JOIN material "
+								+ "ON orcVirtual.MaterialId = material.CodigoMat " 
+					+ "ORDER BY NumeroOrcVir");
 			
 			rs = st.executeQuery();
 			

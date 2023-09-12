@@ -426,7 +426,7 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 					veiculo.setPlacaVei(obj.getPlacaOrc());
 					veiculo.setKmInicialVei(0);
 					veiculo.setKmFinalVei(obj.getKmFinalOrc());
-					veiculo.setModeloVei(null);
+					veiculo.setModeloVei(" ");
 					veiculo.setAnoVei(0);
 					classe = "Veiculo";
 					veiService.saveOrUpdate(veiculo);

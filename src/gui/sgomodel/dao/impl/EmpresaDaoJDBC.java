@@ -60,8 +60,38 @@ public class EmpresaDaoJDBC implements EmpresaDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Empresa obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO empresa " +
+				      "(NumeroEmp, NomeEmp, EnderecoEmp, TelefoneEmp, EmailEmp, PixEmp )" + 
+  				      "VALUES " +
+				      "(?, ?, ?, ?, ?, ? )"); 
+
+			st.setInt(1, obj.getNumeroEmp());
+			st.setString(2, obj.getNomeEmp());
+			st.setString(3, obj.getEnderecoEmp());
+			st.setString(4, obj.getTelefoneEmp());
+			st.setString(5, obj.getEmailEmp());
+			st.setString(6, obj.getPixEmp());
+			
+ 			st.executeUpdate();
+			
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
 		}
 	}
  
@@ -91,8 +121,8 @@ public class EmpresaDaoJDBC implements EmpresaDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
 		}
 	}
  
@@ -120,7 +150,7 @@ public class EmpresaDaoJDBC implements EmpresaDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
  	}
@@ -131,7 +161,8 @@ public class EmpresaDaoJDBC implements EmpresaDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
-				 "SELECT * FROM empresa ");
+				 "SELECT * FROM empresa " +
+			"ORDER BY NumeroEmp " );
  			
 			rs = st.executeQuery();
 			List<Empresa> list = new ArrayList<>();
@@ -146,7 +177,7 @@ public class EmpresaDaoJDBC implements EmpresaDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
  	}

@@ -76,7 +76,45 @@ public class OrcamentoDaoJDBC implements OrcamentoDao {
 			DB.closeStatement(st);
 		}
 	}
+	
+	@Override
+	public void insertBackUp(Orcamento obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO orcamento " +
+				      "(NumeroOrc, DataOrc, ClienteOrc, FuncionarioOrc, PlacaOrc, KmInicialOrc, " +
+				       "KmFinalOrc, DescontoOrc, TotalOrc, OsOrc, MesOrc, AnoOrc, ClienteId, FuncionarioId) " +
+   				       "VALUES " +
+				       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
+
+			st.setInt(1, obj.getNumeroOrc());
+			st.setDate(2, new java.sql.Date(obj.getDataOrc().getTime()));
+			st.setString(3, obj.getClienteOrc());
+			st.setString(4, obj.getFuncionarioOrc());
+			st.setString(5,  obj.getPlacaOrc());
+			st.setInt(6, obj.getKmInicialOrc());
+			st.setInt(7,  obj.getKmFinalOrc());
+			st.setDouble(8, obj.getDescontoOrc());
+			st.setDouble(9, obj.getTotalOrc());
+			st.setInt(10, obj.getOsOrc());
+			st.setInt(11, obj.getMesOrc());
+			st.setInt(12, obj.getAnoOrc());
+			st.setInt(13, obj.getCliente().getCodigoCli());
+			st.setInt(14, obj.getFuncionario().getCodigoFun());
  
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão" + e);
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+  
 	@Override
 	public void update(Orcamento obj) {
 		PreparedStatement st = null;
@@ -260,6 +298,53 @@ public class OrcamentoDaoJDBC implements OrcamentoDao {
 						 		 "INNER JOIN funcionario " +
 					 				 "ON orcamento.FuncionarioId = funcionario.CodigoFun " +
 								 "ORDER BY - NumeroOrc");
+			
+			rs = st.executeQuery();
+			
+ 			List<Orcamento> list = new ArrayList<>();
+ 			Cliente cli = new Cliente();
+ 			Funcionario fun = new Funcionario();
+  			Map<Integer, Cliente> mapCli = new HashMap<>();
+  			Map<Integer, Funcionario> mapFun = new HashMap<>();
+ 			
+			while (rs.next()) 
+ 			{ 	cli = mapCli.get(rs.getInt("ClienteId"));
+ 				if (cli == null)
+ 				{ 	cli =	instantiateCliente(rs);
+ 					mapCli.put(rs.getInt("ClienteId"), cli);
+ 				}
+  			    fun = mapFun.get(rs.getInt("FuncionarioId"));
+  			    if (fun == null)
+  			    { 	fun = instantiateFuncionario(rs);
+  			    	mapFun.put(rs.getInt("FuncionarioId"),fun);
+  			    }
+ 			    Orcamento obj = instantiateOrcamento(rs, cli, fun);
+  				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Orcamento> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					 "SELECT orcamento.*, cliente.*, funcionario.* " +
+							   "FROM orcamento " +
+						 		 "INNER JOIN cliente " +
+				 					 "on orcamento.ClienteId = cliente.CodigoCli " + 
+						 		 "INNER JOIN funcionario " +
+					 				 "ON orcamento.FuncionarioId = funcionario.CodigoFun " +
+								 "ORDER BY NumeroOrc");
 			
 			rs = st.executeQuery();
 			

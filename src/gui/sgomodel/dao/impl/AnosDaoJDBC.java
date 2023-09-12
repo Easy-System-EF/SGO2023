@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,61 @@ public class AnosDaoJDBC implements AnosDao {
 	
 	public AnosDaoJDBC (Connection conn) {
 		this.conn = conn;
+	}
+
+	@Override
+	public void insert(Anos obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"Insert INTO anos " + 
+						"AnoAnos, AnoStrAnos " +
+							"VALUES " +
+					 	"(?, ? ) ",
+
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setInt(1, obj.getAnoAnos());
+			st.setString(2, obj.getAnoStrAnos());
+			st.executeUpdate();
+			rs = st.getGeneratedKeys();
+
+			while (rs.next()) {
+				int cod = rs.getInt(1);
+				obj.setNumeroAnos(cod);
+			}			
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public void update(Anos obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"UPDATE anos " + 
+						"SET AnoAnos = ?, AnoStrAnos = ? " +
+					 " WHERE (NumeroAnos = ? )",
+
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setInt(1, obj.getAnoAnos());
+			st.setString(2, obj.getAnoStrAnos());
+			st.setInt(3, obj.getNumeroAnos());
+			st.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
@@ -46,7 +102,37 @@ public class AnosDaoJDBC implements AnosDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Anos> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM anos " +
+					"ORDER BY NumeroAnos");
+			
+			rs = st.executeQuery();
+			
+			List<Anos> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	if (rs != null)
+				{	Anos obj = instantiateAnos(rs);
+ 					list.add(obj);
+				}	
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -75,7 +161,7 @@ public class AnosDaoJDBC implements AnosDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 

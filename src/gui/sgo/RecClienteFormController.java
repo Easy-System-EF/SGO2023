@@ -97,14 +97,14 @@ public class RecClienteFormController implements Initializable {
 		    List<Cliente> list = service.findPesquisa(pesquisa);
 			if (list.size() == 0) { 
 				pesquisa = "";
-				Alerts.showAlert("Cliente ", null, "N�o encontrado ", AlertType.INFORMATION);
+				Alerts.showAlert("Cliente ", null, "Não encontrado ", AlertType.INFORMATION);
 				codigo = null;
 				list = service.findAll();
 		 	}
 	 		obsList = FXCollections.observableArrayList(list);
 			comboBoxCliente.setItems(obsList);
 			comboBoxCliente.getSelectionModel().selectFirst();
-   	    	notifyDataChangeListerners();
+//   	    	notifyDataChangeListerners();
    	    	updateFormData();
 		}
 		catch (DbException e) {
@@ -119,13 +119,13 @@ public class RecClienteFormController implements Initializable {
 		{	throw new IllegalStateException("Entidade nula");
 		}
 		if (service == null)
-		{	throw new IllegalStateException("Servi�o nulo");
+		{	throw new IllegalStateException("Serviço nulo");
 		}
 		try {
-			@SuppressWarnings("unused")
 			List<Cliente> listOk = new ArrayList<>();
 			if (pesquisa != "") { 
 				listOk = service.findPesquisa(pesquisa);
+				codigo = listOk.get(0).getCodigoCli();
 			} else {	
 				listOk = service.findAll();
 		 	}			
@@ -218,7 +218,7 @@ public class RecClienteFormController implements Initializable {
 //	carrega dados do bco  dentro 
 	public void loadAssociatedObjects() {
 		if (service == null) {
-			throw new IllegalStateException("ClienteServi�o esta nulo");
+			throw new IllegalStateException("ClienteServiço esta nulo");
 		}
 // buscando (carregando) os forn q est�o no bco de dados
 		List<Cliente> listLoad = new ArrayList<>();

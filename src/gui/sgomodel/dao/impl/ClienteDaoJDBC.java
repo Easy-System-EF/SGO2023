@@ -82,6 +82,52 @@ public class ClienteDaoJDBC implements ClienteDao {
 	}
  
 	@Override
+	public void insertBackUp(Cliente obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO cliente " +
+				      "(CodigoCli, NomeCli, RuaCli, NumeroCli, ComplementoCli, BairroCli, CidadeCli, "
+				      + "UFCli, CepCli, Ddd01Cli, Telefone01Cli, Ddd02Cli, Telefone02Cli, "
+				      + "EmailCli, PessoaCli, CpfCli, CnpjCli, ValorClass, PercentualClass, LetraClass, VisitaClass )" 
+  				      + "VALUES " +
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+
+			st.setInt(1, obj.getCodigoCli());
+			st.setString(2, obj.getNomeCli());
+ 			st.setString(3, obj.getRuaCli());
+   			st.setInt(4, obj.getNumeroCli());
+ 			st.setString(5, obj.getComplementoCli());
+ 			st.setString(6, obj.getBairroCli());
+ 			st.setString(7, obj.getCidadeCli());
+ 			st.setString(8, obj.getUfCli());
+  			st.setString(9,  obj.getCepCli());
+  			st.setInt(10, obj.getDdd01Cli());
+   			st.setInt(11,  obj.getTelefone01Cli());
+  			st.setInt(12, obj.getDdd02Cli());
+   			st.setInt(13, obj.getTelefone02Cli());
+  			st.setString(14, obj.getEmailCli());
+   			st.setString(15, String.valueOf(obj.getPessoaCli()));
+  			st.setString(16, obj.getCpfCli());
+   			st.setString(17, obj.getCnpjCli());
+   			st.setDouble(18, obj.getValorClass());
+   			st.setDouble(19, obj.getPercentualClass());
+   			st.setString(20, String.valueOf(obj.getLetraClass()));
+   			st.setInt(21, obj.getVisitaClass());
+   			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão " + e.getMessage() );
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
 	public void update(Cliente obj) {
 		PreparedStatement st = null;
   		try {
@@ -192,6 +238,34 @@ public class ClienteDaoJDBC implements ClienteDao {
 			st = conn.prepareStatement( 
 					"SELECT * FROM cliente " +
 					"ORDER BY NomeCli");
+			
+			rs = st.executeQuery();
+			
+			List<Cliente> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	Cliente obj = instantiateCliente(rs);
+				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Cliente> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM cliente " +
+					"ORDER BY CodigoCli");
 			
 			rs = st.executeQuery();
 			

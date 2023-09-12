@@ -91,7 +91,7 @@ public class ParFornecedorFormController implements Initializable {
 	  			obsListFor = FXCollections.observableArrayList(list);
 				comboBoxFornecedor.setItems(obsListFor);
 				comboBoxFornecedor.getSelectionModel().selectFirst();
-	  			notifyDataChangeListerners();
+//	  			notifyDataChangeListerners();
 	  			updateFormData();
 	  		}	
 		}
@@ -113,7 +113,6 @@ public class ParFornecedorFormController implements Initializable {
  *  qdo ela salvar obj com sucesso, � s� notificar (juntar)
  *  recebe l� no  listController    		 
  */
-	@SuppressWarnings("unused")
 	@FXML
 	public void onBtOkAction(ActionEvent event) {
 		if (entity == null) {
@@ -126,6 +125,7 @@ public class ParFornecedorFormController implements Initializable {
 			} else {	
 				listFor = forService.findAll();
 		 	}			
+			codigo = listFor.get(0).getCodigo();
      		entity = getFormData();
      		ParcelaConsultaListAbertoController.codigo = codigo;
      		ParcelaConsultaListPagoController.codigo = codigo;

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="494.0" prefWidth="689.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgcp.FornecedorCadastroListController">
+<VBox prefHeight="494.0" prefWidth="706.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgcp.FornecedorCadastroListController">
    <children>
       <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="560.0">
         <items>
@@ -38,15 +38,15 @@
       </ToolBar>
       <TableView fx:id="tableViewFornecedor" blendMode="DARKEN" prefHeight="443.0" prefWidth="715.0">
         <columns>
-          <TableColumn fx:id="tableColumnCodigo" editable="false" prefWidth="43.0" text="Código" />
-            <TableColumn fx:id="tableColumnRazaoSocial" editable="false" prefWidth="251.0" text="Razão Social" />
-            <TableColumn fx:id="tableColumnDdd01" editable="false" prefWidth="33.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefone01" editable="false" prefWidth="64.0" text="Telefone" />
-            <TableColumn fx:id="tableColumnContato" editable="false" minWidth="0.0" prefWidth="89.0" text="Contato" />
-            <TableColumn fx:id="tableColumnDddContato" editable="false" minWidth="0.0" prefWidth="32.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefoneContato" editable="false" prefWidth="64.0" text="Telefone" />
-            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="52.0" text=" " />
-            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="56.0" text=" " />
+          <TableColumn fx:id="tableColumnCodigo" editable="false" prefWidth="52.0" text="Código" />
+            <TableColumn fx:id="tableColumnRazaoSocial" editable="false" prefWidth="200.0" text="Razão Social" />
+            <TableColumn fx:id="tableColumnDdd01" editable="false" prefWidth="40.0" text="DDD" />
+            <TableColumn fx:id="tableColumnTelefone01" editable="false" prefWidth="79.0" text="Telefone" />
+            <TableColumn fx:id="tableColumnContato" editable="false" minWidth="0.0" prefWidth="95.0" text="Contato" />
+            <TableColumn fx:id="tableColumnDddContato" editable="false" minWidth="0.0" prefWidth="33.0" text="DDD" />
+            <TableColumn fx:id="tableColumnTelefoneContato" editable="false" prefWidth="76.0" text="Telefone" />
+            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="59.0" />
+            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="57.0" />
         </columns>
       </TableView>
    </children>

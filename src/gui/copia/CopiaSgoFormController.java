@@ -40,21 +40,34 @@ public class CopiaSgoFormController implements Initializable {
 			String pathB = unid + ":\\ARQS\\Backup";
 			String pathC = unid + ":\\ARQS\\Backup\\SGO";
 			String pathD = unid + ":\\ARQS\\Backup\\SGOCP";
-//			File pathf = new File(pathA);
-	 		@SuppressWarnings("unused")
-			boolean exist = false;
-			exist = new File (pathA).mkdir();
-			exist = new File (pathB).mkdir();
-			exist = new File (pathC).mkdir();
-			exist = new File (pathD).mkdir();
-//			File[] folders = pathf.listFiles(File::isDirectory);
-//			for(File f : folders) {
-//				System.out.println(f);
-//			}	
+
+			File pathU = new File(unid + ":\\");
+			File unidade[] = pathU.listFiles(File::isFile);
+	 		if (unidade == null) {
+				Alerts.showAlert(null, "unidade inválida " , "unidade: " + unid, AlertType.ERROR);				
+				CopiaSgoController.unid = null;
+				unid = null;
+	 		} else {	
+//	 		} else {
+//	 			File path = new File(unid + ":\\ARQS\\Backup\\SGO");
+//	 			File[] folder = path.listFiles(File::isDirectory);
+//	 			if (folder == null) {
+//	 				Alerts.showAlert(null, "local inválido " , "unidade: " + unid, AlertType.ERROR);				
+//	 				CopiaSgoController.unid = null;
+//	 				unid = null;
+//	 			}
+//	 		}	
+//	 		if (unid != null) {
+ 				@SuppressWarnings("unused")
+ 				boolean exist = false;
+ 				exist = new File (pathA).mkdir();
+ 				exist = new File (pathB).mkdir();
+ 				exist = new File (pathC).mkdir();
+ 				exist = new File (pathD).mkdir();
+ 			}	
 			Utils.currentStage(event).close();
-			CopiaSgoController.unid = unid;
 		} catch (NullPointerException e) {
-			Alerts.showAlert("IO Exception", "unidade inválida - sem backUp " , "BackForm ", AlertType.ERROR);
+			Alerts.showAlert(null, "unidade inválida - BackUpForm " , "unidade: " + unid, AlertType.ERROR);
 		}
  	}	
  	

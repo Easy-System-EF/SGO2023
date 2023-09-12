@@ -12,6 +12,7 @@ public interface ProdutoDao {
 	void zeraAll();
 	Produto findById(Integer codigo); 
  	List<Produto> findAll();
+ 	List<Produto> findAllId();
  	List<Produto> findMVR();
  	List<Produto> findPesquisa(String str);
  

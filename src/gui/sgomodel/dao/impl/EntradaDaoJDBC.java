@@ -67,8 +67,42 @@ public class EntradaDaoJDBC implements EntradaDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Entrada obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO entrada " 
+				      + "(NumeroEnt, NnfEnt, DataEnt, NomeFornEnt, NomeMatEnt, QuantidadeMatEnt, "
+				      + "ValorMatEnt, FornecedorIdEnt, MaterialIdEnt)" 
+   				      + "VALUES " 
+				      + "(?, ?, ?, ?, ?, ?, ?, ?, ? )",
+ 					 Statement.RETURN_GENERATED_KEYS); 
+
+			st.setInt(1, obj.getNumeroEnt());
+			st.setInt(2, obj.getNnfEnt());
+			st.setDate(3, new java.sql.Date(obj.getDataEnt().getTime()));
+			st.setString(4, obj.getForn().getRazaoSocial());
+			st.setString(5, obj.getMat().getNomeMat());
+ 			st.setDouble(6, obj.getQuantidadeMatEnt());
+			st.setDouble(7, obj.getValorMatEnt());
+			st.setInt(8,  obj.getForn().getCodigo());
+			st.setInt(9, obj.getMat().getCodigoMat());
+						
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão" + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
 		}
 	}
  
@@ -103,7 +137,14 @@ public class EntradaDaoJDBC implements EntradaDao {
  			conn.commit();
    		} 
  		catch (SQLException e) {
- 				throw new DbException ( "Erro!!! sem atualização " +  classe + " " + e.getMessage()); }
+ 			try {
+				conn.rollback();
+ 				throw new DbException("Erro!!! sem atualização " + classe + " " + e.getMessage());
+ 				} 
+ 				catch (SQLException e1) {
+ 					throw new DbException("Erro!!! sem rollback " + classe + " " + e.getMessage());
+ 				}
+ 		}
  		finally {
  			DB.closeStatement(st);
 		}
@@ -168,7 +209,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 			throw new DbException( classe + " " + e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -216,7 +257,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 			throw new DbException( classe + " " + e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -262,7 +303,53 @@ public class EntradaDaoJDBC implements EntradaDao {
 			throw new DbException( classe + " " + e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Entrada> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try 
+		{	st = conn.prepareStatement( 
+					 "SELECT *, fornecedor.Codigo, material.CodigoMat "
+						 + "FROM entrada " 
+					 		+ "INNER JOIN fornecedor " 
+					 			+ "on entrada.FornecedorIdEnt = fornecedor.Codigo " 
+					 		+ "INNER JOIN material " 
+					 			+ "on entrada.MaterialIdEnt = Material.CodigoMat " 
+						+ "ORDER BY NumeroEnt");
+  
+			rs = st.executeQuery();
+			
+			List<Entrada> list = new ArrayList<>();
+			Material prod = new Material();
+			Map<Integer, Fornecedor> mapForn = new HashMap<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+   			
+			while (rs.next()) {
+  				Fornecedor forn = mapForn.get(rs.getInt("FornecedorIdEnt"));
+  				if (forn == null)
+  				{	forn = instantiateFornecedor(rs);
+  					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
+  				}
+  				prod = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (prod == null)
+  				{	prod = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
+  				}
+  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+  			    list.add(obj);
+  			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException( classe + " " + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -282,7 +369,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -369,7 +456,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 				throw new DbException( classe + " " + e.getMessage());
 			}
 			finally {
-				DB.closeStatement(st);
+	 			DB.closeStatement(st);
 				DB.closeResultSet(rs);
 			}
 		} 

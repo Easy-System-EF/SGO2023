@@ -31,4 +31,7 @@ public class NotaFiscalService {
 		}
 	}
 
+	public void insertBackUp(NotaFiscal obj) {
+		dao.insertBackUp(obj);
+	}
 }

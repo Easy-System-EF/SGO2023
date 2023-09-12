@@ -18,6 +18,10 @@ public class ProdutoService {
    		return dao.findAll();
 	} 
 	
+	public List<Produto> findAllId() {
+   		return dao.findAll();
+	} 
+	
 	public List<Produto> findMVR() {
    		return dao.findMVR();
 	} 

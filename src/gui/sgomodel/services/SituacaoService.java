@@ -18,6 +18,10 @@ public class SituacaoService {
    		return dao.findAll();
 	} 
 	
+	public List<Situacao> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public Situacao findById(Integer cod) {
    		return dao.findById(cod);
 	} 
@@ -32,8 +36,12 @@ public class SituacaoService {
 		}
 	}
 
+	public void insertBackUp(Situacao obj) {
+		dao.insertBackUp(obj);
+	}
+
 // removendo
-	public void remove(Situacao obj) {
-		dao.deleteById(obj.getNumeroSit());
+	public void remove(int cod) {
+		dao.deleteById(cod);
 	}
 }

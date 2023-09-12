@@ -22,6 +22,10 @@ public class EmpresaService {
 		}
 	} 
 
+	public void insertBackUp(Empresa obj) {
+		dao.insertBackUp(obj);
+	} 
+
 	public Empresa findById(Integer cod) {
    		return dao.findById(cod);
 	}

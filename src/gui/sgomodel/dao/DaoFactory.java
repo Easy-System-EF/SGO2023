@@ -3,6 +3,7 @@ package gui.sgomodel.dao;
 import db.DB;
 import gui.sgomodel.dao.impl.AdiantamentoDaoJDBC;
 import gui.sgomodel.dao.impl.AnosDaoJDBC;
+import gui.sgomodel.dao.impl.BalcaoCommitDaoJDBC;
 import gui.sgomodel.dao.impl.BalcaoDaoJDBC;
 import gui.sgomodel.dao.impl.CargoDaoJDBC;
 import gui.sgomodel.dao.impl.ClienteDaoJDBC;
@@ -16,6 +17,7 @@ import gui.sgomodel.dao.impl.LoginDaoJDBC;
 import gui.sgomodel.dao.impl.MaterialDaoJDBC;
 import gui.sgomodel.dao.impl.MesesDaoJDBC;
 import gui.sgomodel.dao.impl.NotaFiscalJDBC;
+import gui.sgomodel.dao.impl.OSCommitDaoJDBC;
 import gui.sgomodel.dao.impl.OrcVirtualDaoJDBC;
 import gui.sgomodel.dao.impl.OrcamentoDaoJDBC;
 import gui.sgomodel.dao.impl.OrdemServicoDaoJDBC;
@@ -70,6 +72,10 @@ public class DaoFactory {
 		return new OrdemServicoDaoJDBC(DB.getConnection());
 	}	
 
+  	public static OSCommitDao createOSCommitDao() {
+		return new OSCommitDaoJDBC(DB.getConnection());
+	}	
+
   	public static ReceberDao createReceberDao() {
 		return new ReceberDaoJDBC(DB.getConnection());
 	}
@@ -107,6 +113,11 @@ public class DaoFactory {
   	public static BalcaoDao createBalcaoDao() {
 		return new BalcaoDaoJDBC(DB.getConnection());
 	}
+  	
+  	public static BalcaoCommitDao createBalcaoCommitDao() {
+		return new BalcaoCommitDaoJDBC(DB.getConnection());
+	}	
+
   	public static NotaFiscalDao createNotaFiscalDao() {
 		return new NotaFiscalJDBC(DB.getConnection());
 	}

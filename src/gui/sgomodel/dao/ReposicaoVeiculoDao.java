@@ -10,6 +10,7 @@ public interface ReposicaoVeiculoDao {
 	void deleteByOs(int numOs);
 	List<ReposicaoVeiculo> findByPlaca(String placa, Integer km); 
  	List<ReposicaoVeiculo> findAllData();
+ 	List<ReposicaoVeiculo> findAllId();
 
 }
  

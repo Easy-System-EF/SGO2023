@@ -1,17 +1,22 @@
 package gui.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Datas {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//		SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdfAnoTr = new SimpleDateFormat("yyyy/MM/dd");
 //		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 //		DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+//		DateTimeFormatter dtf1Ano = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+		DateTimeFormatter dtf2Ano = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 //		DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 //		// withZone c/ default ou a qtd de hs de fuso horario;
 //		DateTimeFormatter dtf4 = DateTimeFormatter.ISO_DATE_TIME;
@@ -31,32 +36,46 @@ public class Datas {
 //		LocalDate d10 = LocalDate.of(2023, 7, 14);
 //		LocalDateTime d11 = LocalDateTime.of(2023, 7, 14, 11, 30);
 
-		LocalDate dt1 = DataStatic.criaLocalAtual();
-		LocalDate dt2 = DataStatic.converteString("2023-07-15");
+//		LocalDate dt1 = DataStatic.criaLocalAtual();
+		LocalDate dt2 = DataStatic.converteString("2001-01-01");
 		LocalDate dt3 = DataStatic.criaAnoMesDia(2023, 10, 17);
 		LocalDate dt4 = DataStatic.converteFormataString("15/09/2020");
-		Date dt5 = DataStatic.localParaDateFormatada(dt1);
-		String dt55 = sdf.format(dt5);
-		boolean dt6 = DataStatic.anoBissexto(dt4);
-		Duration dt7 = DataStatic.durationPositivo(dt4, dt3);
-		Duration dt8 = DataStatic.durationNegativo(dt3, dt4);
-		LocalDate dt9 = DataStatic.maisDiasLocal(dt4, 1127);
-		Date dt10 = DataStatic.somaDiasDate(dt5, 30);
-		Duration dt11 = DataStatic.intervalDiasDate(sdf.format(dt5), sdf.format(dt10));
-		Date dt12 = DataStatic.somaMesDate(dt5, 12);
+		Date dataInicialDespAberto = DataStatic.localYYMMAADate(dt3);
+//		Date dt = sdfAnoTr.parse("2000" + "/" + "02" + "/" + "02");
+//		Date dt = new Date("2000/02/02");
 		
-		System.out.println("dt1 " + dt1);
-		System.out.println("dt2 " + dt2);
+		Date dt = sdfAnoTr.parse("2001/01/01");
+		
+		System.out.println("dti " + dataInicialDespAberto);
+		System.out.println("dt " + dt2 + " " + dt3 + " " + dt4 + " " + dt);
+//		System.out.println("dataIn " + dataInicialDespAberto);
+		
+//		Date dt5 = DataStatic.localParaDateFormatada(dt1);
+//		String dt55 = sdf.format(dt5);
+//		boolean dt6 = DataStatic.anoBissexto(dt4);
+//		Duration dt7 = DataStatic.durationPositivo(dt4, dt3);
+//		Duration dt8 = DataStatic.durationNegativo(dt3, dt4);
+//		LocalDate dt9 = DataStatic.maisDiasLocal(dt4, 1127);
+//		Date dt10 = DataStatic.somaDiasDate(dt5, 30);
+//		Duration dt11 = DataStatic.intervalDiasDate(sdf.format(dt5), sdf.format(dt10));
+//		Date dt12 = DataStatic.somaMesDate(dt5, 12);
+//		
+//		System.out.println("dt1 " + dt1);
+//		System.out.println("dt2 " + dt2);
 		System.out.println("dt3 " + dt3);
 		System.out.println("dt4 " + dt4);
-		System.out.println("dt5 " + dt55);
-		System.out.println("dt6 " + dt6);
-		System.out.println("dt7 " + dt7.toDays());
-		System.out.println("dt8 " + dt8.toDays());
-		System.out.println("dt9 " + dt9);
-		System.out.println("dt10 " + dt10);
-		System.out.println("dt11 " + dt11.toDays());
-		System.out.println("dt12 " + sdf.format(dt12));
+		String dt3s = dtf2Ano.format(dt2);
+		System.out.println(dt3s);
+//		dt3a = sdfAno.format(dt2);
+//		System.out.println(dt3a);
+//		System.out.println("dt5 " + dt55);
+//		System.out.println("dt6 " + dt6);
+//		System.out.println("dt7 " + dt7.toDays());
+//		System.out.println("dt8 " + dt8.toDays());
+//		System.out.println("dt9 " + dt9);
+//		System.out.println("dt10 " + dt10);
+//		System.out.println("dt11 " + dt11.toDays());
+//		System.out.println("dt12 " + sdf.format(dt12));
 		
 //// INSTANCIAÇÃO datas		
 //		// output formato iso default
@@ -126,5 +145,22 @@ public class Datas {
 //		System.out.println("intervalo +  datas d04 local date parse " + d2.toDays());
 //		System.out.println("intervalo -  datas d06 instant parse    " + d3.toDays());
 //		System.out.println("intervalo +  datas d06 instant parse    " + d4.toDays());
+		
+//		String unid = "E";
+//		File path = new File(unid + ":\\64\\ARQS\\*.*");
+////		File path = new File(unid);
+//System.out.println("path " + path);	 		
+// 		File[] folder = path.listFiles(File::isDirectory);
+//		for(File f : folder) {
+//			System.out.println(f);
+//		}	
+//
+//		path = new File("E:\\64\\arqs");
+//		File[] folders = path.listFiles(File::isDirectory);
+//		for (File fol : folders) {
+//			System.out.println(fol);
+//		}
+
+		
 	}
 }

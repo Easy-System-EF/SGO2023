@@ -18,6 +18,10 @@ public class ClienteService {
    		return dao.findAll();
 	} 
 	
+	public List<Cliente> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Cliente> findMVR() {
    		return dao.findMVR();
 	} 
@@ -42,6 +46,10 @@ public class ClienteService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(Cliente obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

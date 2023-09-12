@@ -62,6 +62,31 @@ public class TipoConsumidorDaoJDBC implements TipoConsumidorDao {
 	}
  
 	@Override
+	public void insertBackUp(TipoConsumo obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO tipoConsumo " +
+				      "(CodigoTipo, NomeTipo)" + 
+  				      "VALUES " +
+				      "(?,?)"); 
+ 
+ 			st.setInt(1, obj.getCodigoTipo());
+ 			st.setString(2, obj.getNomeTipo());
+			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException (e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
 	public void update(TipoConsumo obj) {
 		PreparedStatement st = null;
   		try {
@@ -136,6 +161,34 @@ public class TipoConsumidorDaoJDBC implements TipoConsumidorDao {
 			st = conn.prepareStatement( 
 					"SELECT * FROM tipoConsumo " +
 					"ORDER BY NomeTipo");
+			
+			rs = st.executeQuery();
+			
+			List<TipoConsumo> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	TipoConsumo obj = instantiateTipoFornecedor(rs);
+				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<TipoConsumo> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM tipoConsumo " +
+					"ORDER BY CodigoTipo");
 			
 			rs = st.executeQuery();
 			

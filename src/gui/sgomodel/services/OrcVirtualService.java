@@ -18,6 +18,10 @@ public class OrcVirtualService {
    		return dao.findAll();
 	} 
 	
+	public List<OrcVirtual> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<OrcVirtual> findPesquisa(String str) {
    		return dao.findPesquisa(str);
 	} 
@@ -50,6 +54,10 @@ public class OrcVirtualService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(OrcVirtual obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

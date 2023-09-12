@@ -44,8 +44,8 @@
         <columns>
           <TableColumn fx:id="tableColumnNumeroOs" editable="false" prefWidth="75.0" text="OS" />
           <TableColumn fx:id="tableColumnDataOs" editable="false" prefWidth="75.0" text="Data" />
-            <TableColumn fx:id="tableColumnClienteOs" editable="false" prefWidth="274.0" text="Cliente" />
-            <TableColumn fx:id="tableColumnPlacaOs" editable="false" prefWidth="56.0" text="Placa" />
+            <TableColumn fx:id="tableColumnClienteOs" editable="false" prefWidth="256.0" text="Cliente" />
+            <TableColumn fx:id="tableColumnPlacaOs" editable="false" prefWidth="74.0" text="Placa" />
             <TableColumn fx:id="tableColumnKmOs" editable="false" prefWidth="57.0" text="Km" />
             <TableColumn fx:id="tableColumnValorOs" editable="false" minWidth="0.0" prefWidth="72.0" text="Valor" />
             <TableColumn fx:id="tableColumnList" editable="false" prefWidth="75.0" text=" " />

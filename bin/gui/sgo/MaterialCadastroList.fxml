@@ -38,8 +38,8 @@
       </ToolBar>
       <TableView fx:id="tableViewMaterial" blendMode="DARKEN" prefHeight="443.0" prefWidth="715.0">
         <columns>
-          <TableColumn fx:id="tableColumnCodigoMat" editable="false" prefWidth="43.0" text="Código" />
-            <TableColumn fx:id="tableColumnNomeMat" editable="false" prefWidth="354.0" text="Nome" />
+          <TableColumn fx:id="tableColumnCodigoMat" editable="false" prefWidth="67.0" text="Código" />
+            <TableColumn fx:id="tableColumnNomeMat" editable="false" prefWidth="330.0" text="Nome" />
             <TableColumn fx:id="tableColumnSaldoMat" editable="false" prefWidth="57.0" text="Saldo" />
             <TableColumn fx:id="tableColumnVendaMat" editable="false" prefWidth="65.0" text="Valor" />
             <TableColumn fx:id="tableColumnCmmMat" editable="false" minWidth="0.0" prefWidth="39.0" text="Cmm" />

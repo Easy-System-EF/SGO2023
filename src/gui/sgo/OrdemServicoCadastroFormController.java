@@ -2,6 +2,7 @@ package gui.sgo;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -28,6 +29,8 @@ import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
+import gui.sgomodel.dao.DaoFactory;
+import gui.sgomodel.dao.OSCommitDao;
 import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Funcionario;
@@ -39,19 +42,14 @@ import gui.sgomodel.entities.OrdemServico;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.entities.ReposicaoVeiculo;
 import gui.sgomodel.entities.Veiculo;
-import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrcamentoService;
-import gui.sgomodel.services.OrdemServicoService;
-import gui.sgomodel.services.ReceberService;
-import gui.sgomodel.services.ReposicaoVeiculoService;
 import gui.sgomodel.services.VeiculoService;
 import gui.util.Alerts;
-import gui.util.CalculaParcela;
 import gui.util.Constraints;
 import gui.util.DataStatic;
 import gui.util.Utils;
@@ -89,21 +87,22 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	private ParPeriodo periodo;
 	private Veiculo veiculo;
 	private NotaFiscal nota = new NotaFiscal();
+	private Adiantamento adiantamento = new Adiantamento();
 
 	/*
 	 * private OrdemServico entity; dependencia service com metodo set
 	 */
-	private OrdemServicoService service;
 	private OrcamentoService orcService;
 	private OrcVirtualService virService;
 	private MaterialService matService;
-	private ReceberService recService;
-	private ReposicaoVeiculoService repService;
 	private ParPeriodoService perService;
 	private VeiculoService veiService;
-	private AdiantamentoService adiService;
 	private FuncionarioService funService;
 	private NotaFiscalService nfService;
+	
+	List<Receber> listRecCommit = new ArrayList<>();
+	List<ReposicaoVeiculo> listRepCommit = new ArrayList<>();
+	List<Material> listMatCommit = new ArrayList<>();
 
 // lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
@@ -220,20 +219,15 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	}
 
 	// * metodo set /p service
-	public void setServices(OrdemServicoService service, OrcamentoService orcService, OrcVirtualService virService,
-			MaterialService matService, ReceberService recService, ReposicaoVeiculoService repService,
-			ParPeriodoService perService, VeiculoService veiService, FuncionarioService funService,
-			AdiantamentoService adiService, NotaFiscalService nfService) {
-		this.service = service;
+	public void setServices(OrcamentoService orcService, OrcVirtualService virService,
+			MaterialService matService, ParPeriodoService perService, VeiculoService veiService, 
+			FuncionarioService funService, NotaFiscalService nfService) {
 		this.orcService = orcService;
 		this.virService = virService;
 		this.matService = matService;
-		this.recService = recService;
-		this.repService = repService;
 		this.perService = perService;
 		this.veiService = veiService;
 		this.funService = funService;
-		this.adiService = adiService;
 		this.nfService = nfService;
 	}
 
@@ -311,26 +305,26 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				flagg = 2;
 			}
 			if (flagg == 2) {
+				Alerts.showAlert(null, "processamento longo", "aguarde", AlertType.WARNING);
 				classe = "OS Form Material ";
 				updateMaterialOS();
 				classe = "Ordem de Serviço Form ";
-				service.saveOrUpdate(entity);
-				nota.setOsNF(entity.getNumeroOS());
+				nota.setCodigoNF(null);
+				nota.setOsNF(null);
 				nota.setNumeroNF(entity.getNnfOS());
 				nota.setBalcaoNF(0);
-				nota.setCodigoNF(null);
 				classe = "OS Form NF ";
-				nfService.saveOrUpdate(nota);
 				classe = "OS Form Orçamento ";
 				orcamento = orcService.findById(entity.getOrcamentoOS());
 				porPeriodo();
-				gravaReceberOS();
-				createReposicao();
 				updateOsOrcamento();
 				updateKmVeiculo();
 				if (maoObra > 0) {
 					gravaComissaoOS();
 				}
+				classe = "OS Commit ";
+				OSCommitDao osCommit = DaoFactory.createOSCommitDao();
+				osCommit.gravaOS(entity, orcamento, periodo, nota, veiculo, adiantamento, listMatCommit);
 			}
 			notifyDataChangeListerners();
 			updateFormData();
@@ -356,14 +350,16 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			for (OrcVirtual v : vir) {
 				if (v.getNumeroOrcVir().equals(entity.getOrcamentoOS())) {
 					mat1 = matService.findById(v.getMaterial().getCodigoMat());
-					if (mat1.getGrupo().getNomeGru().equals("Mão de obra")) {
+					if (mat1.getGrupo().getNomeGru().equals("Mão de obra") || 
+							mat1.getGrupo().getNomeGru().equals("Mao de obra")) {
 						if (mat1.getSaldoMat() < v.getQuantidadeMatVir()) {
 							mat1.setSaldoMat(0.00);
 							mat1.entraSaldo(v.getQuantidadeMatVir());
 						}	
 						maoObra += mat1.getVendaMat();
 					}	
-					if (mat1.getGrupo().getNomeGru().equals("Serviço")) {
+					if (mat1.getGrupo().getNomeGru().equals("Serviço") || 
+						 mat1.getGrupo().getNomeGru().equals("Servico")) {
 						if (mat1.getSaldoMat() < v.getQuantidadeMatVir()) {
 							mat1.setSaldoMat(0.00);
 							mat1.entraSaldo(v.getQuantidadeMatVir());
@@ -434,15 +430,18 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 						mat3.getSaldoMat();
 						mat3.setSaidaCmmMat(ov.getQuantidadeMatVir());
 						classe = "OS Form Material ";
-						matService.saveOrUpdate(mat3);
+						listMatCommit.add(mat3);
+//						matService.saveOrUpdate(mat3);
 						ov.setMaterial(mat3);
 	// saidaCmmProd p/ calculo cmmm
-						@SuppressWarnings("unused")
 						int nada = 0;
-						if (mat3.getGrupo().getNomeGru().equals("Mão de obra") ||
-								mat3.getGrupo().getNomeGru().equals("Serviço")) {
+						if (mat3.getGrupo().getNomeGru().equals("Mão de obra") || mat3.getGrupo().getNomeGru().equals("Serviço")) {
 							nada = 1;
-						} else {	
+						} 	
+						if (mat3.getGrupo().getNomeGru().equals("Mao de obra") || mat3.getGrupo().getNomeGru().equals("Servico")) {
+							nada = 1;
+						} 
+						if (nada == 0) {
 							if (mat3.getSaldoMat() <= mat3.getEstMinMat()) {
 								String nomeMat = mat3.getNomeMat();
 								if (mat3.getSaldoMat() == 0.00) {
@@ -487,111 +486,11 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		return periodo;
 	}
 
-	private void gravaReceberOS() {
-		try {
-			classe = "Receber OS form ";
-			Receber receber = new Receber();
-			orcamento = orcService.findById(entity.getOrcamentoOS());
-			receber.setFuncionarioRec(orcamento.getFuncionario().getCodigoFun());
-			receber.setClienteRec(orcamento.getCliente().getCodigoCli());
-			receber.setNomeClienteRec(orcamento.getCliente().getNomeCli());
-			receber.setOsRec(entity.getNumeroOS());
-			receber.setDataOsRec(entity.getDataOS());
-			receber.setPlacaRec(entity.getPlacaOS());
-			receber.setPeriodo(periodo);
-			if (entity.getPagamentoOS() == 1) {
-				receber.setFormaPagamentoRec("Dinheiro");
-			} else {
-				if (entity.getPagamentoOS() == 2) {
-					receber.setFormaPagamentoRec("Pix");
-				} else {
-					if (entity.getPagamentoOS() == 3) {
-						receber.setFormaPagamentoRec("Débito");
-					} else {
-						if (entity.getPagamentoOS() == 4) {
-							receber.setFormaPagamentoRec("CC");
-						}
-					}
-				}
-			}
-			for (int i = 1; i < entity.getParcelaOS() + 1; i++) {
-				receber.setParcelaRec(i);
-				if (entity.getPrazoOS() == 1) {
-					receber.setDataVencimentoRec(entity.getDataPrimeiroPagamentoOS());
-					receber.setDataPagamentoRec(entity.getDataPrimeiroPagamentoOS());
-					receber.setValorRec(entity.getValorOS());
-					receber.setJurosRec(0.00);
-					receber.setDescontoRec(0.00);
-					receber.setTotalRec(entity.getValorOS());
-					receber.setValorPagoRec(0.00);
-					if (receber.getDataVencimentoRec().equals(entity.getDataPrimeiroPagamentoOS())) {
-						receber.setValorPagoRec(entity.getValorOS());
-					}	
-				}
-				if (entity.getPrazoOS() > 1) {
-					receber.setDataVencimentoRec(CalculaParcela
-							.CalculaVencimentoDia(entity.getDataPrimeiroPagamentoOS(), (i - 1), entity.getPrazoOS()));
-					receber.setValorRec(CalculaParcela.calculaParcelas(entity.getValorOS(), entity.getParcelaOS(), i));
-					receber.setDataPagamentoRec(receber.getDataVencimentoRec());
-					receber.setJurosRec(0.00);
-					receber.setDescontoRec(0.00);
-					receber.setTotalRec(0.00);
-					receber.setValorPagoRec(0.00);
-					receber.setNumeroRec(null);
-				}	
-				recService.insert(receber);
-			}
-		} catch (DbException e) {
-			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
-		}
-	}
-
-	private void createReposicao() {
-		try {
-			classe = "Reposição OS Form ";
-			ReposicaoVeiculo reposicao = new ReposicaoVeiculo();
-			repService.remove(entity.getNumeroOS());
-			List<OrcVirtual> listVir = virService.findAll();
-			for (int i = 0; i < listVir.size(); i++) {
-				if (listVir.get(i).getNumeroOrcVir().equals(entity.getOrcamentoOS())) {
-					if (listVir.get(i).getMaterial().getVidaKmMat() > 0
-							|| listVir.get(i).getMaterial().getVidaMesMat() > 0) {
-						reposicao.setNumeroRep(null);
-						reposicao.setOsRep(entity.getNumeroOS());
-						reposicao.setDataRep(entity.getDataOS());
-						reposicao.setPlacaRep(entity.getPlacaOS());
-						reposicao.setClienteRep(entity.getClienteOS());
-						reposicao.setDddClienteRep(orcamento.getCliente().getDdd01Cli());
-						reposicao.setTelefoneClienteRep(orcamento.getCliente().getTelefone01Cli());
-						reposicao.setCodigoMaterialRep(listVir.get(i).getMaterial().getCodigoMat());
-						reposicao.setMaterialRep(listVir.get(i).getMaterial().getNomeMat());
-						reposicao.setKmTrocaRep(orcamento.getKmFinalOrc());
-						if (listVir.get(i).getMaterial().getVidaKmMat() > 0) {
-							reposicao.setProximaKmRep(
-									orcamento.getKmFinalOrc() + listVir.get(i).getMaterial().getVidaKmMat());
-						} else {
-							reposicao.setProximaKmRep(0);
-						}
-						if (listVir.get(i).getMaterial().getVidaMesMat() > 0) {
-							reposicao.setProximaDataRep(DataStatic.somaMesDate(
-									entity.getDataOS(), listVir.get(i).getMaterial().getVidaMesMat()));
-						} else {
-							reposicao.setProximaDataRep(entity.getDataOS());
-						}
-						repService.insert(reposicao);
-					}
-				}
-			}
-		} catch (DbException e) {
-			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
-		}
-	}
-
 	private void updateOsOrcamento() {
 		try {
 			classe = "Orçamento OS Form";
-			orcamento.setOsOrc(entity.getNumeroOS());
-			orcService.saveOrUpdate(orcamento);
+			orcamento.setOsOrc(null);
+//			orcService.saveOrUpdate(orcamento);
 		} catch (DbException e) {
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
 		}
@@ -612,7 +511,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				veiculo.setModeloVei(null);
 				veiculo.setAnoVei(0);
 			}
-			veiService.saveOrUpdate(veiculo);
+//			veiService.saveOrUpdate(veiculo);
 		} catch (DbException e) {
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
 		}
@@ -621,7 +520,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	@SuppressWarnings("static-access")
 	private void gravaComissaoOS() {
 		classe = "Adiantamento OS Form ";
-		Adiantamento adiantamento = new Adiantamento();
 		orcamento = orcService.findById(entity.getOrcamentoOS());
 		Funcionario fun = funService.findById(orcamento.getFuncionario().getCodigoFun());
 		adiantamento.setCodigoFun(fun.getCodigoFun());
@@ -636,7 +534,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		adiantamento.setComissaoFun(0.00);
 				
 		adiantamento.setNumeroAdi(null);
-		adiantamento.setDataAdi(entity.getDataOS());
+		adiantamento.setDataAdi(new Date());
 		adiantamento.percComissao = fun.getCargo().getComissaoCargo();
 		adiantamento.setValeAdi(0.00);
 		adiantamento.setValorAdi(maoObra);
@@ -649,12 +547,11 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		adiantamento.setAnoAdi(DataStatic.anoDaData(dt1));
 		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
 		adiantamento.setBalcaoAdi(0);
-		adiantamento.setOsAdi(entity.getNumeroOS());
+		adiantamento.setOsAdi(null);
 		adiantamento.setTipoAdi("C");
 		adiantamento.setCargo(fun.getCargo());
 		adiantamento.setSituacao(fun.getSituacao());
-		adiantamento.calculaComissao();;
-		adiService.saveOrUpdate(adiantamento);		
+		adiantamento.calculaComissao();
 	}
 
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
@@ -851,11 +748,13 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	}
 
 	private void initializeComboBoxOrcamento() {
+	 	DecimalFormat df = new DecimalFormat("#,###,##0.00"); 
 		Callback<ListView<Orcamento>, ListCell<Orcamento>> factory = lv -> new ListCell<Orcamento>() {
 			@Override
 			protected void updateItem(Orcamento item, boolean empty) {
 				super.updateItem(item, empty);
-				setText(empty ? "" : item.getPlacaOrc() + " - " + item.dataFormatada() + " - " + item.getClienteOrc().substring(0, 20));
+				setText(empty ? "" : item.getPlacaOrc() + " - " + item.dataFormatada() + " - " + 
+							item.getClienteOrc().substring(0, 10) + " - " + ("R$" + df.format(item.getTotalOrc())));
 			}
 		};
 
@@ -982,7 +881,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 
 	@Override
 	public void onDataChanged() {
-		// TODO Auto-generated method stub
 	}
 	
 	@SuppressWarnings("static-access")

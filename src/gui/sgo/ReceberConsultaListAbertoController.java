@@ -121,7 +121,7 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 			contC.subscribeDataChangeListener(this);
 			contC.updateFormData();
  		});
-		updateTableView();
+//		updateTableView();
 	}
  	
 	@FXML
@@ -138,7 +138,7 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 		contP.subscribeDataChangeListener(this);
 		contP.updateFormData();
   		});
-		updateTableView();
+//		updateTableView();
   	}
   
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -181,24 +181,18 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
  		List<Receber> list = new ArrayList<>();
  		if (opcao == "t") {
  			list = service.findAllAberto();
- 			if (list.size() == 0) {
- 				Alerts.showAlert("Contas a Receber em aberto ", "Em aberto", "Não há recebimento em aberto ", AlertType.INFORMATION);
- 			}	
- 		} else {
- 			if (opcao == "c" && codCli != null) {
- 				list = service.findByIdClienteAberto(codCli);
- 	 			if (list.size() == 0) {
- 	 				Alerts.showAlert("Contas a Receber por Cliente ", "Cliente", "Não há recebimento para o Cliente ", AlertType.INFORMATION);
- 	 			}	
- 			} else {
- 				if (opcao == "p") {
- 	 				list = service.findPeriodoAberto();
- 	 	 			if (list.size() == 0) {
- 	 	 				Alerts.showAlert("Contas a Receber por período ", "Período ", "Não há recebimento no período ", AlertType.INFORMATION);
- 	 	 			}	
- 				}
- 			}
  		}
+ 		if (codCli != null) {
+			if (opcao == "c" && codCli != null) {
+				list = service.findByIdClienteAberto(codCli);
+			}
+ 		}	
+		if (opcao == "p") {
+			list = service.findPeriodoAberto();
+ 		}
+		if (list.size() == 0) {
+			Alerts.showAlert(null, "Contas a Receber ", "Não há recebimento para opção ", AlertType.INFORMATION);
+		}	
   		labelTitulo.setText(String.format("%s ", nomeTitulo));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);

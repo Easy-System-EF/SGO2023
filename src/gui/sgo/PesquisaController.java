@@ -64,7 +64,6 @@ public class PesquisaController implements Initializable {
 
 	public String getFormDataPesq() {
 		pesq = textPesquisa.getText().toUpperCase();
-System.out.println("dataPesq 1 pesq " + pesq);			
 		pesquisa = pesq ;
 		return pesquisa;
 	}
@@ -74,12 +73,10 @@ System.out.println("dataPesq 1 pesq " + pesq);
  */
   	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-System.out.println(" initialize");  		
  		Constraints.setTextFieldMaxLength(textPesquisa, 4);
     	}
 
  	public void updateFormData() {
-System.out.println("upd form data "); 		
 		textPesquisa.setText(pesquisa);
      } 	
 }	

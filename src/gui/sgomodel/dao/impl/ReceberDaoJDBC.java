@@ -77,6 +77,46 @@ public class ReceberDaoJDBC implements ReceberDao {
 	}
 
 	@Override
+	public void insertBackUp(Receber obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement("INSERT INTO receber " 
+					+ "(NumeroRec, FuncionarioRec, ClienteRec, NomeClienteRec, "
+						+ "OsRec, DataOsRec, PlacaRec, ParcelaRec, FormaPagamentoRec, "
+						+ "ValorRec, DataVencimentoRec, DataPagamentoRec, PeriodoIdRec, jurosRec, descontoRec, "
+						+ "totalRec, valorPagoRec ) " 
+					+ "VALUES " 
+						+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+
+			st.setInt(1, obj.getNumeroRec());
+			st.setInt(2, obj.getFuncionarioRec());
+			st.setInt(3, obj.getClienteRec());
+			st.setString(4, obj.getNomeClienteRec());
+			st.setInt(5, obj.getOsRec());
+			st.setDate(6, new java.sql.Date(obj.getDataOsRec().getTime()));
+			st.setString(7, obj.getPlacaRec());
+			st.setInt(8, obj.getParcelaRec());
+			st.setString(9, obj.getFormaPagamentoRec());
+			st.setDouble(10, obj.getValorRec());
+			st.setDate(11, new java.sql.Date(obj.getDataVencimentoRec().getTime()));
+			st.setDate(12, new java.sql.Date(obj.getDataPagamentoRec().getTime()));
+			st.setInt(13, obj.getPeriodo().getIdPeriodo());
+			st.setDouble(14, obj.getJurosRec());
+			st.setDouble(15, obj.getDescontoRec());
+			st.setDouble(16, obj.getTotalRec());
+			st.setDouble(17, obj.getValorPagoRec());
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão " + e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+
+	@Override
 	public void update(Receber obj) {
 		PreparedStatement st = null;
 		try {
@@ -253,10 +293,10 @@ public class ReceberDaoJDBC implements ReceberDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
- 					"SELECT receber.ValorRec, receber.ValorPagoRec, receber.NomeClienteRec, receber.DataPagamentoRec, "  +
- 							"SUM(receber.ValorRec) AS totMes FROM receber " +
-						"WHERE receber.ValorPagoRec > 0 AND receber.NomeClienteRec != 'Balcão' AND " +
- 							"receber.DataVencimentoRec >= ? AND receber.DataPagamentoRec <= ? ");
+					
+				"SELECT SUM(ValorPagoRec) AS 'totMes' FROM receber " +
+					"WHERE ValorPagoRec > 0 AND NomeClienteRec != 'Balcao' AND " +
+						"DataVencimentoRec >= ? AND DataPagamentoRec <= ? ");
 
 					st.setDate(1, new java.sql.Date(dti.getTime()));
 					st.setDate(2, new java.sql.Date(dtf.getTime()));
@@ -284,10 +324,10 @@ public class ReceberDaoJDBC implements ReceberDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
- 					"SELECT receber.ValorRec, receber.ValorPagoRec, receber.NomeClienteRec, receber.DataVencimentoRec, "  +
- 							"SUM(receber.ValorRec) AS totMes FROM receber " +
-						"WHERE receber.ValorPagoRec = 0 AND receber.NomeClienteRec != 'Balcão' AND " +
- 							"receber.DataVencimentoRec >= ? AND receber.DataVencimentoRec <= ? ");
+
+					"SELECT SUM(ValorRec) AS 'totMes' FROM receber " +
+					"WHERE ValorPagoRec = 0 AND NomeClienteRec != 'Balcao' AND " +
+						"DataVencimentoRec >= ? AND DataPagamentoRec <= ? ");
 
 					st.setDate(1, new java.sql.Date(dti.getTime()));
 					st.setDate(2, new java.sql.Date(dtf.getTime()));
@@ -315,10 +355,10 @@ public class ReceberDaoJDBC implements ReceberDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
- 					"SELECT receber.ValorRec, receber.ValorPagoRec, receber.NomeClienteRec, receber.DataVencimentoRec, "  +
- 							"SUM(receber.ValorRec) AS totMes FROM receber " +
-						"WHERE receber.ValorPagoRec > 0 AND receber.NomeClienteRec = 'Balcão' AND " +
- 							"receber.DataVencimentoRec >= ? AND receber.DataVencimentoRec <= ? ");
+
+					"SELECT SUM(ValorPagoRec) AS 'totMes' FROM receber " +
+					"WHERE ValorPagoRec > 0 AND NomeClienteRec = 'Balcao' AND " +
+						"DataVencimentoRec >= ? AND DataPagamentoRec <= ? ");
 
 					st.setDate(1, new java.sql.Date(dtiRP.getTime()));
 					st.setDate(2, new java.sql.Date(dtfRP.getTime()));
@@ -346,10 +386,10 @@ public class ReceberDaoJDBC implements ReceberDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
- 					"SELECT receber.ValorRec, receber.ValorPagoRec, receber.NomeClienteRec, receber.DataVencimentoRec, "  +
- 							"SUM(receber.ValorRec) AS totMes FROM receber " +
-						"WHERE receber.ValorPagoRec = 0 AND receber.NomeClienteRec = 'Balcão' AND " +
- 							"receber.DataVencimentoRec >= ? AND receber.DataVencimentoRec <= ? ");
+
+				"SELECT SUM(ValorRec) AS 'totMes' FROM receber " +
+					"WHERE ValorPagoRec = 0 AND NomeClienteRec = 'Balcao' AND " +
+						"DataVencimentoRec >= ? AND DataVencimentoRec <= ? ");
 
 					st.setDate(1, new java.sql.Date(dti.getTime()));
 					st.setDate(2, new java.sql.Date(dtf.getTime()));
@@ -377,9 +417,10 @@ public class ReceberDaoJDBC implements ReceberDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(
- 					"SELECT receber.ValorPagoRec, receber.ClienteRec, "  +
- 							"SUM(receber.ValorPagoRec) AS totCli FROM receber " +
-						"WHERE receber.ValorPagoRec > 0.00 AND receber.ClienteRec = ? ");
+
+				"SELECT SUM(ValorPagoRec) AS 'totCli' FROM receber " + 
+					"WHERE ValorPagoRec > 0.00 AND ClienteRec = ? ");
+
 					st.setInt(1, cod);
 
 					rs = st.executeQuery();
@@ -439,7 +480,7 @@ public class ReceberDaoJDBC implements ReceberDao {
 							+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
 							+ "WHERE  DataPagamentoRec >= DataOsRec AND "
 							+ "receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
-							+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo " + "ValorPagoRec > 0.00 "
+							+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " + "ValorPagoRec > 0.00 "
 							+ "ORDER BY DataVencimentoRec, ParcelaRec ");
 
 			rs = st.executeQuery();
@@ -495,9 +536,11 @@ public class ReceberDaoJDBC implements ReceberDao {
 		try {
 			st = conn.prepareStatement(
 
-					"SELECT *, parPeriodo.* " + "FROM receber " + "INNER JOIN parPeriodo "
-							+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
-							+ "WHERE ClienteRec = ? AND ValorPagoRec > 0.00 "
+					"SELECT *, parPeriodo.* " 
+						+ "FROM receber " 
+							+ "INNER JOIN parPeriodo "
+								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
+									+ "WHERE ClienteRec = ? AND ValorPagoRec > 0.00 "
 							+ "ORDER BY DataVencimentoRec, ParcelaRec");
 
 			st.setInt(1, cod);
@@ -518,6 +561,7 @@ public class ReceberDaoJDBC implements ReceberDao {
 			DB.closeStatement(st);
 		}
 	}
+	
 	@Override
 	public List<Receber> findAll() {
 		PreparedStatement st = null;
@@ -530,6 +574,37 @@ public class ReceberDaoJDBC implements ReceberDao {
 								"INNER JOIN parPeriodo " +
 									"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " +
 								"ORDER BY DataVencimentoRec, ParcelaRec");
+
+			rs = st.executeQuery();
+
+			List<Receber> list = new ArrayList<>();
+
+			while (rs.next()) {
+				ParPeriodo per = instantiateParPeriodo(rs);
+				Receber obj = instantiateReceber(rs, per);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+
+	@Override
+	public List<Receber> findAllId() {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+
+					"SELECT *, parPeriodo.* " + 
+							"FROM receber " + 
+								"INNER JOIN parPeriodo " +
+									"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " +
+								"ORDER BY NumeroRec");
 
 			rs = st.executeQuery();
 

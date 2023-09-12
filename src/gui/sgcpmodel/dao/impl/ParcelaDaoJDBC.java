@@ -81,6 +81,45 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	}
 
 	@Override
+	public void insertBackUp(Parcela obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					"INSERT INTO parcela " + 
+					"(IdPar, CodigoFornecedorPar, NomeFornecedorPar, NnfPar, NumeroPar, DataVencimentoPar, ValorPar, DescontoPar, " 
+							+ "JurosPar, TotalPar, PagoPar, DataPagamentoPar, FornecedorIdPar, TipoIdPar, PeriodoIdPar) "   
+					+ "VALUES "   
+						+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			
+ 			st.setInt(1, obj.getIdPar());
+ 			st.setInt(2, obj.getCodigoFornecedorPar());
+ 			st.setString(3, obj.getNomeFornecedorPar());
+ 			st.setInt(4, obj.getNnfPar());
+ 			st.setInt(5, obj.getNumeroPar());
+			st.setDate(6, new java.sql.Date(obj.getDataVencimentoPar().getTime()));
+  			st.setDouble(7, obj.getValorPar());
+			st.setDouble(8, obj.getDescontoPar());
+			st.setDouble(9, obj.getJurosPar());
+			st.setDouble(10, obj.getTotalPar());
+			st.setDouble(11, obj.getPagoPar());
+			st.setDate(12, new java.sql.Date(obj.getDataPagamentoPar().getTime()));
+  			st.setInt(13, obj.getFornecedor().getCodigo());
+  			st.setInt(14, obj.getTipoConsumo().getCodigoTipo());
+  			st.setInt(15, obj.getPeriodo().getIdPeriodo());
+   			
+ 			st.executeUpdate();
+   		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! sem inclusão " + classe + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+ 			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
 	public void update(Parcela obj) {
 		PreparedStatement st = null;
   		try {
@@ -145,7 +184,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 		try {
 			st = conn.prepareStatement( 
 					
-					"SELECT SUM(valorPar) AS 'total' FROM parcela "
+					"SELECT SUM(PagoPar) AS 'total' FROM parcela "
 					+ 	"WHERE pagoPar = 0.00 AND month(DataVencimentoPar) <= ? AND year(DataVencimentoPar) <= ? ");
 
 			st.setInt(1, mes);
@@ -174,8 +213,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 		try {
 			st = conn.prepareStatement( 
 					
-					"SELECT parcela.ValorPar, parcela.PagoPar, parcela.DataVencimentoPar, " +
-					 "SUM(valorPar) AS 'total' FROM parcela " +
+					"SELECT SUM(PagoPar) AS 'total' FROM parcela " +
 					 	"WHERE parcela.pagoPar = 0 AND parcela.DataVencimentoPar >= ? AND parcela.DataVencimentoPar <= ? ");
 
 			st.setDate(1, new java.sql.Date(dti.getTime()));
@@ -204,8 +242,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 		try {
 			st = conn.prepareStatement( 
 					
-					"SELECT parcela.ValorPar, parcela.PagoPar, parcela.DataPagamentoPar, " +
-					 "SUM(valorPar) AS 'total' FROM parcela " +
+					"SELECT SUM(PagoPar) AS 'total' FROM parcela " +
 					 	"WHERE parcela.pagoPar > 0 AND parcela.DataPagamentoPar >= ? AND parcela.DataPagamentoPar <= ? ");
 
 			st.setDate(1, new java.sql.Date(dti.getTime()));
@@ -306,6 +343,59 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	  							"ON parcela.TipoIdPar = tipoConsumo.CodigoTipo " +
 //	  								"WHERE PagoPar = 0 " +
  									"ORDER BY DataVencimentoPar ");
+
+ 			rs = st.executeQuery();
+ 			 
+ 			List<Parcela> list = new ArrayList<>();
+			Map<Integer, Fornecedor> mapFor = new HashMap<>();
+			Map<Integer, TipoConsumo> mapTp = new HashMap<>();
+			Map<Integer, ParPeriodo> mapPer = new HashMap<>();
+			
+			while (rs.next()) {
+				Fornecedor objFor = mapFor.get(rs.getInt("FornecedorIdPar"));
+				if (objFor == null) {
+					objFor = instantiateFornecedor(rs);
+					mapFor.put(rs.getInt("FornecedorIdPar"), objFor);
+				}	
+				TipoConsumo objTp = mapTp.get(rs.getInt("TipoIdPar"));
+				if (objTp == null) {
+					objTp = instantiateTipo(rs);
+					mapTp.put(rs.getInt("TipoIdPar"), objTp);
+				}	
+				ParPeriodo objPer = mapPer.get(rs.getInt("PeriodoIdPar"));
+				if (objPer == null) {
+					objPer = instantiateParPeriodo(rs, objFor);
+					mapPer.put(rs.getInt("PeriodoIdPar"), objPer);
+				}	
+				Parcela obj = instantiateParcela(rs, objFor, objTp, objPer);
+				list.add(obj);
+  			}
+ 			return list;
+   		}
+ 		catch (SQLException e) {
+			throw new DbException (e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+ 	}
+
+ 	@Override
+	public List<Parcela> findAllId() {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+ 					"SELECT * " +  
+				    	"FROM parcela "  +
+				    		"INNER JOIN fornecedor " +
+				    			"ON parcela.FornecedorIdPar = fornecedor.codigo " + 
+				    		"INNER JOIN parPeriodo " +
+				    			"ON parcela.PeriodoIdPar = parPeriodo.idPeriodo " + 
+	  						"INNER JOIN TipoConsumo " +
+	  							"ON parcela.TipoIdPar = tipoConsumo.CodigoTipo " +
+ 									"ORDER BY IdPar ");
 
  			rs = st.executeQuery();
  			 

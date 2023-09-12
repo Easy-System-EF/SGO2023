@@ -64,6 +64,7 @@ public class GrupoCadastroListController implements Initializable, DataChangeLis
 
 	String classe = "Grupo ";
 	public String user = "usuário";		
+	public Integer nivel = null;		
    	
 // carrega aqui os fornecedores Updatetableview (metodo)
  	private ObservableList<Grupo> obsList;
@@ -194,7 +195,7 @@ public class GrupoCadastroListController implements Initializable, DataChangeLis
 		}
 	
 
-	private void initRemoveButtons() {		
+	private void initRemoveButtons() {
 		  tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
 		  tableColumnREMOVE.setCellFactory(param -> new TableCell<Grupo, Grupo>() { 
 		        private final Button button = new Button("exclui"); 
@@ -212,24 +213,28 @@ public class GrupoCadastroListController implements Initializable, DataChangeLis
 		            button.setOnAction(event -> removeEntity(obj)); 
 		        } 
 		    });
- 		} 
+	} 
 
 	private void removeEntity(Grupo obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmção", "Tem certeza que deseja excluir");
-		if (result.get() == ButtonType.OK) {
-			if (service == null) {
-				throw new IllegalStateException("Serviço está vazio");
+		if (nivel == 1 || nivel == 9) {
+			Optional<ButtonType> result = Alerts.showConfirmation("Confirmção", "Tem certeza que deseja excluir");
+			if (result.get() == ButtonType.OK) {
+				if (service == null) {
+					throw new IllegalStateException("Serviço está vazio");
+				}
+				try {
+					service.remove(obj.getCodigoGru());
+					updateTableView();
+				}
+				catch (DbException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}
+				catch (DbIntegrityException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}	
 			}
-			try {
-				service.remove(obj);
-				updateTableView();
-			}
-			catch (DbException e) {
-				Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
- 			}
-			catch (DbIntegrityException e) {
-				Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
-			}
-		}
+        } else {
+        	Alerts.showAlert(null, "Exclusão" , "Acesso negado ", AlertType.WARNING);
+        }	
 	}
 }

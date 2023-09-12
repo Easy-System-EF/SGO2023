@@ -15,6 +15,10 @@ public class ReceberService {
 
 //    criar no parcelalist uma dependencia na parc controlador para esse metodo, 
 //	carregando e mostrando na view		
+	public List<Receber> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Receber> findByAllOs(Integer os) {
    		return dao.findByAllOs(os);
 	} 
@@ -75,6 +79,10 @@ public class ReceberService {
 		} else {
 			dao.update(obj);
 		}
+ 	}
+
+	public void insertBackUp(Receber obj) {
+		dao.insertBackUp(obj);
  	}
 
 	public void update(Receber obj) {

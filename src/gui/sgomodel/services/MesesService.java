@@ -14,6 +14,10 @@ public class MesesService {
 
 //    criar no fornecedorlist uma dependencia no forn controlador para esse metodo, 
 //	carregando e mostrando na view		
+	public void insert(Meses obj) {
+   		dao.insert(obj);
+	} 
+	
 	public List<Meses> findAll() {
    		return dao.findAll();
 	} 

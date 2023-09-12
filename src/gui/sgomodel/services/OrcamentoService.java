@@ -18,6 +18,10 @@ public class OrcamentoService {
    		return dao.findAll();
 	} 
 	
+	public List<Orcamento> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Orcamento> findPesquisa(String str) {
    		return dao.findPesquisa(str);
 	} 
@@ -50,6 +54,10 @@ public class OrcamentoService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(Orcamento obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

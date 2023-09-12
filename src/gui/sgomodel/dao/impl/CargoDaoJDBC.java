@@ -60,8 +60,36 @@ public class CargoDaoJDBC implements CargoDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Cargo obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO cargo " +
+				      "(CodigoCargo, NomeCargo, SalarioCargo, ComissaoCargo )" + 
+  				      "VALUES " +
+				      "(?, ?, ?, ?)",
+ 					 Statement.RETURN_GENERATED_KEYS); 
+ 
+ 			st.setInt(1, obj.getCodigoCargo());
+ 			st.setString(2, obj.getNomeCargo());
+ 			st.setDouble(3, obj.getSalarioCargo());
+ 			st.setDouble(4, obj.getComissaoCargo());
+			 
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
 		}
 	}
  
@@ -131,10 +159,11 @@ public class CargoDaoJDBC implements CargoDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
  	}
+	
 	@Override
 	public List<Cargo> findAll() {
 		PreparedStatement st = null; 
@@ -160,7 +189,37 @@ public class CargoDaoJDBC implements CargoDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Cargo> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM cargo " +
+					"ORDER BY CodigoCargo");
+			
+			rs = st.executeQuery();
+			
+			List<Cargo> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	if (rs != null)
+				{	Cargo obj = instantiateCargos(rs);
+ 					list.add(obj);
+				}	
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 

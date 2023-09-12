@@ -68,8 +68,8 @@ public class FolhaMesDaoJDBC implements FolhaMesDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-			DB.closeStatement(st);
 		}
 	}
  
@@ -113,7 +113,7 @@ public class FolhaMesDaoJDBC implements FolhaMesDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -133,7 +133,7 @@ public class FolhaMesDaoJDBC implements FolhaMesDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
+ 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 

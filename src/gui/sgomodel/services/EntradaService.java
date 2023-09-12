@@ -18,6 +18,10 @@ public class EntradaService {
    		return dao.findAll();
 	} 
 	
+	public List<Entrada> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Entrada> findByNnf(int nnf) {
 		return dao.findByNnf(nnf);	
 } 
@@ -38,6 +42,10 @@ public class EntradaService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(Entrada obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

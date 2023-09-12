@@ -18,7 +18,20 @@ public class AnosService {
    		return dao.findAll();
 	} 
 
+	public List<Anos> findAllId() {
+   		return dao.findAllId();
+	} 
+
 	public Anos findAno(Integer ano) {
    		return dao.findAno(ano);
 	} 	
+
+	public void saveOrUpdate(Anos obj) {
+		if (obj.getNumeroAnos() == null) {
+			dao.insert(obj);
+		} else {
+			dao.update(obj);
+		}
+	}
+
 }

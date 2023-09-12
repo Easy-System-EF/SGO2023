@@ -18,6 +18,10 @@ public class BalcaoService {
    		return dao.findAll();
 	} 
 	
+	public List<Balcao> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public Balcao findById(Integer cod) {
 		return dao.findById(cod);
 } 
@@ -34,6 +38,10 @@ public class BalcaoService {
 		} else {
 			dao.update(obj);
 		}
+	}
+
+	public void insertBackUp(Balcao obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

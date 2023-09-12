@@ -17,7 +17,7 @@
    <children>
       <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo">
+          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" prefHeight="19.0" prefWidth="52.0" text="Novo">
                <padding>
                   <Insets bottom="2.0" left="5.0" top="2.0" />
                </padding>

@@ -169,7 +169,7 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
 		
 		LocalDate dt1 = DataStatic.criaLocalAtual();
 		int mm = DataStatic.mesDaData(dt1);
-		int aa = DataStatic.anoDaData(dt1);
+		int aa = DataStatic.anoDaData(dt1) - 1;
 		
 		List<Orcamento> list = service.findByMesAnoList(mm, aa);
  		obsList = FXCollections.observableArrayList(list);
@@ -360,7 +360,7 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
 
 	private void removeEntity(Orcamento obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operaçaoo não permitida", AlertType.INFORMATION);
 		} else {
 			if (obj.getOsOrc() != null && obj.getOsOrc() > 0) {
 				String os = String.format("OS número: %d", obj.getOsOrc());

@@ -69,7 +69,6 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 	private OrcamentoService orcService;
 	@SuppressWarnings("unused")
 	private OrcVirtualService virService;
-	@SuppressWarnings("unused")
 	private MaterialService matService;
 	private VeiculoService veiService;
 	private AdiantamentoService adiService;
@@ -201,6 +200,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		cal.setTime(dataHj);
 		int mm = cal.get(Calendar.MONTH) + 1;
 		int aa = cal.get(Calendar.YEAR) - 1;
+		mm = 1;
  		List<OrdemServico> list = service.findByMesAnoList(mm, aa);
   		obsList = FXCollections.observableArrayList(list);
   		tableViewOrdemServico.setItems(obsList);
@@ -228,9 +228,9 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 // injetando passando parametro obj 		
 // injetando servi�os vindo da tela de formulario form
  				controller.setOrdemEntity(obj, objOrc, objMat, objPer, objVei);
- 				controller.setServices(new OrdemServicoService(), new OrcamentoService(), new OrcVirtualService(), 
- 						new MaterialService(), new ReceberService(), new ReposicaoVeiculoService(), new ParPeriodoService(),
- 						new VeiculoService(), new FuncionarioService(), new AdiantamentoService(), new NotaFiscalService());
+ 				controller.setServices(new OrcamentoService(), new OrcVirtualService(), 
+ 						new MaterialService(), new ParPeriodoService(), new VeiculoService(), new FuncionarioService(), 
+ 						new NotaFiscalService());
  	 			if (obj.getNumeroOS() != null) {
 	 				objOrc = orcService.findById(obj.getOrcamentoOS());
 	 				if (! objOrc.getOsOrc().equals(null)) {
@@ -254,7 +254,8 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
  				dialogStage.initModality(Modality.WINDOW_MODAL);
  				dialogStage.showAndWait();
  			}	
-		} catch (IOException e) {
+		}
+ 		catch (IOException e) {
 			e.printStackTrace();
 			Alerts.showAlert("IO Exception", classe + "Erro carregando tela", e.getMessage(), AlertType.ERROR);
 		}
@@ -363,7 +364,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 
 	private void removeEntity(OrdemServico obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operaçaoo não permitida", AlertType.INFORMATION);
 		} else {
 			conferePagamento(flagD, obj);
 			if (flagD == 0) {

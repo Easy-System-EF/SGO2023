@@ -22,7 +22,7 @@ public class VeiculoDaoJDBC implements VeiculoDao {
 		this.conn = conn;
 	}
 
-	String classe = "Ve�culo";
+	String classe = "Veículo";
 	
 	@Override
 	public void insert(Veiculo obj) {
@@ -32,7 +32,7 @@ public class VeiculoDaoJDBC implements VeiculoDao {
 			st = conn.prepareStatement(
 					"INSERT INTO veiculo " +
 				      "(PlacaVei, KmInicialVei, KmFinalVei, ModeloVei, AnoVei)" + 
-  				      "VALUES " +
+  				      " VALUES " +
 				      "(?, ?, ?, ?, ?)",
  					 Statement.RETURN_GENERATED_KEYS); 
  
@@ -46,20 +46,47 @@ public class VeiculoDaoJDBC implements VeiculoDao {
 
  			int rowsaffectad = st.executeUpdate();
 			
-			if (rowsaffectad > 0)
-			{	rs = st.getGeneratedKeys();
-				if (rs.next())
-				{	int codigo = rs.getInt(1);
+			if (rowsaffectad > 0) {
+				rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int codigo = rs.getInt(1);
 					obj.setNumeroVei(codigo);;
-					System.out.println("New key inserted: " + obj.getNumeroVei());
-				}
-				else
-				{	throw new DbException("Erro!!! " + classe + " sem inclus�o" );
+//					System.out.println("New key inserted: " + obj.getNumeroVei());
 				}
 			}	
   		}
  		catch (SQLException e) {
-			throw new DbException (e.getMessage());
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+//			throw new DbException (e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
+	public void insertBackUp(Veiculo obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO veiculo " +
+				      "(NumeroVei, PlacaVei, KmInicialVei, KmFinalVei, ModeloVei, AnoVei)" + 
+  				      " VALUES " +
+				      "(?, ?, ?, ?, ?, ?)"); 
+ 
+ 			st.setInt(1, obj.getNumeroVei());
+ 			st.setString(2, obj.getPlacaVei());
+ 			st.setInt(3, obj.getKmInicialVei());
+ 			st.setInt(4, obj.getKmFinalVei());
+ 			st.setString(5, obj.getModeloVei());
+ 			st.setInt(6, obj.getAnoVei());
+			 
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
 		}
 		finally {
 			DB.closeResultSet(rs);
@@ -91,7 +118,7 @@ public class VeiculoDaoJDBC implements VeiculoDao {
 			st.executeUpdate();
    		} 
  		catch (SQLException e) {
- 		throw new DbException ( "Erro!!! " + classe + " sem atualiza��o " + e.getMessage()); }
+ 		throw new DbException ( "Erro!!! " + classe + " sem atualização " + e.getMessage()); }
 
   		finally {
  			DB.closeStatement(st);
@@ -110,7 +137,7 @@ public class VeiculoDaoJDBC implements VeiculoDao {
 			st.executeUpdate();
    		}
  		catch (SQLException e) {
-			throw new DbException ( "Erro!!! " + classe + " na� exclu�do " + e.getMessage()); }
+			throw new DbException ( "Erro!!! " + classe + " não excluído " + e.getMessage()); }
  		finally {
  			DB.closeStatement(st);
 		}

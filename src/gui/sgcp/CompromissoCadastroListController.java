@@ -258,33 +258,30 @@ public class CompromissoCadastroListController implements Initializable, DataCha
 		
 
 		private void initRemoveButtons() {		
-			if (nivel > 1 && nivel < 9) {
-				Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
-			} else {
 				tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
 				tableColumnREMOVE.setCellFactory(param -> new TableCell<Compromisso, Compromisso>() { 
-			    private final Button button = new Button("exclui"); 
+					private final Button button = new Button("exclui"); 
 			 
-			    @Override 
-			    protected void updateItem(Compromisso obj, boolean empty) { 
-			    super.updateItem(obj, empty); 
+					@Override 
+					protected void updateItem(Compromisso obj, boolean empty) { 
+						super.updateItem(obj, empty); 
 			 
-			    if (obj == null) { 
-			       setGraphic(null); 
-			       return; 
-			    } 
+						if (obj == null) { 
+							setGraphic(null); 
+							return; 
+						} 
 			 
-			    setGraphic(button);
- 			    button.setOnAction(event -> removeEntity(obj)); 
-			    } 
+						setGraphic(button);
+						button.setOnAction(event -> removeEntity(obj)); 
+					} 
 			    });
-	 		} 
-		}	
+	 	} 
+			
 
 		int flagd = 0;
 		private void removeEntity(Compromisso obj) {
 	   		if (nivel > 1 && nivel < 9) {
-	   			Alerts.showAlert(null,"Atenção", "Nível sem acesso ", AlertType.INFORMATION);
+	   			Alerts.showAlert(null,"Exclusão", "Nível sem acesso ", AlertType.INFORMATION);
 	   		} else {
 	   			conferePagamento(flagd, obj);
 	   			if (flagd == 0) {
@@ -295,7 +292,6 @@ public class CompromissoCadastroListController implements Initializable, DataCha
 	   					}
 	   					try {
 	   						if 	(flagd == 0) {
-System.out.println("compr remove " + obj.getNnfCom() + " " + obj.getCodigoFornecedorCom());	   							
 	   							parService.removeNnf(obj.getNnfCom(), obj.getCodigoFornecedorCom());
 	   							service.remove(obj.getCodigoFornecedorCom(), obj.getNnfCom());
 	   							updateTableView();

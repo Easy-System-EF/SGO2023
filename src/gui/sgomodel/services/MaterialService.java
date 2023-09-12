@@ -18,6 +18,10 @@ public class MaterialService {
    		return dao.findAll();
 	} 
 	
+	public List<Material> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Material> findMVR() {
    		return dao.findMVR();
 	} 
@@ -44,8 +48,12 @@ public class MaterialService {
 		}
 	}
 
+	public void insertBackUp(Material obj) {
+		dao.insertBackUp(obj);
+	}
+
 // removendo
-	public void remove(Material obj) {
-		dao.deleteById(obj.getCodigoMat());
+	public void remove(Integer cod) {
+		dao.deleteById(cod);
 	}
 }

@@ -18,6 +18,10 @@ public class OrdemServicoService {
    		return dao.findAll();
 	} 
 	
+	public List<OrdemServico> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public OrdemServico findById(Integer cod) {
     		return dao.findById(cod);
 	} 
@@ -42,6 +46,10 @@ public class OrdemServicoService {
 		} else {
 			dao.update(obj);
 		}
+	}	
+
+	public void insertBackUp(OrdemServico obj) {
+		dao.insertBackUp(obj);
 	}
 
 // removendo

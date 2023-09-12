@@ -269,7 +269,7 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 
 	private void removeEntity(Entrada obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operaçaoo não permitida", AlertType.INFORMATION);
 		} else {
 			classe = "Entrada List";
 			Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja excluir?");

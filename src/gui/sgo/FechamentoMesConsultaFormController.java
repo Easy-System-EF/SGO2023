@@ -5,7 +5,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +14,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import gui.listerneres.DataChangeListener;
+import gui.sgcpmodel.entities.Parcela;
 import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
@@ -117,7 +117,10 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	private final int ddInicial = 01;
 	private final int mmInicial = 01;
 	private final int aaInicial = 2000;
-	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//	private static SimpleDateFormat sdfAno = new SimpleDateFormat("yyyyy/MM/yyyy HH:mm:ss");
+//	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//	private static DateTimeFormatter dtfTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 // data inicial e final - aberto e pago	
 	Date dataInicialDespAberto = new Date();
 	Date dataFinalDespAberto = new Date();
@@ -129,7 +132,6 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	Date dataFinalRecPago = new Date();
 
 	Calendar cal = Calendar.getInstance();
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public void setDadosEntityes(FechamentoMes entity, Orcamento orc, Adiantamento adianto, Funcionario fun, Balcao bal,
 			Receber receber) {
@@ -167,7 +169,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	}
 
 	@FXML
-	public void onBtOkAction(ActionEvent event) {
+	public void onBtOkAction(ActionEvent event) throws ParseException {
 		if (entity == null) {
 			throw new IllegalStateException("Entidade nula");
 		}
@@ -194,7 +196,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	 * obrigat�rios est�o preenchidos, para informar erro(s) para cpos string n�o
 	 * precisa tryParse
 	 */
-	private FechamentoMes getFormData() {
+	private FechamentoMes getFormData() throws ParseException {
 		FechamentoMes obj = new FechamentoMes();
 		// instanciando uma exce��o, mas n�o lan�ado - validation exc....
 		ValidationException exception = new ValidationException("Validation exception");
@@ -213,33 +215,32 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 		}
 		FechamentoMesConsultaListController.numAno = aa;
 
-		Date data1 = new Date();
-		LocalDate dt1 = DataStatic.dateParaLocal(data1);
+		LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 20);
 		df = DataStatic.ultimoDiaMes(dt1);
 
+		dt1 = DataStatic.criaAnoMesDia(2001, 01, 01);
+		dataInicialDespAberto = DataStatic.localParaDateSdfAno(dt1);
+
+		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+		dataFinalDespAberto = DataStatic.localParaDateSdfAno(dt1);
+
+		dt1 = DataStatic.criaAnoMesDia(aa, mm, ddInicial);
+		dataInicialDespPago = DataStatic.localParaDateSdfAno(dt1);
+		
+		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+		dataFinalDespPago = DataStatic.localParaDateSdfAno(dt1);
+		
 		dt1 = DataStatic.criaAnoMesDia(aaInicial, mmInicial, ddInicial);
-		dataInicialDespAberto = DataStatic.localParaDateFormatada(dt1);
+		dataInicialRecAberto = DataStatic.localParaDateSdfAno(dt1);
 				
 		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
-		dataFinalDespAberto = DataStatic.localParaDateFormatada(dt1);
+		dataFinalRecAberto = DataStatic.localParaDateSdfAno(dt1);
 		
 		dt1 = DataStatic.criaAnoMesDia(aa, mm, ddInicial);
-		dataInicialDespPago = DataStatic.localParaDateFormatada(dt1);
+		dataInicialRecPago = DataStatic.localParaDateSdfAno(dt1);
 		
 		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
-		dataFinalDespPago = DataStatic.localParaDateFormatada(dt1);
-		
-		dt1 = DataStatic.criaAnoMesDia(aaInicial, mmInicial, ddInicial);
-		dataInicialRecAberto = DataStatic.localParaDateFormatada(dt1);
-				
-		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
-		dataFinalRecAberto = DataStatic.localParaDateFormatada(dt1);
-		
-		dt1 = DataStatic.criaAnoMesDia(aa, mm, ddInicial);
-		dataInicialRecPago = DataStatic.localParaDateFormatada(dt1);
-		
-		dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
-		dataFinalRecPago = DataStatic.localParaDateFormatada(dt1);
+		dataFinalRecPago = DataStatic.localParaDateSdfAno(dt1);
 		
 //		cal.setTime(data1);
 //		cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -312,8 +313,18 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			objAno = anoService.findAno(aa);
 
  			classe = "Parcela sum ";
+ 			
  			Double sumAberto = parService.findSumAberto(dataInicialRecAberto, dataFinalRecAberto);
  			Double sumPago = parService.findSumPago(dataInicialDespPago, dataFinalDespPago);
+ 			List<Parcela> listPara = parService.findAllAberto();
+ 			for (Parcela pa : listPara) {
+ 				sumAberto += pa.getTotalPar();
+ 			}
+ 			List<Parcela> listParp = parService.findAllPago();
+ 			for (Parcela p : listParp) {
+ 				sumPago += p.getTotalPar();
+ 			}
+ 			
  			Double sumFolha = 0.00;
  			
 // som salarios		
@@ -331,7 +342,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			List<Adiantamento> adZera = adService.findMes(mm, aa);
  			for (Adiantamento a : adZera) {
  				if (a.getCodigoFun() != null) {
- 					if (a.getComissaoAdi() > 0 || a.getValorAdi() > 0) {
+ 					if (a.getComissaoAdi() > 0 || a.getValeAdi() > 0) {
  						classe = "Funcionario Dados 1 ";
  						fun = funService.findById(a.getCodigoFun());
  						fun.setComissaoFun(adService.findByTotalCom(mm, aa, fun.getCodigoFun()));

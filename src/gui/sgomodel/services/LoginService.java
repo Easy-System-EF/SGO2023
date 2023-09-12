@@ -14,14 +14,6 @@ public class LoginService {
 
 //    criar no fornecedorlist uma dependencia no forn controlador para esse metodo, 
 //	carregando e mostrando na view		
-	public void insertOrUpdate(Login obj) {
-		if (obj.getNumeroLog() == null) {
-			dao.insert(obj);
-		} else {
-			dao.update(obj);
-		}
-	} 
-
 	public Login findBySenha(String senha) {
    		return dao.findBySenha(senha);
 	}
@@ -33,4 +25,16 @@ public class LoginService {
 	public List<Login> findAll() {
    		return dao.findAll();
 	}
+
+	public void insertOrUpdate(Login obj) {
+		if (obj.getNumeroLog() == null) {
+			dao.insert(obj);
+		} else {
+			dao.update(obj);
+		}
+	} 
+	
+	public void insertBackUp(Login obj) {
+		dao.insertBackUp(obj);
+	} 
 }

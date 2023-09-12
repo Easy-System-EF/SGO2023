@@ -30,6 +30,8 @@ import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
+import gui.sgomodel.dao.BalcaoCommitDao;
+import gui.sgomodel.dao.DaoFactory;
 import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.Entrada;
@@ -37,15 +39,12 @@ import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.NotaFiscal;
 import gui.sgomodel.entities.OrcVirtual;
-import gui.sgomodel.entities.Receber;
-import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
-import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.DataStatic;
@@ -92,6 +91,10 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	private ParPeriodo periodo;
 	private NotaFiscal nota = new NotaFiscal();
 	Calendar cal = Calendar.getInstance();
+	
+	Adiantamento adiantamento = new Adiantamento();
+	List<Balcao> listBalCommit = new ArrayList<>();
+	List<Material> listMatCommit = new ArrayList<>();
 
 	/*
 	 * dependencia service com metodo set
@@ -101,8 +104,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	private FuncionarioService funService;
 	private MaterialService matService;
 	private ParPeriodoService perService;
-	private ReceberService recService;
-	private AdiantamentoService adiService;
 	private NotaFiscalService nfService;
 
 // lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
@@ -228,12 +229,8 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
  		this.nfService = nfService;
 	}
 	
-	public void setBalcaoServices(ParPeriodoService perService,
-									ReceberService recService,
-									AdiantamentoService adiService) {
+	public void setBalcaoServices(ParPeriodoService perService) {
 		this.perService = perService;
-		this.recService = recService;
-		this.adiService = adiService;
 	}
 
 	@FXML
@@ -312,13 +309,11 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 					if (flagSave == 2) {
 						updateMaterialBal(event);
 						classe = "Balcao Form ";
-						service.saveOrUpdate(entity);
 						String vlr = Mascaras.formataValor(entity.getTotalBal());
 						labelTotalBal.setText(vlr);
 						labelTotalBal.viewOrderProperty();
 						@SuppressWarnings("unused")
 						int ok = 0;
-						Alerts.showAlert(null, "Conferindo total", null, AlertType.INFORMATION);
 						Optional<ButtonType> result = Alerts.showConfirmation("Conferindo ", "total");
 						if (result.get() == ButtonType.OK) {
 							ok = 1;
@@ -329,13 +324,13 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 					nota.setNumeroNF(entity.getNnfBal());
 					nota.setBalcaoNF(numBal);
 					nota.setOsNF(0);
-					nfService.saveOrUpdate(nota);
-					setBalcaoServices(new ParPeriodoService(), new ReceberService(), new AdiantamentoService());
+					setBalcaoServices(new ParPeriodoService());
 					porPeriodo();
-					gravaReceberBal();
 					if (maoObra > 0) {
 						gravaComissaoBal();
 					}		
+					BalcaoCommitDao balCommit = DaoFactory.createBalcaoCommitDao();
+					balCommit.gravaBalcao(entity, periodo, nota, adiantamento, listMatCommit);
 					notifyDataChangeListerners();
 					Utils.currentStage(event).close();
 				}	
@@ -358,10 +353,8 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	@SuppressWarnings("static-access")
 	private void gravaComissaoBal() {
 		classe = "Balcão Adianto From ";
-		Balcao balAdi = service.findById(numBal);
 		classe = "Adiantamento balcão From ";
-		Adiantamento adiantamento = new Adiantamento();
-		Funcionario fun = funService.findById(balAdi.getFuncionario().getCodigoFun());
+		Funcionario fun = funService.findById(entity.getFuncionario().getCodigoFun());
 		adiantamento.setCodigoFun(fun.getCodigoFun());
 		adiantamento.setNomeFun(fun.getNomeFun());
 		adiantamento.setCargo(fun.getCargo());
@@ -374,7 +367,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		adiantamento.setComissaoFun(0.00);
 				
 		adiantamento.setNumeroAdi(null);
-		adiantamento.setDataAdi(balAdi.getDataBal());
+		adiantamento.setDataAdi(new Date());
 		adiantamento.percComissao = fun.getCargo().getComissaoCargo();
 		adiantamento.setValeAdi(0.00);
 		adiantamento.setValorAdi(maoObra);
@@ -386,13 +379,12 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		adiantamento.setMesAdi(DataStatic.mesDaData(dt1));
 //		adiantamento.setAnoAdi(cal.get(Calendar.YEAR));
 		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
-		adiantamento.setBalcaoAdi(balAdi.getNumeroBal());
+		adiantamento.setBalcaoAdi(entity.getNumeroBal());
 		adiantamento.setOsAdi(0);
 		adiantamento.setTipoAdi("C");
 		adiantamento.setCargo(fun.getCargo());
 		adiantamento.setSituacao(fun.getSituacao());
 		adiantamento.calculaComissao();
-		adiService.saveOrUpdate(adiantamento);
 	}
 
 	public ParPeriodo porPeriodo() {
@@ -419,54 +411,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		return periodo;
 	}
 	
-	private void gravaReceberBal() {
-		try {
-			Balcao balRec = new Balcao();
-			balRec = service.findById(numBal);
-			classe = "Receber ";
-			Receber rec = new Receber();
-			rec.setFuncionarioRec(balRec.getFuncionario().getCodigoFun());
-			rec.setClienteRec(0);
-			rec.setNomeClienteRec("Balcão");
-			rec.setOsRec(balRec.getNumeroBal());
-			rec.setDataOsRec(balRec.getDataBal());
-			rec.setPlacaRec("Balcão");
-			rec.setParcelaRec(1);
-			rec.setPeriodo(periodo);
-			if (balRec.getPagamentoBal() == 1) {
-				rec.setFormaPagamentoRec("Dinheiro");
-			} else {
-				if (balRec.getPagamentoBal() == 2) {
-					rec.setFormaPagamentoRec("Pix");
-				} else {
-					if (balRec.getPagamentoBal() == 3) {
-						rec.setFormaPagamentoRec("Débito");
-					} else {
-						if (balRec.getPagamentoBal() == 4) {
-							rec.setFormaPagamentoRec("CC");					
-						}
-					}
-				}
-			}	
-			rec.setDataPagamentoRec(balRec.getDataPrimeiroPagamentoBal());
-			rec.setDataVencimentoRec(balRec.getDataPrimeiroPagamentoBal());
-			rec.setValorRec(balRec.getTotalBal());
-			rec.setJurosRec(0.00);
-			rec.setDescontoRec(0.00);
-			rec.setTotalRec(balRec.getTotalBal());
-			if (balRec.getDataBal().before(balRec.getDataPrimeiroPagamentoBal())) {
-				rec.setValorPagoRec(0.00);
-			} else {
-				rec.setValorPagoRec(balRec.getTotalBal());
-			}	
-			rec.setNumeroRec(null);
-			recService.insert(rec);
-		}	
-		catch (DbException e) {
-			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
-		}
-	}
-
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
 	private void notifyDataChangeListerners() {
 		for (DataChangeListener listener : dataChangeListeners) {
@@ -604,14 +548,16 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			for (OrcVirtual ov : vir1) {
 				if (ov.getNumeroBalVir().equals(numBal)) {
 					mat1 = matService.findById(ov.getMaterial().getCodigoMat());
-					if (mat1.getGrupo().getNomeGru().equals("Mão de obra")) {
+					if (mat1.getGrupo().getNomeGru().equals("Mão de obra") ||
+							mat1.getGrupo().getNomeGru().equals("Mao de obra")) {
 						if (mat1.getSaldoMat() < ov.getQuantidadeMatVir()) {
 							mat1.setSaldoMat(0.00);
 							mat1.entraSaldo(ov.getQuantidadeMatVir());
 						}	
 						maoObra += mat1.getVendaMat();
 					}	
-					if (mat1.getGrupo().getNomeGru().equals("Serviço")) {
+					if (mat1.getGrupo().getNomeGru().equals("Serviço") ||
+							mat1.getGrupo().getNomeGru().equals("Servico")) {
 						if (mat1.getSaldoMat() < ov.getQuantidadeMatVir()) {
 							mat1.setSaldoMat(0.00);
 							mat1.entraSaldo(ov.getQuantidadeMatVir());
@@ -681,15 +627,19 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 						mat3.getSaldoMat();
 						mat3.setSaidaCmmMat(v3.getQuantidadeMatVir());
 						classe = "Virtual Form Material ";
-						matService.saveOrUpdate(mat3);
+						listMatCommit.add(mat3);
 						v3.setMaterial(mat3);
 // saidaCmmProd p/ calculo cmmm
-						@SuppressWarnings("unused")
 						int nada = 0;
 						if (mat3.getGrupo().getNomeGru().equals("Mão de obra") ||
-								mat3.getGrupo().getNomeGru().equals("Serviço")) {
+								mat3.getGrupo().getNomeGru().equals("Mao de obra")) {
 							nada = 1;
-						} else {	
+						} 
+						if (mat3.getGrupo().getNomeGru().equals("Serviço") ||
+								mat3.getGrupo().getNomeGru().equals("Servico")) {
+							nada = 1;
+						} 
+						if (nada == 0) {	
 							if (mat3.getSaldoMat() <= mat3.getEstMinMat()) {
 								String nomeMat = mat3.getNomeMat();
 								if (mat3.getSaldoMat() == 0.00) {
@@ -908,9 +858,9 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 				throw new IllegalStateException("Serviço virtual está vazio");
 			}
 			try {
-				acertaBal(virtual);
 				classe = "OrcVirtual";
 				virService.removeVir(virtual.getNumeroVir());
+				acertaBal(virtual);
 				updateFormData();
 				updateTableView();
 			} catch (DbIntegrityException e) {

@@ -7,11 +7,13 @@ import gui.sgomodel.entities.OrcVirtual;
 public interface OrcVirtualDao {
 
 	void insert(OrcVirtual obj);
+	void insertBackUp(OrcVirtual obj);
 	void update(OrcVirtual obj);
 	void deleteByIdVir(int numVir);
 	void deleteByIdOrc(int numOrc);
 	void deleteByIdBal(int numBal);
  	List<OrcVirtual> findAll();
+ 	List<OrcVirtual> findAllId();
  	List<OrcVirtual> findPesquisa(String str);
  	List<OrcVirtual> findByOrcto(Integer orc);
 	List<OrcVirtual> findByBalcao(Integer bal);

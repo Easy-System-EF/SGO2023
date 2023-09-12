@@ -23,6 +23,8 @@ public class ParPeriodoDaoJDBC implements ParPeriodoDao {
 	public ParPeriodoDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
+	
+	String classe = "ParPeriodo ";
 
 	@Override
 	public void update(ParPeriodo obj) {
@@ -46,7 +48,45 @@ public class ParPeriodoDaoJDBC implements ParPeriodoDao {
 			st.executeUpdate();
    		} 
  		catch (SQLException e) {
- 		throw new DbException ( "Erro!!! sem atualiza��o " + e.getMessage()); }
+ 		throw new DbException ( "Erro!!! sem atualiza��o " + classe  + e.getMessage()); }
+
+  		finally {
+ 			DB.closeStatement(st);
+		}
+	}
+ 	
+	@Override
+	public void insert(ParPeriodo obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO parPeriodo " +
+  							"(DtiPeriodo, DtfPeriodo, FornecedorIdPer, TipoIdPer ) " +
+  								"VALUE " +
+  									"(?, ?, ?, ?) ", +
+  										Statement.RETURN_GENERATED_KEYS);
+
+  			st.setDate(1, new java.sql.Date(obj.getDtiPeriodo().getTime()));
+ 			st.setDate(2, new java.sql.Date(obj.getDtfPeriodo().getTime()));
+ 			st.setInt(3, obj.getFornecedor().getCodigo());
+ 			st.setInt(4, obj.getTipoConsumo().getCodigoTipo());
+     			
+ 			int rowsaffectad = st.executeUpdate();
+			
+			if (rowsaffectad > 0) {
+				rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int codigo = rs.getInt(1);
+					obj.setIdPeriodo(codigo);
+//					System.out.println("Novo inserido: " + obj.getCodigo());
+				} else {
+					throw new DbException("Erro!!! sem inclusão " + classe + classe );
+				}	
+	  		}
+  		} 
+ 		catch (SQLException e) {
+ 		throw new DbException ( "Erro!!! sem atualização " + e.getMessage()); }
 
   		finally {
  			DB.closeStatement(st);
@@ -67,6 +107,42 @@ public class ParPeriodoDaoJDBC implements ParPeriodoDao {
 			 		"INNER JOIN TipoConsumo " +
 			 			"on parPeriodo.TipoIdPer = tipoConsumo.codigoTipo " +
 				"ORDER BY DtiPeriodo ");
+ 			
+			rs = st.executeQuery();
+			 
+			List<ParPeriodo> list = new ArrayList<>();
+			
+			while (rs.next()) 
+ 			{ 	Fornecedor forn = instantiateFornecedor(rs);
+ 				TipoConsumo tpForn = instantiateTipoConsumo(rs);
+  			    ParPeriodo obj = instantiatePeriodo(rs, forn, tpForn);
+  				list.add(obj);
+ 			}
+			return list;
+ 		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+
+ 	@Override
+	public List<ParPeriodo> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+  			
+			"SELECT *, fornecedor.Codigo, tipoConsumo.codigoTipo " + 
+				"FROM ParPeriodo " +
+			 		"INNER JOIN fornecedor " +
+			 			"on parPeriodo.FornecedorIdPer = fornecedor.codigo " +
+			 		"INNER JOIN TipoConsumo " +
+			 			"on parPeriodo.TipoIdPer = tipoConsumo.codigoTipo " +
+				"ORDER BY IdPeriodo ");
  			
 			rs = st.executeQuery();
 			 
@@ -134,7 +210,7 @@ public class ParPeriodoDaoJDBC implements ParPeriodoDao {
  			
    		}
  		catch (SQLException e) {
-			throw new DbException ( "Erro consulta !!! sem exclus�o " + e.getMessage()); }
+			throw new DbException ( "Erro consulta !!! sem exclusão " + classe + e.getMessage()); }
  		finally {
  			DB.closeStatement(st);
 		}

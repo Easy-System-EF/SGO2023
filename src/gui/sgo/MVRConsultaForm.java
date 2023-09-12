@@ -63,7 +63,7 @@ public class MVRConsultaForm implements Initializable, DataChangeListener {
 		LocalDate dt2 = DataStatic.criaLocalAtual();
 		Date dtf = DataStatic.localParaDateFormatada(dt2);
 		clienteTotalReceberBal = service.findPagoBalMes(dti, dtf);
-		clienteTotalReceberOs += service.findPagoOsMes(dti, dtf);
+		clienteTotalReceberOs = service.findPagoOsMes(dti, dtf);
 		clienteTotalReceber = clienteTotalReceberOs + clienteTotalReceberBal;
 	}
 
@@ -116,36 +116,6 @@ public class MVRConsultaForm implements Initializable, DataChangeListener {
 	/*
 	 * MATERIAL
 	 */
-	
-//	public void acertaMaterial() {
-//System.out.println("acerta material");
-//		int count = 0;
-//		MaterialService matSer = new MaterialService();
-//		Boolean verifica = false;
-//		Map<String, String> mapMat = new HashMap<>();
-//		mapMat.clear();
-//		listM = matSer.findAll();
-//		for (Material m : listM) {
-//			verifica = mapMat.containsValue(m.getNomeMat());
-////			if (verifica == true) {
-//				count += 1;
-//System.out.println("verifica " + m.getCodigoMat() + " " + m.getNomeMat() + " " + count);
-////System.out.println(mapMat.get(mapMat));
-////			}
-////			if (verifica == false) {
-////				matSer.remove(m);
-////			} else {
-//				mapMat.put("nome", m.getNomeMat());
-//				System.out.println("size  " + mapMat.size());
-//				for (String key : mapMat.keySet()) {
-//					System.out.println("map 1 " + m.getCodigoMat() + " " + key + " " + mapMat.get(key));
-////					System.out.println("map 2 " + mapMat.containsKey(m.getCodigoMat() + " " + mapMat.get(key)));
-//					break;
-//				}	
-////			}	
-//		}
-//System.out.println("fim " + count);		
-//	}
 	
 	public void materialCustoEstoque() {
 		listM = matService.findAll();

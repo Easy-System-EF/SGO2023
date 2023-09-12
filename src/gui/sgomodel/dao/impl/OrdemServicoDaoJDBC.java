@@ -81,6 +81,47 @@ public class OrdemServicoDaoJDBC implements OrdemServicoDao {
 	}
  
 	@Override
+	public void insertBackUp(OrdemServico obj) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+  		try {
+			st = conn.prepareStatement(
+					"INSERT INTO ordemServico " +
+				      "(NumeroOs, DataOS, OrcamentoOS, PlacaOS, ClienteOS, ValorOS, ParcelaOS, PrazoOS, " +
+				      "PagamentoOS, DataPrimeiroPagamentoOS, NnfOS, ObservacaoOS, KmOS, " +
+				      "MesOs, AnoOs, OrcamentoId )" +
+   				      	"VALUES " + 
+   				      		"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
+
+			st.setInt(1, obj.getNumeroOS());
+			st.setDate(2, new java.sql.Date(obj.getDataOS().getTime()));
+			st.setInt(3, obj.getOrcamentoOS());
+			st.setString(4,  obj.getPlacaOS());
+			st.setString(5, obj.getClienteOS());
+			st.setDouble(6, obj.getValorOS());
+			st.setInt(7, obj.getParcelaOS());
+			st.setInt(8, obj.getPrazoOS());
+			st.setInt(9, obj.getPagamentoOS());
+			st.setDate(10, new java.sql.Date(obj.getDataPrimeiroPagamentoOS().getTime()));
+			st.setInt(11, obj.getNnfOS());
+			st.setString(12, obj.getObservacaoOS());
+			st.setInt(13, obj.getKmOS());
+			st.setInt(14, obj.getMesOs());
+			st.setInt(15, obj.getAnoOs());
+			st.setInt(16, obj.getOrcamento().getNumeroOrc());
+			
+ 			st.executeUpdate();
+  		}
+ 		catch (SQLException e) {
+			throw new DbException(classe + "Erro!!! sem inclusão" + e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+ 
+	@Override
 	public void update(OrdemServico obj) {
 		PreparedStatement st = null;
   		try {
@@ -191,6 +232,44 @@ public class OrdemServicoDaoJDBC implements OrdemServicoDao {
  									"INNER JOIN orcamento " +  
  										"ON ordemServico.OrcamentoId = orcamento.NumeroOrc " + 
 								"ORDER BY - NumeroOS");
+			
+			rs = st.executeQuery();
+			
+ 			List<OrdemServico> list = new ArrayList<>();
+ 			Orcamento orc = new Orcamento();
+  			Map<Integer, Orcamento> mapOrc = new HashMap<>();
+ 			
+			while (rs.next()) 
+ 			{ 	orc = mapOrc.get(rs.getInt("OrcamentoId"));
+ 				if (orc == null)
+ 				{ 	orc =	instantiateOrcamento(rs);
+ 					mapOrc.put(rs.getInt("OrcamentoId"), orc);
+ 				}
+ 			    OrdemServico obj = instantiateOrdemServico(rs, orc);
+  				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<OrdemServico> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+ 							 "SELECT *, orcamento.* " + 
+ 								"FROM ordemServico " + 
+ 									"INNER JOIN orcamento " +  
+ 										"ON ordemServico.OrcamentoId = orcamento.NumeroOrc " + 
+								"ORDER BY NumeroOS");
 			
 			rs = st.executeQuery();
 			

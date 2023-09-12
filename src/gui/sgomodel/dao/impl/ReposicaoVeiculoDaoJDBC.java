@@ -150,6 +150,36 @@ public class ReposicaoVeiculoDaoJDBC implements ReposicaoVeiculoDao {
 		}
 	} 
 	
+	@Override
+	public List<ReposicaoVeiculo> findAllId() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT * FROM reposicaoVeiculo " +
+					"ORDER BY NumeroRep ");
+			
+			rs = st.executeQuery();
+			
+			List<ReposicaoVeiculo> list = new ArrayList<>();
+			
+			while (rs.next())
+			{	if (rs != null)
+				{	ReposicaoVeiculo obj = instantiateReposicaoVeiculos(rs);
+ 					list.add(obj);
+				}	
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
 	private ReposicaoVeiculo instantiateReposicaoVeiculos(ResultSet rs) throws SQLException {
  		ReposicaoVeiculo rep = new ReposicaoVeiculo();
  		rep.setNumeroRep(rs.getInt("NumeroRep"));

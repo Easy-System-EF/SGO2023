@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="273.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.EntradaCadastroListController">
+<VBox prefHeight="273.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.EntradaCadastroListController">
    <children>
       <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="560.0">
         <items>
@@ -41,14 +41,14 @@
       </ToolBar>
       <TableView fx:id="tableViewEntrada" blendMode="DARKEN" prefHeight="436.0" prefWidth="651.0">
         <columns>
-          <TableColumn fx:id="tableColumnNumeroEnt" editable="false" prefWidth="43.0" text="Código" />
-            <TableColumn fx:id="tableColumnDataEnt" editable="false" prefWidth="75.0" text="Data" />
-            <TableColumn fx:id="tableColumnNomeMatEnt" editable="false" prefWidth="153.0" text="Material" />
-            <TableColumn fx:id="tableColumnNomeFornEnt" editable="false" prefWidth="136.0" text="Fornecedor" />
+          <TableColumn fx:id="tableColumnNumeroEnt" editable="false" prefWidth="56.0" text="Código" />
+            <TableColumn fx:id="tableColumnDataEnt" editable="false" prefWidth="76.0" text="Data" />
+            <TableColumn fx:id="tableColumnNomeMatEnt" editable="false" prefWidth="145.0" text="Material" />
+            <TableColumn fx:id="tableColumnNomeFornEnt" editable="false" prefWidth="130.0" text="Fornecedor" />
             <TableColumn fx:id="tableColumnQtdMatEnt" editable="false" prefWidth="42.0" text="Qtd" />
             <TableColumn fx:id="tableColumnVlrMatEnt" editable="false" prefWidth="50.0" text="Valor" />
-            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="48.0" text=" " />
-            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="50.0" text=" " />
+            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="61.0" text=" " />
+            <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="68.0" text=" " />
         </columns>
          <effect>
             <Blend />

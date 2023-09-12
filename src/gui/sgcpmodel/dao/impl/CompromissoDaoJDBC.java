@@ -28,6 +28,7 @@ public class CompromissoDaoJDBC implements CompromissoDao {
 	}
 
 	String classe = "Compromisso ";
+	
  	@Override
 	public void insert(Compromisso obj) {
   		PreparedStatement st = null;
@@ -67,6 +68,43 @@ public class CompromissoDaoJDBC implements CompromissoDao {
 					throw new DbException("Erro!!! sem inclusão " + classe );
 				}	
 	  		}
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ("Erro compromisso !!! no insert " + classe + " " + e.getMessage());  
+		}
+		finally {
+ 			DB.closeStatement(st);
+ 			DB.closeResultSet(rs);
+		}
+	}
+
+ 	@Override
+	public void insertBackUp(Compromisso obj) {
+  		PreparedStatement st = null;
+		ResultSet rs = null;
+ 		try {
+			st = conn.prepareStatement(
+					"INSERT INTO compromisso "  
+					+ "(IdCom, CodigoFornecedorCom, NomeFornecedorCom, NnfCom, DataCom, "
+					+ "DataVencimentoCom, ValorCom, ParcelaCom, PrazoCom, "
+					+ "FornecedorIdCom, TipoIdCom, PeriodoIdCom ) " 
+					+ "VALUES " +  
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
+
+			st.setInt(1, obj.getIdCom()); 
+			st.setInt(2, obj.getFornecedor().getCodigo()); 
+			st.setString(3, obj.getFornecedor().getRazaoSocial()); 
+   			st.setInt(4, obj.getNnfCom());
+			st.setDate(5, new java.sql.Date(obj.getDataCom().getTime()));
+			st.setDate(6, new java.sql.Date(obj.getDataVencimentoCom().getTime()));
+ 			st.setDouble(7, obj.getValorCom());
+			st.setInt(8, obj.getParcelaCom());
+			st.setInt(9, obj.getPrazoCom());
+ 			st.setInt(10, obj.getFornecedor().getCodigo());
+ 			st.setInt(11, obj.getTipoConsumo().getCodigoTipo());
+ 			st.setInt(12, obj.getParPeriodo().getIdPeriodo());
+  			
+ 			st.executeUpdate();
    		}
  		catch (SQLException e) {
 			throw new DbException ("Erro compromisso !!! no insert " + classe + " " + e.getMessage());  
@@ -286,6 +324,62 @@ public class CompromissoDaoJDBC implements CompromissoDao {
 					 		"INNER JOIN parPeriodo " +
 					 			"on compromisso.PeriodoIdCom = parPeriodo.IdPeriodo " +
     								"ORDER BY DataCom ");
+ 			
+ 			rs = st.executeQuery();
+ 
+ 			List<Compromisso> list = new ArrayList<>();
+ 			Map<Integer, Fornecedor> mapFor = new HashMap<>();
+ 			Map<Integer, TipoConsumo> mapTp = new HashMap<>();
+ 			Map<Integer, ParPeriodo> mapPer = new HashMap<>();
+
+ 			while (rs.next()) {
+ 				Fornecedor objFor = mapFor.get(rs.getInt("FornecedorIdCom"));
+ 				if (objFor == null) {
+ 					objFor = instantiateFornecedor(rs);
+ 					mapFor.put(rs.getInt("FornecedorIdCom"), objFor);
+ 				}	
+ 				TipoConsumo objTp = mapTp.get(rs.getInt("TipoIdCom"));
+ 				if (objTp == null) {
+ 					objTp = instantiateTipoConsumo(rs);
+ 					mapTp.put(rs.getInt("TipoIdCom"), objTp);
+ 				}	
+ 				ParPeriodo objPer = mapPer.get(rs.getInt("PeriodoIdCom"));
+ 				if (objPer == null) {
+ 					objPer = instantiatePeriodo(rs, objFor, objTp);
+ 					mapPer.put(rs.getInt("PeriodoIdCom"), objPer);
+ 				}	
+ 				Compromisso obj = instantiateCompromisso(rs, objFor, objTp, objPer);
+ 				list.add(obj);
+ 			}
+ 			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException (e.getMessage());
+		}
+		finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+ 	}
+
+	@Override
+	public List<Compromisso> findAllId() {
+ 		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+// nome do fornecedor(apelido aqui) = ForId					
+			st = conn.prepareStatement(
+ // nome das entities fornecedor(apelido aqui) = ForName / TipoName
+
+					"SELECT *, Fornecedor.Codigo, TipoConsumo.CodigoTipo, ParPeriodo.IdPeriodo " +
+					 	"FROM Compromisso " +
+					 		"INNER JOIN fornecedor " +
+					 			"on compromisso.FornecedorIdCom = fornecedor.Codigo " +
+					 		"INNER JOIN TipoConsumo " +
+					 			"on compromisso.TipoIdCom = tipoConsumo.CodigoTipo " +
+					 		"INNER JOIN parPeriodo " +
+					 			"on compromisso.PeriodoIdCom = parPeriodo.IdPeriodo " +
+    								"ORDER BY IdCom ");
  			
  			rs = st.executeQuery();
  

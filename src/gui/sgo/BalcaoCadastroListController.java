@@ -160,14 +160,34 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
  		if (service == null) {
 			throw new IllegalStateException("Serviço está vazio");
  		}
+ 		Balcao bal = new Balcao();
  		labelUser.setText(user);
 		List<Balcao> list = service.findAll();
+		for (Balcao b : list) {
+			if (b.getTotalBal() == 0.0) {
+				bal = b;
+				removeTotalZero(bal);
+			}
+		}
+			list.removeIf(x -> x.getTotalBal() == 0.0);
+			
  		obsList = FXCollections.observableArrayList(list);
 		tableViewBalcao.setItems(obsList);
 		notifyDataChangeListerners();
 		initRemoveButtons();
 		initListButtons();
 	}
+ 	
+ 	private void removeTotalZero(Balcao bal){
+		if (bal.getTotalBal() > 0) {
+			updateEstoqueMaterial(bal.getNumeroBal());
+		}	
+		updateAdiantamento(bal.getNumeroBal());						
+		classe = "Receber";
+		recService.removeOS(bal.getNumeroBal());
+		classe = "Balcão List ";
+		service.remove(bal.getNumeroBal());
+ 	}
 
 /* 	
 * parametro informando qual stage criou essa janela de dialogo - stage parent
@@ -313,7 +333,7 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 
 	private void removeEntity(Balcao obj) {
 		if (nivel > 1 && nivel < 9) {
-			Alerts.showAlert(null, "Atenção", "Operaçaoo não permitida", AlertType.INFORMATION);
+			Alerts.showAlert(null, "Exclusão", "Operação não permitida", AlertType.INFORMATION);
 		} else {
 			if (obj.getTotalBal() > 0) {
 				conferePagamento(obj);
@@ -325,7 +345,9 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 						throw new IllegalStateException("Serviço está vazio");
 					}
 					try {
-						updateEstoqueMaterial(obj.getNumeroBal());
+						if (obj.getTotalBal() > 0) {
+							updateEstoqueMaterial(obj.getNumeroBal());
+						}	
 						updateAdiantamento(obj.getNumeroBal());						
 						classe = "Receber";
 						recService.removeOS(obj.getNumeroBal());

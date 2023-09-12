@@ -35,6 +35,10 @@ public class ParcelaService {
    		return dao.findAll();
 	} 
 	
+	public List<Parcela> findAllId() {
+   		return dao.findAllId();
+	} 
+	
 	public List<Parcela> findAllPago() {
    		return dao.findAllPago();
 	} 
@@ -74,11 +78,15 @@ public class ParcelaService {
  // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
 	public void saveUpdate(Parcela obj) {
-			if (obj.getIdPar() == null) {
-				dao.insert(obj);
-			} else {
-				dao.update(obj);
-			}
+		if (obj.getIdPar() == null) {
+			dao.insert(obj);
+		} else {
+			dao.update(obj);
+		}
+}	
+
+	public void insertBackUp(Parcela obj) {
+		dao.insertBackUp(obj);
 	}	
 
 // removendo

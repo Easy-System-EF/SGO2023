@@ -17,7 +17,7 @@
             <Blend />
          </effect>
       </Label>
-      <Label text="BackUp SGO" AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="10.0">
+      <Label text="BackUp SGO" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="10.0">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -27,7 +27,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <ComboBox fx:id="comboUnid" prefHeight="22.0" prefWidth="9.0" AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="40.0" />
+      <ComboBox fx:id="comboUnid" layoutX="72.0" prefHeight="22.0" prefWidth="65.0" AnchorPane.leftAnchor="72.0" AnchorPane.topAnchor="40.0" />
       <Button fx:id="btOK" mnemonicParsing="false" onAction="#recebeUnidAction" prefHeight="22.0" prefWidth="58.0" text="Ok" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="40.0" />
    </children>
    <effect>

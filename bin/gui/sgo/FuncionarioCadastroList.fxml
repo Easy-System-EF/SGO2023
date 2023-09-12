@@ -41,8 +41,8 @@
       </ToolBar>
       <TableView fx:id="tableViewFuncionario" blendMode="DARKEN" prefHeight="249.0" prefWidth="100.0">
         <columns>
-          <TableColumn fx:id="tableColumnCodigoFun" editable="false" prefWidth="43.0" text="Código" />
-            <TableColumn fx:id="tableColumnNomeFun" editable="false" prefWidth="186.0" text="Nome" />
+          <TableColumn fx:id="tableColumnCodigoFun" editable="false" prefWidth="54.0" text="Código" />
+            <TableColumn fx:id="tableColumnNomeFun" editable="false" prefWidth="175.0" text="Nome" />
             <TableColumn fx:id="tableColumnDddFun" editable="false" prefWidth="39.0" text="DDD" />
             <TableColumn fx:id="tableColumnTelefoneFun" editable="false" prefWidth="62.0" text="Telefone" />
             <TableColumn fx:id="tableColumnCargoFun" editable="false" prefWidth="99.0" text="Cargo" />
