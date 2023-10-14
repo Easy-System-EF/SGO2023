@@ -174,24 +174,26 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 
 	@FXML
 	public void onBtNewVirAction(ActionEvent event) throws ParseException {
-		if (numOrc == null) {
-			if (dpDataOrc.getValue() == null ||
-				textPlacaOrc.getText() == null ||
-				textKmFinalOrc.getText() == null) {
+		try {
+			if (numOrc == null) {
+				if (dpDataOrc.getValue() == null || textPlacaOrc.getText() == null || textKmFinalOrc.getText() == null) {
 				Alerts.showAlert("Atenção", null, "O orçamento tem que estar preenchido", AlertType.INFORMATION);
-			} else {
-				saveOrc();
-			}
-		} 
-		if (entity.getNumeroOrc() != null) {
-			Orcamento orc = service.findById(entity.getNumeroOrc());
-			numOrc = orc.getNumeroOrc();
-			Stage parentStage = Utils.currentStage(event);
+				} else {
+					saveOrc();
+				}
+			} 
+			if (entity.getNumeroOrc() != null) {
+				Orcamento orc = service.findById(entity.getNumeroOrc());
+				numOrc = orc.getNumeroOrc();
+				Stage parentStage = Utils.currentStage(event);
 // instanciando novo obj depto e injetando via
-			OrcVirtual virtual = new OrcVirtual();
-			createDialogForm(numOrc, virtual, "/gui/sgo/OrcVirtualCadastroForm.fxml", parentStage);
-			setflag(0);
-		}
+				OrcVirtual virtual = new OrcVirtual();
+				createDialogForm(numOrc, virtual, "/gui/sgo/OrcVirtualCadastroForm.fxml", parentStage);
+				setflag(0);
+			}
+		} catch (ValidationException e) {
+			setErrorMessages(e.getErros());
+		} 
 	}
 
 	private void setflag(int i) {
@@ -208,11 +210,15 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 		}
 		try {
 			entity = getFormData();
-			entity.setTotalOrc(0.00);
 			classe = "Orçamento Form ";
+			entity.setTotalOrc(0.00);
 			setflag(0);
 			service.saveOrUpdate(entity);
 			updateFormData();
+			notifyDataChangeListerners();
+		} 
+		catch (ValidationException e) {
+			setErrorMessages(e.getErros());
 		} 
 		catch (DbException e) {
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
@@ -220,7 +226,6 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 		catch (ParseException p) {
 			p.printStackTrace();
 		}
-		notifyDataChangeListerners();
 	}
 
 	public void setOrcamento(Orcamento entity) {
@@ -305,37 +310,25 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 		}
 		try {
 			classe = "Orçamento Form ";
-			@SuppressWarnings("unused")
-			ValidationException exception = new ValidationException("Validation exception");
 			entity = getFormData();
+			
 			if (entity.getNumeroOrc() != null) {
-				classe = "Virtual oçto Form ";
 				entity.setTotalOrc(virService.findByTotalOrc(entity.getNumeroOrc()));
 				if (!entity.getTotalOrc().equals(vlrAnt)) {
-					if (flag == 0) {
-						vlrAnt = entity.getTotalOrc();
-						String vlr = Mascaras.formataValor(entity.getTotalOrc());
-						labelTotalOrc.setText(vlr);
-						labelTotalOrc.viewOrderProperty();
-						try {
-							Thread.sleep(15000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						Optional<ButtonType> result = Alerts.showConfirmation("Confirma ", "total");
-						if (result.get() == ButtonType.OK) {
-							@SuppressWarnings("unused")
-							int ok = 1;
-						}
-					}	
+					String vlr = Mascaras.formataValor(entity.getTotalOrc());
+					classe = "Orçamento Form ";
+					labelTotalOrc.setText(vlr);
+					labelTotalOrc.viewOrderProperty();
+					vlrAnt = 0.01;
+					getFormData();
+					vlrAnt = entity.getTotalOrc();
 				}	
-			}	
-			classe = "Orçamento Form ";
+			}
 			service.saveOrUpdate(entity);
+			updateFormData();
 			notifyDataChangeListerners();
 			Utils.currentStage(event).close();
-		} 
-		catch (ValidationException e) {
+		} catch (ValidationException e) {
 			setErrorMessages(e.getErros());
 		} 
 		catch (DbException e) {
@@ -366,10 +359,10 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 	 * precisa tryParse
 	 */
 	private Orcamento getFormData() throws ParseException {
-		// instanciando uma exce��o, mas n�o lan�ado - validation exc....
+		Orcamento obj = new Orcamento();
+// instanciando uma exce��o, mas n�o lan�ado - validation exc....
 		ValidationException exception = new ValidationException("Validation exception");
 // set CODIGO c/ utils p/ transf string em int \\ ou null
-		Orcamento obj = new Orcamento();
 		if (numOrc != null) {
 			obj.setNumeroOrc(numOrc);
 		}
@@ -446,13 +439,19 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 			}	
 		}
 		
-		obj.setTotalOrc(0.00);
-		
-		if (obj.getOsOrc() == null) {
-			obj.setOsOrc(0);
+		obj.setOsOrc(0);
+
+		if (numOrc != null) {
+			obj.setTotalOrc(virService.findByTotalOrc(numOrc));
 		}
 
-		// tst se houve algum (erro com size > 0)
+
+		if (vlrAnt == 0.01) {
+			vlrAnt = entity.getTotalOrc();
+			exception.addErros("km", "Conferindo total - Ok");			
+		}	
+		
+// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
@@ -685,10 +684,11 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 
 		textPlacaOrc.setText(entity.getPlacaOrc());
 		textKmFinalOrc.setText(String.valueOf(entity.getKmFinalOrc()));
-		String vlr = "0.00";
+		String vlr = "0.01";
 		if (entity.getDescontoOrc() == null) {
 			entity.setDescontoOrc(0.00);
 		}
+
 		if (entity.getTotalOrc() == null) {
 			entity.setTotalOrc(0.00);
 		}
@@ -697,7 +697,7 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 		textDescontoOrc.setText(vlr);
 
 		vlrAnt = entity.getTotalOrc();
-		vlr = Mascaras.formataValor(vlrAnt);
+		vlr = Mascaras.formataValor(entity.getTotalOrc());
 		labelTotalOrc.setText(vlr);
 		labelTotalOrc.viewOrderProperty();
 		textPesquisa.setText(pesquisa);

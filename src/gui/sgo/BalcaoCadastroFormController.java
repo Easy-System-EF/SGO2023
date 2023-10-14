@@ -203,6 +203,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	int flagSave = 2;
 	int flagPg = 0;
 	double maoObra = 0.00;
+	Double valor = 0.00;
 	public static Date data1oBal = null;
 	public static String tipoEnt = null;
 	
@@ -256,15 +257,14 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			throw new IllegalStateException("Serviço balcão nulo");
 		}
 		try {
-			ValidationException exception = new ValidationException("Validation exception");
 			flagSave = 1;
 			entity = getFormData();
-			numBal = entity.getNumeroBal();
+			entity.setTotalBal(0.00);
 			classe = "Balcão Form ";
 			service.saveOrUpdate(entity);
+			numBal = entity.getNumeroBal();
 			notifyDataChangeListerners();
 			updateFormData();
-			throw exception;
 		} 
 		catch (ValidationException e) {
 			setErrorMessages(e.getErros());
@@ -301,23 +301,14 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			if (numBal == null) {
 				Alerts.showAlert("Balcão!!!", "Não preenchido", "sem dados", AlertType.INFORMATION);
 				Utils.currentStage(event).close();	
-			} else { 
+			} else {
 				entity = getFormData();
 				entity.setTotalBal(virService.findByTotalBal(numBal));
 				if (entity.getTotalBal() != 0.00 || entity.getTotalBal() != null) {		
-					confereSaldo(event);
+					confereSaldo(event);					
 					if (flagSave == 2) {
 						updateMaterialBal(event);
 						classe = "Balcao Form ";
-						String vlr = Mascaras.formataValor(entity.getTotalBal());
-						labelTotalBal.setText(vlr);
-						labelTotalBal.viewOrderProperty();
-						@SuppressWarnings("unused")
-						int ok = 0;
-						Optional<ButtonType> result = Alerts.showConfirmation("Conferindo ", "total");
-						if (result.get() == ButtonType.OK) {
-							ok = 1;
-						}	
 					}	
 					classe = "NF Balcão Form ";
 					nota.setCodigoNF(null);
@@ -438,7 +429,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		obj.setNumeroBal(Utils.tryParseToInt(textNumeroBal.getText()));
 // tst name (trim elimina branco no principio ou final
 // lan�a Erros - nome do cpo e msg de erro
-
+ 
 		if (dpDataBal.getValue() != null) {
 			Instant instant = Instant.from(dpDataBal.getValue().atStartOfDay(ZoneId.systemDefault()));
 			obj.setDataBal(Date.from(instant));
@@ -492,7 +483,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
  
 		if (obj.getDataPrimeiroPagamentoBal() != null) {
 			if (obj.getDataPrimeiroPagamentoBal().before(obj.getDataBal())) {
-				exception.addErros("data1o", "Data menor que Data da Bal");
+				exception.addErros("data1o", "Data menor que Data do docto");
 			}	
  		}
 
@@ -529,12 +520,20 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			obj.setMesBal(cal.get(Calendar.MONTH) + 1);
 			obj.setAnoBal(cal.get(Calendar.YEAR));
 		}
+
+		if (numBal != null) {
+			obj.setTotalBal(virService.findByTotalBal(numBal));
+			if (!valor.equals(obj.getTotalBal())) {
+				String vlr = Mascaras.formataValor(obj.getTotalBal());
+				labelTotalBal.setText(vlr);
+				labelTotalBal.viewOrderProperty(); 
+				valor = obj.getTotalBal();
+				exception.addErros("total", "Conferindo total - Ok ");
+			}	
+		}
 		
 		// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
-			if (flagSave == 1) {
-				Alerts.showAlert("Atenção", null, "O balcão tem que estar preenchido", AlertType.WARNING);	
-			}
 			throw exception;
 		}
 		return obj;
@@ -581,12 +580,10 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			Alerts.showAlert("Erro saldo OS ", classe, e.getMessage(), AlertType.ERROR);
 		}
 	}
-	
+
 	private void somaSaldo(ActionEvent event2, double qtd, int cod) {
 		Material mat2 = new Material();
-		Balcao bal2 = new Balcao();
 		mat2 = matService.findById(cod);
-		bal2 = service.findById(numBal);
 		Optional<ButtonType> result = 
 				Alerts.showConfirmation("Saldo insuficiente ", "Deseja incluir? - "  + mat2.getNomeMat());
 		if (result.get() == ButtonType.OK) {
@@ -596,7 +593,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			Fornecedor forn =new Fornecedor();
 			TipoConsumo tipo = new TipoConsumo();
 			Entrada ent = new Entrada();
-			data1oBal = bal2.getDataPrimeiroPagamentoBal();
+			data1oBal = entity.getDataPrimeiroPagamentoBal();
 			tipoEnt = "bal";
 			createDialogEnt(ent, mat2, com, periodo, par, forn, tipo, data1oBal, tipoEnt,     
 							"/gui/sgo/EntradaCadastroForm.fxml", parentStage);
@@ -615,7 +612,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	
 	private void updateMaterialBal(ActionEvent event3) {
 		try {
-			ValidationException exception = new ValidationException("Validation exception");
 			Material mat3 = new Material();
 			List<OrcVirtual> vir3 = new ArrayList<>();
 			vir3 = virService.findByBalcao(numBal);
@@ -651,9 +647,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 						}
 					}	
 				}	
-			}
-			if (exception.getErros().size() > 0) {
-				throw exception;
 			}
 		}	
 		catch (DbException e) {
@@ -859,8 +852,8 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			}
 			try {
 				classe = "OrcVirtual";
-				virService.removeVir(virtual.getNumeroVir());
 				acertaBal(virtual);
+				virService.removeVir(virtual.getNumeroVir());
 				updateFormData();
 				updateTableView();
 			} catch (DbIntegrityException e) {
@@ -871,11 +864,21 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		}
 	}
 
-	private void acertaBal(OrcVirtual obj) {
-			Balcao bal = service.findById(obj.getNumeroBalVir());
-			bal.setTotalBal(0.0);
-			bal.setTotalBal(virService.findByTotalOrc(bal.getNumeroBal()));
-  			service.saveOrUpdate(bal);
+	private void acertaBal(OrcVirtual virtual) {
+			Balcao bal = service.findById(numBal);
+			if (bal != null) {
+				bal.setTotalBal(virService.findByTotalBal(numBal));
+				service.saveOrUpdate(bal);
+			}
+			try {
+				if (bal != null) {
+					String vlr = Mascaras.formataValor(bal.getTotalBal());
+					labelTotalBal.setText(vlr);
+					labelTotalBal.viewOrderProperty();
+				}	
+			} catch (ParseException e) {
+				throw new DbException(e.getMessage()); 
+			}
 	}
 
 	/*
@@ -896,7 +899,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		if (entity.getDataBal() != null) {
 			dpDataBal.setValue(LocalDate.ofInstant(entity.getDataBal().toInstant(), ZoneId.systemDefault()));
 		}
-		
 
 		if (entity.getFuncionario() == null) {
 			comboBoxFunBal.getSelectionModel().selectFirst();
@@ -951,6 +953,9 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		textDescontoBal.setText(Mascaras.formataValor(entity.getDescontoBal()));
 
 		labelTotalBal.setText(Mascaras.formataValor(entity.getTotalBal()));
+		String vlr = Mascaras.formataValor(entity.getTotalBal());
+		labelTotalBal.setText(vlr);
+		labelTotalBal.viewOrderProperty();
 	}	
 
 //	carrega dados do bco cargo dentro obslist via

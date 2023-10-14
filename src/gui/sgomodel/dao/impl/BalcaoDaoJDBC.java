@@ -176,8 +176,7 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 							"FROM balcao " + 
 								"INNER JOIN funcionario " +
 									"ON balcao.FuncionarioIdBal = funcionario.CodigoFun " + 
-					"WHERE NumeroBal = ?");
-
+					"WHERE NumeroBal = ? ");
 			st.setInt(1, codigo);
 			rs = st.executeQuery();
 

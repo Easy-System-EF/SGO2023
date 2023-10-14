@@ -12,10 +12,8 @@ import java.util.Set;
 
 import db.DbException;
 import gui.listerneres.DataChangeListener;
-import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.OrcVirtual;
-import gui.sgomodel.entities.Orcamento;
 import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.GrupoService;
 import gui.sgomodel.services.MaterialService;
@@ -49,8 +47,8 @@ import model.exception.ValidationException;
 public class OrcVirtualCadastroFormController implements Initializable, DataChangeListener {
 
 	private OrcVirtual entity;
-	private OrcVirtual entityAnterior;
 	Material mat = new Material();
+	Material mat3 = new Material();
  
 	/*
 	 * dependencia service com metodo set
@@ -138,11 +136,8 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
  	String classe = "OrcVirtual Form ";
  	String pesquisa = "";
 	Double totAnt = null;
-	int flagGrava = 0;
 	public static Integer numOrc = 0;
 	public static Integer numBal = 0;
-	@SuppressWarnings("unused")
-	private double maoObra = 0;
 	
 	private ObservableList<Material> obsListMat;
 
@@ -212,69 +207,34 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 	 */
 	@FXML
 	public void onBtSaveVirAction(ActionEvent event) {
+//		ValidationException exception1 = new ValidationException("Validation exception1");
 		if (entity == null) {
 			throw new IllegalStateException("Entidade nula");
 		}
 		if (service == null) {
 			throw new IllegalStateException("Serviço nulo");
 		}
+		
 		try {
-			ValidationException exception = new ValidationException("Validation exception");
 			int sair = 0;
 			if (entity.getNumeroVir() != null) {
 				sair = 1;
 			}
-			if (entity.getTotalMatVir() == 0.00 || entity.getTotalMatVir() == null || sair == 1) {
-				entity = getFormData();
-				updateMaterial();
-				classe = "OrcVirtual Form ";
-				if (!entity.getTotalMatVir().equals(totAnt)) {
-					String vlr2 = Mascaras.formataValor(entity.getPrecoMatVir());
-					labelPrecoMatVir.setText(vlr2);
-					vlr2 = Mascaras.formataValor(entity.getTotalMatVir());
-					labelTotalMatVir.setText(vlr2);
-					labelPrecoMatVir.viewOrderProperty();
-					labelTotalMatVir.viewOrderProperty();
-					Optional<ButtonType> result = Alerts.showConfirmation("Confirma ", "total");
-					if (result.get() == ButtonType.OK) {
-						totAnt = entity.getTotalMatVir();
-					}	
-				}	
-			}
-			if (flagGrava == 0) {
-				if (entity.getTotalMatVir().equals(totAnt)) {
-					classe = "OrcVirtual Form ";
-					service.saveOrUpdate(entity);
-					if (numBal > 0) {	
-						classe = "Balcao Virtual Form ";
-						Balcao bal = balService.findById(numBal);
-						classe = "Virtual Form ";
-						bal.setTotalBal(service.findByTotalBal(numBal));
-					}	
-					if (numOrc > 0 && flagGrava == 0) {
-						classe = "Orcamento Virtual Form ";
-						Orcamento orc = orcService.findById(entity.getNumeroOrcVir());
-						orc.setTotalOrc(entity.getTotalMatVir());
-						orcService.saveOrUpdate(orc);
-					}	
-					if (sair == 1) {
-						onBtCancelVirAction(event);
-						Utils.currentStage(event).close();
-					}	
-					entity = new OrcVirtual();
-					labelPrecoMatVir.setText("0,00");
-					labelTotalMatVir.setText("0,00");
-					labelPrecoMatVir.viewOrderProperty();
-					labelTotalMatVir.viewOrderProperty();
-					textPesquisa.setText("");
-					totAnt = 0.00;
-					notifyDataChangeListerners();
-					updateFormData();
-				}	
-			}
-			if (exception.getErros().size() > 0) {
-				throw exception;
-			}
+			entity = getFormData();
+			classe = "OrcVirtual Form ";
+			service.saveOrUpdate(entity);
+			entity = new OrcVirtual();
+			labelPrecoMatVir.setText("0,00");
+			labelTotalMatVir.setText("0,00");
+			pesquisa = "";
+			notifyDataChangeListerners();
+			updateFormData();
+
+			if (sair == 1) {
+				onBtCancelVirAction(event);
+				Utils.currentStage(event).close();
+			}	
+
 		} catch (ValidationException e) {
 			setErrorMessages(e.getErros());
 		} catch (DbException e) {
@@ -315,7 +275,7 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		String vlr = Mascaras.formataValor(matForm.getVendaMat());
 		labelPrecoMatVir.setText(vlr);
 		labelPrecoMatVir.viewOrderProperty();
-
+  						
 		if (textQtdMatVir.getText() == null || textQtdMatVir.getText().trim().contentEquals("")) {
 			exception.addErros("qtd", "Qtd é obrigatória");
 		}	else { 
@@ -327,21 +287,32 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 			exception.addErros("qtd", "Qtd é obrigatória");			
 		}
 
-		List<OrcVirtual> vir = service.findByBalcao(numBal);
-		for (OrcVirtual v : vir) {
-			if (v.getNumeroOrcVir() == obj.getNumeroOrcVir()) {
-				if (v.getMaterial().getCodigoMat().equals(obj.getMaterial().getCodigoMat())) {
-					if (obj.getNumeroVir() != v.getNumeroVir()) {
-						exception.addErros("material", "Erro!!! já existe material");
-					}	
-				}
-			}	
-		}
-				
 		if (obj.getQuantidadeMatVir() == 0) {
 			exception.addErros("qtd", "Quantidade não pode ser 0");
 		}	 
-  				
+
+		if (!totAnt.equals(obj.getTotalMatVir())) {
+			String vlr2 = Mascaras.formataValor(obj.getTotalMatVir());
+			labelTotalMatVir.setText(vlr2);
+			labelTotalMatVir.viewOrderProperty();
+			totAnt = obj.getTotalMatVir();
+			exception.addErros("total", "Conferindo total - Ok");
+		}	
+
+		if (numOrc > 0 ) {
+			List<OrcVirtual> listOrc = service.findByOrctoMat(numOrc, obj.getMaterial().getCodigoMat());
+			if (obj.getNumeroVir() == null && listOrc.size() > 0 ) {
+				exception.addErros("material", "Já existe material " + obj.getNomeMatVir());
+			}	
+		} else {
+			if (numBal > 0 ) {
+				List<OrcVirtual> listBal = service.findByBalcaoMat(numBal, obj.getMaterial().getCodigoMat());
+				if (listBal.size() > 0 && obj.getNumeroVir() == null) {
+					exception.addErros("material", "Já existe material " + obj.getNomeMatVir());
+				}
+			}	
+		}
+
 // tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
@@ -349,45 +320,6 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		return obj;
 	}
 
-	private void updateMaterial() {
-		try {
-			ValidationException exception = new ValidationException("Validation exception");
-			Material mat3 = new Material();
-			classe = "OS Form virtual ";
-			List<OrcVirtual> listVir = service.findByOrcto(entity.getNumeroBalVir());
-			for (OrcVirtual ov : listVir) {
-				if (ov.getNumeroOrcVir().equals(entity.getNumeroBalVir())) {
-					mat3 = matService.findById(ov.getMaterial().getCodigoMat());
-					if (mat3.getGrupo().getNomeGru().contains("Serviço")) { 
-						if (mat3.getSaldoMat() < ov.getQuantidadeMatVir()) {
-							mat3.entraSaldo(ov.getQuantidadeMatVir());
-						}
-					}	
-	// serviço não tem estoque - entra no momento da solicitação
-					if (mat3.getGrupo().getNomeGru().contains("Mão de obra")) { 
-						if (mat3.getSaldoMat() < ov.getQuantidadeMatVir()) {
-							mat3.entraSaldo(ov.getQuantidadeMatVir());
-						}		
-					}	
-					if (entityAnterior.getNumeroVir() != null) {
-						if (mat3.getCodigoMat() == entityAnterior.getMaterial().getCodigoMat()) {
-							mat3.setSaidaCmmMat(-1 * entityAnterior.getQuantidadeMatVir());
-							mat3.entraSaldo(entityAnterior.getQuantidadeMatVir());
-						}
-					}	
-					matService.saveOrUpdate(mat3);
-					ov.setMaterial(mat3);
-				}
-				if (exception.getErros().size() > 0) {
-					throw exception;
-				}
-			}
-		}		
-		catch (DbException e) {
-			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
-		}
-	}	
-				
 	// msm processo save p/ fechar
 	@FXML
 	public void onBtCancelVirAction(ActionEvent event) {
@@ -423,7 +355,6 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		if (entity == null) {
 			throw new IllegalStateException("Entidade esta nula");
 		}
-		entityAnterior = entity; 
 		labelUser.setText(user);
 //  string value of p/ casting int p/ string
 		if (numOrc > 0) {
@@ -468,16 +399,13 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		
 		if (entity.getTotalMatVir() == null) {
 			entity.setTotalMatVir(0.00);
-			totAnt = entity.getTotalMatVir();
 		}	
 		
-		if (totAnt == null) {
-			totAnt = 0.00;
-		}
+		totAnt = entity.getTotalMatVir();
 		String vlr2 = Mascaras.formataValor(totAnt);
 		labelTotalMatVir.setText(vlr2);
 		labelTotalMatVir.viewOrderProperty();
-		textPesquisa.setText(pesquisa);
+		textPesquisa.setText(pesquisa);		
 	}
 
 //	carrega dados do bco cargo dentro obslist via

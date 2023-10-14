@@ -2,7 +2,6 @@ package gui.sgo;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,6 @@ import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
 import gui.util.Utils;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,7 +28,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -203,8 +200,8 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
   		labelTitulo.setText(String.format("%s ", nomeTitulo));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);
-//		notifyDataChangeListerners();
-		initEditButtons();
+		notifyDataChangeListerners();
+//		initEditButtons();
 	}
  	
 	@SuppressWarnings("unused")
@@ -256,47 +253,46 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 * nome da view - absolutename
 * carregando uma janela de dialogo modal (s� sai qdo sair dela, tem q instaciar um stage e dps a janela dialog
 */
- 	private synchronized void createDialogForm(Receber obj, String absoluteName, Stage parentStage) {
- 		try {
- 			FXMLLoader loader  = new FXMLLoader(getClass().getResource(absoluteName));
-			Pane pane = loader.load();
-			
-// referencia para o controlador = controlador da tela carregada fornListaForm			
-			ReceberFormController controller = loader.getController();
-// injetando passando parametro obj 		
-// injetando servi�os vindo da tela de formulario fornform
-			controller.setReceber(obj);
-			controller.setService(new ReceberService());
-			controller.loadAssociatedObjects();
-// inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...
-			controller.subscribeDataChangeListener(this);
-//	carregando o obj no formulario (fornecedorFormControl)			
-			controller.updateFormData();
-			
- 			Stage dialogStage = new Stage();
- 			dialogStage.setTitle("Informe data de pagamento                                      ");
- 			dialogStage.setScene(new Scene(pane));
-// pode redimencionar a janela: s/n?
-			dialogStage.setResizable(false);
-// quem e o stage pai da janela?
-			dialogStage.initOwner(parentStage);
-// travada enquanto n�o sair da tela
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-			Alerts.showAlert("IO Exception", classe, e.getMessage(), AlertType.ERROR);
-		}
- 		catch (ParseException p) {
- 			p.printStackTrace();
- 		}
- 	} 
+// 	private synchronized void createDialogForm(Receber obj, String absoluteName, Stage parentStage) {
+// 		try {
+// 			FXMLLoader loader  = new FXMLLoader(getClass().getResource(absoluteName));
+//			Pane pane = loader.load();
+//			
+//// referencia para o controlador = controlador da tela carregada fornListaForm			
+//			ReceberFormController controller = loader.getController();
+//// injetando passando parametro obj 		
+//// injetando servi�os vindo da tela de formulario fornform
+//			controller.setReceber(obj);
+//			controller.setService(new ReceberService());
+//			controller.loadAssociatedObjects();
+//// inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...
+//			controller.subscribeDataChangeListener(this);
+////	carregando o obj no formulario (fornecedorFormControl)			
+//			controller.updateFormData();
+//			
+// 			Stage dialogStage = new Stage();
+// 			dialogStage.setTitle("Informe data de pagamento                                      ");
+// 			dialogStage.setScene(new Scene(pane));
+//// pode redimencionar a janela: s/n?
+//			dialogStage.setResizable(false);
+//// quem e o stage pai da janela?
+//			dialogStage.initOwner(parentStage);
+//// travada enquanto n�o sair da tela
+//			dialogStage.initModality(Modality.WINDOW_MODAL);
+//			dialogStage.showAndWait();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			Alerts.showAlert("IO Exception", classe, e.getMessage(), AlertType.ERROR);
+//		}
+// 		catch (ParseException p) {
+// 			p.printStackTrace();
+// 		}
+// 	} 
  	 	
 // lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
 		private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
-		@SuppressWarnings("unused")
 		private void notifyDataChangeListerners() {
 			for (DataChangeListener listener : dataChangeListeners) {
 				listener.onDataChanged();
@@ -320,21 +316,21 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
  * ele cria bot�o em cada linha 
  * o cell instancia e cria
 */	
-	private void initEditButtons() {
-		  tableColumnEDITA.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
-		  tableColumnEDITA.setCellFactory(param -> new TableCell<Receber, Receber>() { 
-		    private final Button button = new Button("edita"); 
-		    @Override 
-		    protected void updateItem(Receber obj, boolean empty) { 
-		      super.updateItem(obj, empty); 
-		      if (obj == null) { 
-		        setGraphic(null); 
-		        return; 
-		      } 
-		      setGraphic(button); 
-		      button.setOnAction( 
-						event -> createDialogForm(obj, "/gui/sgo/ReceberForm.fxml", Utils.currentStage(event)));
-			}
-		});
-	}		  
+//	private void initEditButtons() {
+//		  tableColumnEDITA.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
+//		  tableColumnEDITA.setCellFactory(param -> new TableCell<Receber, Receber>() { 
+//		    private final Button button = new Button("edita"); 
+//		    @Override 
+//		    protected void updateItem(Receber obj, boolean empty) { 
+//		      super.updateItem(obj, empty); 
+//		      if (obj == null) { 
+//		        setGraphic(null); 
+//		        return; 
+//		      } 
+//		      setGraphic(button); 
+//		      button.setOnAction( 
+//						event -> createDialogForm(obj, "/gui/sgo/ReceberForm.fxml", Utils.currentStage(event)));
+//			}
+//		});
+//	}		  
  }

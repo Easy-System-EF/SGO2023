@@ -2,8 +2,7 @@ package gui.sgomodel.dao.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import db.DbException;
@@ -38,36 +37,42 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 		this.conn = conn;
 	}
 	
+	
+	OrcVirtualService virService = new OrcVirtualService();
+	ReceberService recService = new ReceberService();
+	ReposicaoVeiculoService repService = new ReposicaoVeiculoService();
+	Receber rec = new Receber();
+	ReposicaoVeiculo rep = new ReposicaoVeiculo();
+
 	@SuppressWarnings("unused")
 	public void gravaOS(OrdemServico objOs, Orcamento objOrc, ParPeriodo objPer, NotaFiscal objNf, Veiculo objVei, 
 			Adiantamento objAdi, List<Material> listMat) {
 
-	 	Calendar cal = Calendar.getInstance();
-	 	SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String classe = "OS Commit ";
+
 		OrdemServicoService osService = new OrdemServicoService(); 
 		OrcamentoService orcService = new OrcamentoService(); 
 		NotaFiscalService nfService = new NotaFiscalService();
 		VeiculoService veiService = new VeiculoService();
 		MaterialService matService = new MaterialService();
-		OrcVirtualService virService = new OrcVirtualService();
-		ReceberService recService = new ReceberService();
-		ReposicaoVeiculoService repService = new ReposicaoVeiculoService();
 		AdiantamentoService adiService = new AdiantamentoService();
 
-		Receber rec = new Receber();
-		ReposicaoVeiculo rep = new ReposicaoVeiculo();
 		Adiantamento adi = new Adiantamento();
 		Material mat = new Material();
 
 		try {
 			conn.setAutoCommit(false);
+	
 			osService.saveOrUpdate(objOs);	
+			
 			objOrc.setOsOrc(objOs.getNumeroOS());
 			orcService.saveOrUpdate(objOrc);
+			
 			objNf.setOsNF(objOs.getNumeroOS());
 			nfService.saveOrUpdate(objNf);
+			
 			veiService.saveOrUpdate(objVei);
+			
 			for (Material m : listMat) {
 				if (m.getCodigoMat() != null) {
 					mat = m;
@@ -79,12 +84,30 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 				int nada = 0;
 			} else {
 				objAdi.setOsAdi(objOs.getNumeroOS());
-				cal.setTime(objOs.getDataOS());
-				adi.setDataAdi(cal.getTime());
-//				objAdi.setDataAdi(objOs.getDataOS());
+				adi.setDataAdi(new Date());
 				adiService.saveOrUpdate(objAdi);
 			}	
+			
+			receber(objOrc, objOs, objPer);
+			
+			reposicao(objOs, objOrc);
 
+			conn.commit();
+			
+		} catch (SQLException e) {
+			try {	
+				conn.rollback();
+				throw new DbException("bug rollback CAUSA: " + e.getMessage());
+			} catch (SQLException e1) {
+				throw new DbException("Erro!!! rollback " + classe + e1.getMessage());
+			}
+		}
+		finally {
+		}		
+	}
+
+	private void receber(Orcamento objOrc, OrdemServico objOs, ParPeriodo objPer) {
+		try {
 			rec.setFuncionarioRec(objOrc.getFuncionario().getCodigoFun());
 			rec.setClienteRec(objOrc.getCliente().getCodigoCli());
 			rec.setNomeClienteRec(objOrc.getCliente().getNomeCli());
@@ -123,7 +146,7 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 				}
 				if (objOs.getPrazoOS() > 1) {
 					rec.setDataVencimentoRec(CalculaParcela
-						.CalculaVencimentoDia(objOs.getDataPrimeiroPagamentoOS(), (i - 1), objOs.getPrazoOS()));
+							.CalculaVencimentoDia(objOs.getDataPrimeiroPagamentoOS(), (i - 1), objOs.getPrazoOS()));
 					rec.setValorRec(CalculaParcela.calculaParcelas(objOs.getValorOS(), objOs.getParcelaOS(), i));
 					rec.setDataPagamentoRec(rec.getDataVencimentoRec());
 					rec.setJurosRec(0.00);
@@ -134,15 +157,18 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 				rec.setNumeroRec(null);
 				recService.insert(rec);
 			}	
-
-//monta reposição						
-			classe = "Reposição OS Form ";
-
-			List<OrcVirtual> listVir = virService.findAll();
+		} catch (DbException e1) {
+			throw new DbException("Erro!!! rollback receber, CAUSA: " + e1.getMessage());
+		}
+	}
+	
+	private void reposicao(OrdemServico objOs, Orcamento objOrc) {
+		List<OrcVirtual> listVir = virService.findByOrcto(objOrc.getNumeroOrc());
+		try {
 			for (int i = 0; i < listVir.size(); i++) {
 				if (listVir.get(i).getNumeroOrcVir().equals(objOs.getOrcamentoOS())) {
 					if (listVir.get(i).getMaterial().getVidaKmMat() > 0
-						|| listVir.get(i).getMaterial().getVidaMesMat() > 0) {
+							|| listVir.get(i).getMaterial().getVidaMesMat() > 0) {
 						rep.setNumeroRep(null);
 						rep.setOsRep(objOs.getNumeroOS());
 						rep.setDataRep(objOs.getDataOS());
@@ -151,40 +177,32 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 						rep.setDddClienteRep(objOrc.getCliente().getDdd01Cli());
 						rep.setTelefoneClienteRep(objOrc.getCliente().getTelefone01Cli());
 						rep.setCodigoMaterialRep(listVir.get(i).getMaterial().getCodigoMat());
-						rep.setMaterialRep(listVir.get(i).getMaterial().getNomeMat());
-						rep.setKmTrocaRep(objOrc.getKmFinalOrc());
-						if (listVir.get(i).getMaterial().getVidaKmMat() > 0) {
-							rep.setProximaKmRep(
-								objOrc.getKmFinalOrc() + listVir.get(i).getMaterial().getVidaKmMat());
-						} else {
-							rep.setProximaKmRep(0);
-						}
-						if (listVir.get(i).getMaterial().getVidaMesMat() > 0) {
-							rep.setProximaDataRep(DataStatic.somaMesDate(
-								objOs.getDataOS(), listVir.get(i).getMaterial().getVidaMesMat()));
-						} else {
-							rep.setProximaDataRep(objOs.getDataOS());
-						}
-						if (rep.getCodigoMaterialRep() == null) {
-							int nada = 0;
-						} else {	
+				
+						if (rep.getCodigoMaterialRep() != null) {
+							rep.setMaterialRep(listVir.get(i).getMaterial().getNomeMat());
+							rep.setKmTrocaRep(objOrc.getKmFinalOrc());
+							if (listVir.get(i).getMaterial().getVidaKmMat() > 0) {
+								rep.setProximaKmRep(
+										objOrc.getKmFinalOrc() + listVir.get(i).getMaterial().getVidaKmMat());
+							} else {
+								rep.setProximaKmRep(0);
+							}
+							if (listVir.get(i).getMaterial().getVidaMesMat() > 0) {
+								rep.setProximaDataRep(DataStatic.somaMesDate(
+									objOs.getDataOS(), listVir.get(i).getMaterial().getVidaMesMat()));
+							} else {
+								rep.setProximaDataRep(objOs.getDataOS());
+							}
+//							if (rep.getCodigoMaterialRep() == null) {
+//							int nada = 0;
+//						} else {	
 							repService.insert(rep);
 						}	
 					}
 				}
-			}
-			
-			conn.commit();
-			
-		} catch (SQLException e) {
-			try {
-				conn.rollback();
-				throw new DbException("Erro!!! " + classe + e.getMessage());
-			} catch (SQLException e1) {
-				throw new DbException("Erro!!! rollback " + classe + e1.getMessage());
-			}
+			}		
+		} catch (DbException e1) {
+			throw new DbException("Erro!!! rollback reposição, CAUSA: " + e1.getMessage());
 		}
-		finally {
-		}		
-	}
+	}	
 }

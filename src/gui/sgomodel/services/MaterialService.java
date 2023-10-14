@@ -34,6 +34,10 @@ public class MaterialService {
    		return dao.findPesquisa(str);
 	} 
 	
+	public Material findPesquisaUnico(String str) {
+   		return dao.findPesquisaUnico(str);
+	} 
+	
 	public Material findById(Integer cod) {
    		return dao.findById(cod);
 	} 

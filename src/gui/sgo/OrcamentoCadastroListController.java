@@ -220,7 +220,7 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
 				controller.updateFormData();
 			
 				Stage dialogStage = new Stage();
-				dialogStage.setTitle("Digite Orçamento                                             ");
+				dialogStage.setTitle("Digite Material                                             ");
 				dialogStage.setScene(new Scene(pane));
 // pode redimencionar a janela: s/n?
 				dialogStage.setResizable(false);

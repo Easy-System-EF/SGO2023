@@ -157,8 +157,7 @@ public class CompromissoDaoJDBC implements CompromissoDao {
 		ResultSet rs = null;
    		try {
 			st = conn.prepareStatement(
-					"select compromisso.ValorCom, compromisso.TipoIdCom, " +
-					  "sum(ValorCom) AS total from compromisso WHERE TipoIdCom = ? "); 
+					"SELECT SUM(ValorCom) AS 'total' from compromisso WHERE TipoIdCom = ? "); 
 			
 			st.setInt(1, codTp);
 			rs = st.executeQuery();

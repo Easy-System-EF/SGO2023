@@ -238,7 +238,7 @@
                   <Font size="12.0" />
                </font>
             </Label>
-            <Label fx:id="labelErrorKmFinalOrc" textFill="#e84040" GridPane.columnIndex="2" GridPane.rowIndex="4">
+            <Label fx:id="labelErrorKmFinalOrc" textFill="#8b1a9a" GridPane.columnIndex="2" GridPane.rowIndex="4">
                <font>
                   <Font size="12.0" />
                </font>

@@ -164,7 +164,7 @@ public class EntradaCadastroFormController implements Initializable {
 	int flagD = 0;
 	int flagAvisoII = 0;
  	int prz = 0;
- 	int tam = 999999;
+ 	int tam = 999;
  	int i = 0;
  	Integer codigoFor[] = new Integer[tam]; 
  	Integer codigoNnf[] = new Integer[tam];

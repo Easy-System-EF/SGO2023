@@ -416,6 +416,41 @@ public class MaterialDaoJDBC implements MaterialDao {
 		}
 	} 
 	
+	@Override
+	public Material findPesquisaUnico(String str) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT *, grupo.* " +  
+						"FROM material " +
+ 							"INNER JOIN grupo "  +
+								"ON material.GrupoId = grupo.CodigoGru " +
+ 						"WHERE nomeMat like ? " +
+ 					"ORDER BY NomeMat");
+ 			
+			st.setString(1, str + "%");
+			rs = st.executeQuery();
+			
+			Material mat = new Material();
+			Grupo gru = new Grupo();
+			
+			while (rs.next()) {
+				gru = instantiateGrupo(rs);
+				mat = instantiateMaterial(rs, gru);
+				return mat;
+   			}
+			return null;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
  	private Material instantiateMaterial(ResultSet rs, Grupo gru) throws SQLException {
  		Material material = new Material();
    		material.setCodigoMat(rs.getInt("CodigoMat"));

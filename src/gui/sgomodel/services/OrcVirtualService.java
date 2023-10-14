@@ -30,12 +30,12 @@ public class OrcVirtualService {
    		return dao.findByOrcto(orc);
 	} 
 	
-	public Double findByTotalOrc(Integer orc) {
-   		return dao.findByTotalOrc(orc);
+	public List<OrcVirtual> findByOrctoMat(Integer orc, int cod) {
+   		return dao.findByOrctoMat(orc, cod);
 	} 
 	
-	public Double findByTotalBal(Integer bal) {
-   		return dao.findByTotalBal(bal);
+	public Double findByTotalOrc(Integer orc) {
+   		return dao.findByTotalOrc(orc);
 	} 
 	
 	public void zeraAll() {
@@ -44,6 +44,14 @@ public class OrcVirtualService {
 	
 	public List<OrcVirtual> findByBalcao(Integer bal) {
    		return dao.findByBalcao(bal);
+	} 
+	
+	public List<OrcVirtual> findByBalcaoMat(Integer bal, int cod) {
+   		return dao.findByBalcaoMat(bal, cod);
+	} 
+	
+	public Double findByTotalBal(Integer bal) {
+   		return dao.findByTotalBal(bal);
 	} 
 	
 // * inserindo ou atualizando via dao

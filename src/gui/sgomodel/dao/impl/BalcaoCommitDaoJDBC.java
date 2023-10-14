@@ -2,8 +2,7 @@ package gui.sgomodel.dao.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import db.DbException;
@@ -29,25 +28,28 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 		this.conn = conn;
 	}
 	
+
+	ReceberService recService = new ReceberService();
+	Receber rec = new Receber();
+
 	@SuppressWarnings("unused")
 	public void gravaBalcao(Balcao objBal, ParPeriodo objPer, NotaFiscal objNf, Adiantamento objAdi, List<Material> listMat) {
 
-	 	Calendar cal = Calendar.getInstance();
-	 	SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String classe = "OS Commit ";
+
 		BalcaoService balService = new BalcaoService(); 
 		NotaFiscalService nfService = new NotaFiscalService();
 		MaterialService matService = new MaterialService();
 		OrcVirtualService virService = new OrcVirtualService();
-		ReceberService recService = new ReceberService();
 		AdiantamentoService adiService = new AdiantamentoService();
 
-		Receber rec = new Receber();
 		Adiantamento adi = new Adiantamento();
 		Material mat = new Material();
 
 		try {
+
 			conn.setAutoCommit(false);
+
 			balService.saveOrUpdate(objBal);	
 			nfService.saveOrUpdate(objNf);
 			for (Material m : listMat) {
@@ -60,47 +62,12 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 			if (objAdi.getCodigoFun() == null) {
 				int nada = 0;
 			} else {	
-				cal.setTime(objBal.getDataBal());
-				adi.setDataAdi(cal.getTime());
+				adi.setDataAdi(new Date());
 				adiService.saveOrUpdate(objAdi);
 			}
 			
-			rec.setFuncionarioRec(objBal.getFuncionario().getCodigoFun());
-			rec.setClienteRec(0);
-			rec.setNomeClienteRec("Balcao");
-			rec.setOsRec(objBal.getNumeroBal());
-			rec.setDataOsRec(objBal.getDataBal());
-			rec.setPlacaRec("Balcao");
-			rec.setParcelaRec(1);
-			rec.setPeriodo(objPer);
-			if (objBal.getPagamentoBal() == 1) {
-				rec.setFormaPagamentoRec("Dinheiro");
-			} else {
-				if (objBal.getPagamentoBal() == 2) {
-					rec.setFormaPagamentoRec("Pix");
-				} else {
-					if (objBal.getPagamentoBal() == 3) {
-						rec.setFormaPagamentoRec("Débito");
-					} else {
-						if (objBal.getPagamentoBal() == 4) {
-							rec.setFormaPagamentoRec("CC");					
-						}
-					}
-				}
-			}	
-			rec.setDataPagamentoRec(objBal.getDataPrimeiroPagamentoBal());
-			rec.setDataVencimentoRec(objBal.getDataPrimeiroPagamentoBal());
-			rec.setValorRec(objBal.getTotalBal());
-			rec.setJurosRec(0.00);
-			rec.setDescontoRec(0.00);
-			rec.setTotalRec(objBal.getTotalBal());
-			if (objBal.getDataBal().before(objBal.getDataPrimeiroPagamentoBal())) {
-				rec.setValorPagoRec(0.00);
-			} else {
-				rec.setValorPagoRec(objBal.getTotalBal());
-			}	
-			rec.setNumeroRec(null);
-			recService.insert(rec);
+			receber(objBal, objPer);
+			
 			
 //int b = 2;
 //if (b > 1) {
@@ -110,14 +77,49 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 			conn.commit();
 			
 		} catch (SQLException e) {
-			try {
+			try {	
 				conn.rollback();
-				throw new DbException("Erro!!! " + classe + e.getMessage());
+				throw new DbException("bug rollback CAUSA: " + e.getMessage());
 			} catch (SQLException e1) {
 				throw new DbException("Erro!!! rollback " + classe + e1.getMessage());
 			}
 		}
 		finally {
 		}		
+	}
+
+	private void receber(Balcao objBal, ParPeriodo objPer) {
+		rec.setFuncionarioRec(objBal.getFuncionario().getCodigoFun());
+		rec.setClienteRec(0);
+		rec.setNomeClienteRec("Balcao");
+		rec.setOsRec(objBal.getNumeroBal());
+		rec.setDataOsRec(objBal.getDataBal());
+		rec.setPlacaRec("Balcao");
+		rec.setParcelaRec(1);
+		rec.setPeriodo(objPer);
+		if (objBal.getPagamentoBal() == 1) {
+			rec.setFormaPagamentoRec("Dinheiro");
+		} else {
+			if (objBal.getPagamentoBal() == 2) {
+				rec.setFormaPagamentoRec("Pix");
+			} else {
+				if (objBal.getPagamentoBal() == 3) {
+					rec.setFormaPagamentoRec("Débito");
+				} else {
+					if (objBal.getPagamentoBal() == 4) {
+						rec.setFormaPagamentoRec("CC");					
+					}
+				}
+			}
+		}	
+		rec.setDataPagamentoRec(objBal.getDataPrimeiroPagamentoBal());
+		rec.setDataVencimentoRec(objBal.getDataPrimeiroPagamentoBal());
+		rec.setValorRec(objBal.getTotalBal());
+		rec.setJurosRec(0.00);
+		rec.setDescontoRec(objBal.getDescontoBal());
+		rec.setTotalRec(objBal.getTotalBal() - objBal.getDescontoBal());
+		rec.setValorPagoRec(objBal.getTotalBal() - objBal.getDescontoBal());
+		rec.setNumeroRec(null);
+		recService.insert(rec);
 	}
 }

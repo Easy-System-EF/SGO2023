@@ -196,7 +196,7 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
   		labelTitulo.setText(String.format("%s ", nomeTitulo));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);
-//		notifyDataChangeListerners();
+		notifyDataChangeListerners();
 		initEditButtons();
 	}
  	
@@ -295,16 +295,16 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 		  tableColumnEDITA.setCellFactory(param -> new TableCell<Receber, Receber>() { 
 		    private final Button button = new Button("baixa"); 
 		    @Override 
-		    protected void updateItem(Receber obj, boolean empty) { 
+		    protected void updateItem(Receber obj, boolean empty) {
 		      super.updateItem(obj, empty); 
-		      if (obj == null) { 
+		      if (obj == null || obj.getNomeClienteRec().equals("Balcao") || obj.getNomeClienteRec().equals("Balcão")) { 
 		        setGraphic(null); 
 		        return; 
 		      } 
-		      setGraphic(button); 
-		      button.setOnAction( 
+		      setGraphic(button);
+		    	  button.setOnAction( 
 						event -> createDialogForm(obj, "/gui/sgo/ReceberForm.fxml", Utils.currentStage(event)));
-			}
+		      }
 		});
 	}		  
  }

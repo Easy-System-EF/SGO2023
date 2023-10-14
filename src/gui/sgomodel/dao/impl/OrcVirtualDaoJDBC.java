@@ -317,6 +317,7 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 		}
 	} 
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public List<OrcVirtual> findByOrcto(Integer orc) {
 		PreparedStatement st = null; 
@@ -336,8 +337,7 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 			List<OrcVirtual> list = new ArrayList<>();
 			Map<Integer, Material> mapMat = new HashMap<>();
 			
-			while (rs.next())
-			{	@SuppressWarnings("unlikely-arg-type")
+			while (rs.next()) {
 			Material mat = mapMat.get("MaterialId");
 				if (mat == null)
 				{	mat = instantiateMaterial(rs);
@@ -357,6 +357,48 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 		}
 	} 
 	
+	@SuppressWarnings("unlikely-arg-type")
+	@Override
+	public List<OrcVirtual> findByOrctoMat(Integer orc, int cod) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT *, material.* " +
+						 "FROM orcVirtual " +
+							 "INNER JOIN material " +
+								 "ON orcVirtual.MaterialId = material.CodigoMat " +
+					"WHERE NumeroOrcVir = ? AND orcVirtual.MaterialId = ? " +		
+					   "ORDER BY NumeroOrcVir");
+			
+			st.setInt(1, orc);
+			st.setInt(2, cod);
+			rs = st.executeQuery();
+			
+			List<OrcVirtual> list = new ArrayList<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+			
+			while (rs.next()) {
+				Material mat = mapMat.get("MaterialId");
+				if (mat == null){
+					mat = instantiateMaterial(rs);
+					mapMat.put(rs.getInt("MaterialId"), mat);
+				}
+				OrcVirtual orcVir = instantiateOrcVirtual(rs, mat);
+				list.add(orcVir);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public List<OrcVirtual> findByBalcao(Integer bal) {
 		PreparedStatement st = null; 
@@ -376,11 +418,52 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 			List<OrcVirtual> list = new ArrayList<>();
 			Map<Integer, Material> mapMat = new HashMap<>();
 			
-			while (rs.next())
-			{	@SuppressWarnings("unlikely-arg-type")
-			Material mat = mapMat.get("MaterialId");
+			while (rs.next()) {
+				Material mat = mapMat.get("MaterialId");
 				if (mat == null)
 				{	mat = instantiateMaterial(rs);
+					mapMat.put(rs.getInt("MaterialId"), mat);
+				}
+				OrcVirtual orcVir = instantiateOrcVirtual(rs, mat);
+				list.add(orcVir);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@SuppressWarnings("unlikely-arg-type")
+	@Override
+	public List<OrcVirtual> findByBalcaoMat(Integer bal, int cod) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"SELECT *, material.* " +
+						 "FROM orcVirtual " +
+							 "INNER JOIN material " +
+								 "ON orcVirtual.MaterialId = material.CodigoMat " +
+					"WHERE NumeroBalVir = ? AND orcVirtual.MaterialId = ? " +		
+					   "ORDER BY NumeroBalVir");
+			
+			st.setInt(1, bal);
+			st.setInt(2, cod);
+			
+			rs = st.executeQuery();
+			
+			List<OrcVirtual> list = new ArrayList<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+			
+			while (rs.next()) {
+				Material mat = mapMat.get("MaterialId");
+				if (mat == null) {
+					mat = instantiateMaterial(rs);
 					mapMat.put(rs.getInt("MaterialId"), mat);
 				}
 				OrcVirtual orcVir = instantiateOrcVirtual(rs, mat);

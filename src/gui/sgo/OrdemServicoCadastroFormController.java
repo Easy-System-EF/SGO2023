@@ -205,6 +205,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	Date data1oOs = null;
 	String tipoEnt = null;
 	int ultimaNF = 0;
+	int flagAlert = 0;
 	Calendar cal = Calendar.getInstance();
 
 	private ObservableList<Orcamento> obsListOrc;
@@ -243,8 +244,10 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				List<Orcamento> listOrc = orcService.findPesquisa(pesquisa);
 				if (listOrc.size() == 0) { 
 					pesquisa = "";
-					Alerts.showAlert("Orçamento ", "Não encontrado ", "ou fechado ",  AlertType.INFORMATION);
+					exception.addErros("orcto", "orçamento não existe ou fechado ");
+//					Alerts.showAlert("Orçamento ", "Não encontrado ", "ou fechado ",  AlertType.INFORMATION);
 					listOrc = orcService.findAll();
+					exception.addErros("orcto", "");
 			 	}
 				for (Orcamento o : listOrc) {
 					placa = o.getPlacaOrc();
@@ -289,6 +292,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	 */
 	@FXML
 	public void onBtSaveOSAction(ActionEvent event) {
+		ValidationException exception1 = new ValidationException("Validation exception1");
 		if (entity == null) {
 			throw new IllegalStateException("Entidade OS nula");
 		}
@@ -305,7 +309,14 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				flagg = 2;
 			}
 			if (flagg == 2) {
-				Alerts.showAlert(null, "processamento longo", "aguarde", AlertType.WARNING);
+				if (flagAlert == 0) {
+					flagAlert = 1;
+					Alerts.showAlert(null, "processamento longo", "aguarde", AlertType.WARNING);
+					exception1.addErros("nf", "processamento longo - Ok ");
+					if (exception1.getErros().size() > 0) {
+						throw exception1;
+					}	
+				}
 				classe = "OS Form Material ";
 				updateMaterialOS();
 				classe = "Ordem de Serviço Form ";
@@ -877,6 +888,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		labelErrorPagamentoOS.setText((fields.contains("pagamento") ? erros.get("pagamento") : ""));
 		labelErrorData1oOS.setText((fields.contains("data1o") ? erros.get("data1o") : ""));
 		labelErrorNnfOS.setText((fields.contains("nf") ? erros.get("nf") : ""));
+		labelErrorOrcamentoOS.setText((fields.contains("orcto") ? erros.get("orcto") : ""));
 	}
 
 	@Override

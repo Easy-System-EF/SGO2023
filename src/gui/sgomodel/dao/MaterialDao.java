@@ -16,5 +16,5 @@ public interface MaterialDao {
  	List<Material> findMVR();
  	List<Material> findABC();
  	List<Material> findPesquisa(String str);
- 
+ 	Material findPesquisaUnico(String str); 
 }

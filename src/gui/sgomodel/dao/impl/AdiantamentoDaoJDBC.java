@@ -129,9 +129,6 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 		ResultSet rs = null;
    		try {
 			st = conn.prepareStatement(
-//					"select adiantamento.ComissaoAdi, adiantamento.MesAdi, adiantamento.AnoAdi, adiantamento.CodigoFun, " +
-//							  "sum(ComissaoAdi) AS total from adiantamento " +
-//									"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
 					
 			"select SUM(ComissaoAdi) AS total from adiantamento " +
 					"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
@@ -160,9 +157,6 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 		ResultSet rs = null;
    		try {
 			st = conn.prepareStatement(
-//					"select adiantamento.ValeAdi, adiantamento.MesAdi, adiantamento.AnoAdi, adiantamento.CodigoFun, " +
-//							"sum(ValeAdi) AS total from adiantamento " +
-//								"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
 			
 			"select SUM(ValeAdi) AS total from adiantamento " +
 				"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 

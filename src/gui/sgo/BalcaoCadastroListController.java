@@ -160,17 +160,9 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
  		if (service == null) {
 			throw new IllegalStateException("Serviço está vazio");
  		}
- 		Balcao bal = new Balcao();
  		labelUser.setText(user);
 		List<Balcao> list = service.findAll();
-		for (Balcao b : list) {
-			if (b.getTotalBal() == 0.0) {
-				bal = b;
-				removeTotalZero(bal);
-			}
-		}
-			list.removeIf(x -> x.getTotalBal() == 0.0);
-			
+		list.removeIf(x -> x.getTotalBal() == 0.0);
  		obsList = FXCollections.observableArrayList(list);
 		tableViewBalcao.setItems(obsList);
 		notifyDataChangeListerners();
@@ -178,17 +170,6 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 		initListButtons();
 	}
  	
- 	private void removeTotalZero(Balcao bal){
-		if (bal.getTotalBal() > 0) {
-			updateEstoqueMaterial(bal.getNumeroBal());
-		}	
-		updateAdiantamento(bal.getNumeroBal());						
-		classe = "Receber";
-		recService.removeOS(bal.getNumeroBal());
-		classe = "Balcão List ";
-		service.remove(bal.getNumeroBal());
- 	}
-
 /* 	
 * parametro informando qual stage criou essa janela de dialogo - stage parent
 * nome da view - absolutename

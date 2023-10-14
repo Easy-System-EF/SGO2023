@@ -16,7 +16,9 @@ public interface OrcVirtualDao {
  	List<OrcVirtual> findAllId();
  	List<OrcVirtual> findPesquisa(String str);
  	List<OrcVirtual> findByOrcto(Integer orc);
+ 	List<OrcVirtual> findByOrctoMat(Integer orc, int cod);
 	List<OrcVirtual> findByBalcao(Integer bal);
+	List<OrcVirtual> findByBalcaoMat(Integer bal, int cod);
 	Double findByTotalOrc(Integer orc);
 	Double findByTotalBal(Integer bal);
 	void zeroAll();
