@@ -234,7 +234,6 @@ public class CompromissoCadastroFormController implements Initializable {
 	  		if (pesquisa != "") {
 	  			List<Fornecedor> listFor = fornecedorService.findPesquisa(pesquisa);
 				if (listFor.size() == 0) { 
-					pesquisa = "";
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 				 		 Stage parentStage = Utils.currentStage(event);
@@ -243,6 +242,7 @@ public class CompromissoCadastroFormController implements Initializable {
 		 		  	}
 					listFor = fornecedorService.findPesquisa(pesquisa);
 			 	}
+				pesquisa = "";
 	  			obsList = FXCollections.observableArrayList(listFor);
 	  			comboBoxFornecedor.setItems(obsList);
 	  			notifyDataChangeListeners();
@@ -522,7 +522,6 @@ public class CompromissoCadastroFormController implements Initializable {
 			controller.user = user;
 			controller.setFornecedor(obj);
 			controller.setFornecedorService(new FornecedorService());
-//			controller.subscribeDataChangeListener(this);
 			controller.updateFormData();
 			
  			Stage dialogStage = new Stage();

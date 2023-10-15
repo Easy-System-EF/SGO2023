@@ -121,7 +121,6 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 			contC.subscribeDataChangeListener(this);
 			contC.updateFormData();
  		});
-//		updateTableView();
 	}
  	
 	@FXML
@@ -138,7 +137,6 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 		contP.subscribeDataChangeListener(this);
 		contP.updateFormData();
   		});
-//		updateTableView();
   	}
   
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -266,7 +264,6 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 		private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
-		@SuppressWarnings("unused")
 		private void notifyDataChangeListerners() {
 			for (DataChangeListener listener : dataChangeListeners) {
 				listener.onDataChanged();

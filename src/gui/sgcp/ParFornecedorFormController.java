@@ -84,14 +84,14 @@ public class ParFornecedorFormController implements Initializable {
 	  		if (pesquisa != "") {
 	  			List<Fornecedor> list = forService.findPesquisa(pesquisa);
 				if (list.size() == 0) { 
-					pesquisa = "";
 					Alerts.showAlert("Fornecedor ", null, "Não encontrado ", AlertType.INFORMATION);
 					list = forService.findAll();
 			 	}
+				pesquisa = "";
 	  			obsListFor = FXCollections.observableArrayList(list);
 				comboBoxFornecedor.setItems(obsListFor);
 				comboBoxFornecedor.getSelectionModel().selectFirst();
-//	  			notifyDataChangeListerners();
+	  			notifyDataChangeListerners();
 	  			updateFormData();
 	  		}	
 		}

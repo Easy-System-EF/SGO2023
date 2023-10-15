@@ -214,8 +214,8 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 			entity.setTotalOrc(0.00);
 			setflag(0);
 			service.saveOrUpdate(entity);
-			updateFormData();
 			notifyDataChangeListerners();
+			updateFormData();
 		} 
 		catch (ValidationException e) {
 			setErrorMessages(e.getErros());
@@ -265,7 +265,6 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 	  		if (pesquisa != "") {
 	  			List<Cliente> listCli = cliService.findPesquisa(pesquisa);
 				if (listCli.size() == 0) { 
-					pesquisa = "";
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 				 		 Stage parentStage = Utils.currentStage(event);
@@ -274,6 +273,7 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 					}
 					listCli = cliService.findPesquisa(pesquisa);
 			 	}
+				pesquisa = "";
 	  			obsListCli = FXCollections.observableArrayList(listCli);
 	  			comboBoxCliente.setItems(obsListCli);
 	  			notifyDataChangeListerners();
@@ -325,8 +325,8 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 				}	
 			}
 			service.saveOrUpdate(entity);
-			updateFormData();
 			notifyDataChangeListerners();
+			updateFormData();
 			Utils.currentStage(event).close();
 		} catch (ValidationException e) {
 			setErrorMessages(e.getErros());

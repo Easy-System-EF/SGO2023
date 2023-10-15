@@ -145,10 +145,9 @@ public class MaterialCadastroFormController implements Initializable {
 	    		 Utils.currentStage(event).close();
 	    	 } else {
 	    		 entity = new Material();
+	    		 notifyDataChangeListerners();
 	    		 updateFormData();
-	    	 }
-	    	 notifyDataChangeListerners();
-	    		 
+	    	 }	 
 		}
 		catch (ValidationException e) {
 			setErrorMessages(e.getErros());

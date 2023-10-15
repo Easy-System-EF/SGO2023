@@ -243,9 +243,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			if (pesquisa != "") {
 				List<Orcamento> listOrc = orcService.findPesquisa(pesquisa);
 				if (listOrc.size() == 0) { 
-					pesquisa = "";
 					exception.addErros("orcto", "orçamento não existe ou fechado ");
-//					Alerts.showAlert("Orçamento ", "Não encontrado ", "ou fechado ",  AlertType.INFORMATION);
 					listOrc = orcService.findAll();
 					exception.addErros("orcto", "");
 			 	}
@@ -256,6 +254,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 					exception.addErros("dataOS", "Não existe Orçamento ");
 					exception.addErros("orcto", "aberto para consulta ");
 				} else {
+					pesquisa = "";
 					obsListOrc = FXCollections.observableArrayList(listOrc);
 					comboBoxOrcamento.setItems(obsListOrc);
 					notifyDataChangeListerners();
@@ -348,8 +347,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
 		} catch (ParseException p) {
 			p.printStackTrace();
-//		} catch (RuntimeException p) {
-//			System.out.println("Exclua OS e refaça " + p);
 		}
 	}
 

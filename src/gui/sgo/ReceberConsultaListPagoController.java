@@ -123,7 +123,6 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 			contC.subscribeDataChangeListener(this);
 			contC.updateFormData();
  		});
-//		updateTableView();
 	}
  	
 	@FXML
@@ -140,7 +139,6 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 		contP.subscribeDataChangeListener(this);
 		contP.updateFormData();
   		});
-//		updateTableView();
   	}
   
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -201,7 +199,6 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);
 		notifyDataChangeListerners();
-//		initEditButtons();
 	}
  	
 	@SuppressWarnings("unused")
@@ -247,48 +244,6 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 		}
 	}
  	
-	
-/* 	
-* parametro informando qual stage criou essa janela de dialogo - stage parent
-* nome da view - absolutename
-* carregando uma janela de dialogo modal (s� sai qdo sair dela, tem q instaciar um stage e dps a janela dialog
-*/
-// 	private synchronized void createDialogForm(Receber obj, String absoluteName, Stage parentStage) {
-// 		try {
-// 			FXMLLoader loader  = new FXMLLoader(getClass().getResource(absoluteName));
-//			Pane pane = loader.load();
-//			
-//// referencia para o controlador = controlador da tela carregada fornListaForm			
-//			ReceberFormController controller = loader.getController();
-//// injetando passando parametro obj 		
-//// injetando servi�os vindo da tela de formulario fornform
-//			controller.setReceber(obj);
-//			controller.setService(new ReceberService());
-//			controller.loadAssociatedObjects();
-//// inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...
-//			controller.subscribeDataChangeListener(this);
-////	carregando o obj no formulario (fornecedorFormControl)			
-//			controller.updateFormData();
-//			
-// 			Stage dialogStage = new Stage();
-// 			dialogStage.setTitle("Informe data de pagamento                                      ");
-// 			dialogStage.setScene(new Scene(pane));
-//// pode redimencionar a janela: s/n?
-//			dialogStage.setResizable(false);
-//// quem e o stage pai da janela?
-//			dialogStage.initOwner(parentStage);
-//// travada enquanto n�o sair da tela
-//			dialogStage.initModality(Modality.WINDOW_MODAL);
-//			dialogStage.showAndWait();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			Alerts.showAlert("IO Exception", classe, e.getMessage(), AlertType.ERROR);
-//		}
-// 		catch (ParseException p) {
-// 			p.printStackTrace();
-// 		}
-// 	} 
- 	 	
 // lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
 		private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
@@ -310,27 +265,4 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 	public void onDataChanged() {
 		updateTableView();
 	}
-
-/*
- * metodo p/ botao edit do frame
- * ele cria bot�o em cada linha 
- * o cell instancia e cria
-*/	
-//	private void initEditButtons() {
-//		  tableColumnEDITA.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
-//		  tableColumnEDITA.setCellFactory(param -> new TableCell<Receber, Receber>() { 
-//		    private final Button button = new Button("edita"); 
-//		    @Override 
-//		    protected void updateItem(Receber obj, boolean empty) { 
-//		      super.updateItem(obj, empty); 
-//		      if (obj == null) { 
-//		        setGraphic(null); 
-//		        return; 
-//		      } 
-//		      setGraphic(button); 
-//		      button.setOnAction( 
-//						event -> createDialogForm(obj, "/gui/sgo/ReceberForm.fxml", Utils.currentStage(event)));
-//			}
-//		});
-//	}		  
  }

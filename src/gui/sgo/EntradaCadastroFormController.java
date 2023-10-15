@@ -248,8 +248,8 @@ public class EntradaCadastroFormController implements Initializable {
 				}	
 			}
  			entity = new Entrada();
- 			updateFormData();
  			notifyDataChangeListerners();
+			updateFormData();
  			if (sai == 1) {
  				if (tam > 0 && tam < 999999) {
  					compromissoCreate();
@@ -400,7 +400,6 @@ public class EntradaCadastroFormController implements Initializable {
 	  		if (pesquisaForn != "") {
 	  			List<Fornecedor> listFor = fornService.findPesquisa(pesquisaForn);
 				if (listFor.size() == 0) { 
-					pesquisaForn = "";
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 				 		 Stage parentStage = Utils.currentStage(event);
@@ -409,6 +408,7 @@ public class EntradaCadastroFormController implements Initializable {
 		 		  	}
 					listFor = fornService.findPesquisa(pesquisaForn);
 			 	}
+				pesquisaForn = "";
 	  			obsListForn = FXCollections.observableArrayList(listFor);
 	  			comboBoxFornEnt.setItems(obsListForn);
 	  			notifyDataChangeListerners();
@@ -432,7 +432,6 @@ public class EntradaCadastroFormController implements Initializable {
 	  		if (pesquisaMat != "") {
 	  			List<Material> listMat = matService.findPesquisa(pesquisaMat);
 				if (listMat.size() == 0) { 
-					pesquisaMat = "";
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 				 		 Stage parentStage = Utils.currentStage(event);
@@ -441,6 +440,7 @@ public class EntradaCadastroFormController implements Initializable {
 		 		  	}
 					listMat = matService.findPesquisa(pesquisaMat);
 			 	}
+				pesquisaMat = "";
 	  			obsListMat = FXCollections.observableArrayList(listMat);
 	  			comboBoxMatEnt.setItems(obsListMat);
 	  			notifyDataChangeListerners();
@@ -752,7 +752,6 @@ public class EntradaCadastroFormController implements Initializable {
 			controller.user = user;
 			controller.setFornecedor(obj);
 			controller.setFornecedorService(new FornecedorService());
-//			controller.subscribeDataChangeListener(this);
 			controller.updateFormData();
 			
  			Stage dialogStage = new Stage();

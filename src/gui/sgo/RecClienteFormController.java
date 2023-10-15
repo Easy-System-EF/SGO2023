@@ -96,15 +96,14 @@ public class RecClienteFormController implements Initializable {
 		    pesquisa = textPesquisa.getText().toUpperCase().trim();
 		    List<Cliente> list = service.findPesquisa(pesquisa);
 			if (list.size() == 0) { 
-				pesquisa = "";
 				Alerts.showAlert("Cliente ", null, "Não encontrado ", AlertType.INFORMATION);
 				codigo = null;
 				list = service.findAll();
 		 	}
+			pesquisa = "";
 	 		obsList = FXCollections.observableArrayList(list);
 			comboBoxCliente.setItems(obsList);
 			comboBoxCliente.getSelectionModel().selectFirst();
-//   	    	notifyDataChangeListerners();
    	    	updateFormData();
 		}
 		catch (DbException e) {

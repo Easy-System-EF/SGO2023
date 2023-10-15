@@ -170,7 +170,6 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 	  		if (pesquisa != "") {
 	  			List<Material> listMat = matService.findPesquisa(pesquisa);
 				if (listMat.size() == 0) { 
-					pesquisa = "";
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 				 		 Stage parentStage = Utils.currentStage(event);
@@ -179,6 +178,7 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		 		  	}
 					listMat = matService.findPesquisa(pesquisa);
 			 	}
+				pesquisa = "";
 	  			obsListMat = FXCollections.observableArrayList(listMat);
 	  			comboBoxMatVir.setItems(obsListMat);
 	  			notifyDataChangeListerners();
