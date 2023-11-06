@@ -3,7 +3,6 @@ package gui.sgo;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +18,7 @@ import gui.sgcpmodel.entities.TipoConsumo;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
 import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.FornecedorService;
-import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
-import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.services.EntradaService;
@@ -184,10 +181,8 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 			EntradaCadastroFormController controller = loader.getController();
 			controller.user = user;
  // injetando passando parametro obj 			
-			controller.setObjects(obj, mat, objCom, objPer, objPar, objFor, objTipo);
-			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService(), 
-					new CompromissoService(), new TipoConsumoService(), new ParPeriodoService(),
-					new ParcelaService());
+			controller.setObjects(obj, mat);
+			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService());
  // injetando tb o forn service vindo da tela de formulario fornform
 			controller.loadAssociatedObjects();
 // inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...
@@ -302,12 +297,8 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 
 	private String  verificaPago(Entrada obj, String simNao) {
 		ParcelaService parService = new ParcelaService();
-		List<Parcela> listPar = new ArrayList<>();
-		listPar = parService.findByIdFornecedorNnf(obj.getForn().getCodigo(), obj.getNnfEnt());	
-		if (listPar.size() == 0) {
-			Alerts.showAlert("Atenção", "Operação inválida", "não existe parcela(s) correspondente(s)", AlertType.ERROR);
-			simNao = "nao";
-		} else {
+		List<Parcela> listPar = parService.findByIdFornecedorNnf(obj.getForn().getCodigo(), obj.getNnfEnt());	
+		if (listPar.size() != 0) {
 			for (Parcela p : listPar) {
 				if (p.getFornecedor().getCodigo().equals(obj.getForn().getCodigo()) || 
 						p.getNnfPar().equals(obj.getNnfEnt())) {
@@ -359,18 +350,21 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 		if (simNao == "sim") {
 			Compromisso com = new Compromisso();
 			CompromissoService comService = new CompromissoService();
-			double vlrFim = 0.00;
-			double vlrMat = 0.99;
 			com = comService.findById(obj.getForn().getCodigo(), obj.getNnfEnt());
 			if (com != null) {
-				vlrMat = (obj.getQuantidadeMatEnt() * obj.getValorMatEnt());
+				double vlrMat = (obj.getQuantidadeMatEnt() * obj.getValorMatEnt());
 				if (com.getValorCom() >= vlrMat) {
-					vlrFim = com.getValorCom() - (obj.getQuantidadeMatEnt() * obj.getValorMatEnt());
+					double vlrFim = com.getValorCom() - vlrMat;
 					com.setValorCom(vlrFim);
 				}	
 			}	
-			if (com.getCodigoFornecedorCom() != null) {
+			if (com != null) {
 				if (com.getValorCom() > 0.00) {
+					if (com.getPrazoCom() == 1 && com.getParcelaCom() == 1) {
+						com.setSituacaoCom(1);
+					} else {
+						com.setSituacaoCom(0);
+					}
 					comService.saveOrUpdate(com);
 					CalculaParcela.parcelaCreate(com);
 				} else {	

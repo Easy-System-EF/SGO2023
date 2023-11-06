@@ -20,6 +20,7 @@ public class Compromisso implements Serializable {
  	private Double valorCom;
  	private Integer parcelaCom;
  	private Integer prazoCom;
+ 	private Integer situacaoCom;
  	
   	public Fornecedor fornecedor;
  	public TipoConsumo tipoConsumo;
@@ -30,7 +31,7 @@ public class Compromisso implements Serializable {
 
 	public Compromisso(Integer idCom, Integer codigoFornecedorCom, String nomeFornecedorCom, Integer nnfCom, Date dataCom, 
 			Date dataVencimentoCom, Double valorCom, Integer parcelaCom, Integer prazoCom,
-			Fornecedor fornecedor, TipoConsumo tipoConsumo, ParPeriodo periodo) {
+			Fornecedor fornecedor, TipoConsumo tipoConsumo, ParPeriodo periodo, Integer situacaoCom) {
 		this.idCom = idCom;
 		this.codigoFornecedorCom = codigoFornecedorCom; 
 		this.nomeFornecedorCom = nomeFornecedorCom;
@@ -43,6 +44,7 @@ public class Compromisso implements Serializable {
 		this.fornecedor = fornecedor;
 		this.tipoConsumo = tipoConsumo;  
 		this.periodo = periodo;
+		this.situacaoCom = situacaoCom;
   	}
  
 	public Integer getIdCom() {
@@ -141,6 +143,14 @@ public class Compromisso implements Serializable {
 		this.periodo = periodo;
 	}
 
+	public Integer getSituacaoCom() {
+		return situacaoCom;
+	}
+
+	public void setSituacaoCom(Integer situacaoCom) {
+		this.situacaoCom = situacaoCom;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(codigoFornecedorCom, nnfCom);
@@ -163,6 +173,7 @@ public class Compromisso implements Serializable {
 		return "Compromisso [idCom=" + idCom + ", codigoFornecedorCom=" + codigoFornecedorCom + ", nomeFornecedorCom="
 				+ nomeFornecedorCom + ", nnfCom=" + nnfCom + ", dataCom=" + dataCom + ", dataVencimentoCom="
 				+ dataVencimentoCom + ", valorCom=" + valorCom + ", parcelaCom=" + parcelaCom + ", prazoCom=" + prazoCom
-				+ ", fornecedor=" + fornecedor + ", tipoConsumo=" + tipoConsumo + ", periodo=" + periodo + "]";
+				+ ", situacaoCom=" + situacaoCom + ", fornecedor=" + fornecedor + ", tipoConsumo=" + tipoConsumo
+				+ ", periodo=" + periodo + "]";
 	}
- }	
+}	

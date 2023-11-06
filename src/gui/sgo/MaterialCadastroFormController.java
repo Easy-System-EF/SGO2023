@@ -143,11 +143,10 @@ public class MaterialCadastroFormController implements Initializable {
 	    	 service.saveOrUpdate(entity);
 	    	 if (sai == 0) {
 	    		 Utils.currentStage(event).close();
-	    	 } else {
-	    		 entity = new Material();
-	    		 notifyDataChangeListerners();
-	    		 updateFormData();
-	    	 }	 
+	    	 } 
+    		 entity = new Material();
+    		 notifyDataChangeListerners();
+    		 updateFormData();
 		}
 		catch (ValidationException e) {
 			setErrorMessages(e.getErros());
@@ -176,6 +175,7 @@ public class MaterialCadastroFormController implements Initializable {
 	private Material getFormData() throws ParseException {
 //		Locale ptBR = new Locale("pt", "BR");
 		Material obj = new Material();
+		obj = entity;
   // instanciando uma exce��o, mas n�o lan�ado - validation exc....		
 		ValidationException exception = new ValidationException("Validation exception");
 // set CODIGO c/ utils p/ transf string em int \\ ou null		
@@ -232,7 +232,7 @@ public class MaterialCadastroFormController implements Initializable {
  		
  		obj.setPercentualClass(0.00);
  		obj.setLetraClass(' ');
- 		
+
  		// tst se houve algum (erro com size > 0)		
 		if (exception.getErros().size() > 0)
 		{	throw exception;

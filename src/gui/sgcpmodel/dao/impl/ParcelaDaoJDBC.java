@@ -185,7 +185,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 			st = conn.prepareStatement( 
 					
 					"SELECT SUM(PagoPar) AS 'total' FROM parcela "
-					+ 	"WHERE pagoPar = 0.00 AND month(DataVencimentoPar) <= ? AND year(DataVencimentoPar) <= ? ");
+					+ 	"WHERE (pagoPar = 0.00) AND (year(DataVencimentoPar) <= ?) AND (month(DataVencimentoPar) <= ?) ");
 
 			st.setInt(1, mes);
 			st.setInt(2, ano);
@@ -213,7 +213,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 		try {
 			st = conn.prepareStatement( 
 					
-					"SELECT SUM(PagoPar) AS 'total' FROM parcela " +
+					"SELECT SUM(ValorPar) AS 'total' FROM parcela " +
 					 	"WHERE parcela.pagoPar = 0 AND parcela.DataVencimentoPar >= ? AND parcela.DataVencimentoPar <= ? ");
 
 			st.setDate(1, new java.sql.Date(dti.getTime()));
@@ -502,7 +502,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	  						"INNER JOIN TipoConsumo " +
 	  							"ON parcela.TipoIdPar = tipoConsumo.CodigoTipo " +
 	  								"WHERE PagoPar > 0 " +
- 									"ORDER BY DataVencimentoPar ");
+ 									"ORDER BY - DataPagamentoPar ");
 
  			rs = st.executeQuery();
  			 
@@ -617,7 +617,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
  		  							"WHERE  PagoPar > 0 AND " +
  		  							"parcela.DataVencimentoPar >= parPeriodo.DtiPeriodo AND " +
  		  							"parcela.DataVencimentoPar <= parPeriodo.DtfPeriodo " +
- 										"ORDER BY DataVencimentoPar, NumeroPar ");
+ 										"ORDER BY - DataPagamentoPar, NumeroPar ");
     
  			rs = st.executeQuery();
 			
@@ -769,7 +769,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	  						"INNER JOIN TipoConsumo " +
 	  							"ON parcela.TipoIdPar = tipoConsumo.CodigoTipo " +
 		  							"WHERE CodigoFornecedorPar = ? AND PagoPar > 0 " +
-										"ORDER BY DataVencimentoPar, Numeropar");
+										"ORDER BY - DataPagamentoPar, Numeropar");
  			
   			st.setInt(1, cod);
 			rs = st.executeQuery();
@@ -943,7 +943,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 		  						"ON parcela.TipoIdPar = tipoConsumo.CodigoTipo " +
 		  							"WHERE TipoIdPar = ? AND " +
 		  							"PagoPar > 0 " +
-										"ORDER BY DataVencimentoPar, Numeropar");
+										"ORDER BY - DataPagamentoPar, Numeropar");
  			
   			st.setInt(1, cod);
 			rs = st.executeQuery();

@@ -37,8 +37,11 @@ public class CopiaSgoFormController implements Initializable {
 			unid = comboUnid.getValue().getLetraUnid();
 			CopiaSgoController.unid = unid;
 			String pathA = unid + ":\\ARQS";
+			@SuppressWarnings("unused")
 			String pathB = unid + ":\\ARQS\\Backup";
+			@SuppressWarnings("unused")
 			String pathC = unid + ":\\ARQS\\Backup\\SGO";
+			@SuppressWarnings("unused")
 			String pathD = unid + ":\\ARQS\\Backup\\SGOCP";
 
 			File pathU = new File(unid + ":\\");
@@ -60,10 +63,16 @@ public class CopiaSgoFormController implements Initializable {
 //	 		if (unid != null) {
  				@SuppressWarnings("unused")
  				boolean exist = false;
- 				exist = new File (pathA).mkdir();
- 				exist = new File (pathB).mkdir();
- 				exist = new File (pathC).mkdir();
- 				exist = new File (pathD).mkdir();
+ 				switch (unid) {
+					case "A": exist = new File (pathA).mkdir();
+					break;
+ 					case "B": exist = new File (pathA).mkdir();
+ 					break;
+ 					case "C": exist = new File (pathA).mkdir();
+ 					break;
+ 					case "D": exist = new File (pathA).mkdir();
+ 					break;
+ 				}
  			}	
 			Utils.currentStage(event).close();
 		} catch (NullPointerException e) {

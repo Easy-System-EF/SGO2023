@@ -259,6 +259,7 @@ public class Material implements Serializable {
 	}
 
 	public Double calculaCmm() {
+	if (codigoMat == 2) {	
 		if (saidaCmmMat != null) {
 			LocalDate dt1 = DataStatic.criaLocalAtual();
 			if (dataCadastroMat == null) {
@@ -278,6 +279,7 @@ public class Material implements Serializable {
 					cmmMat = saidaCmmMat;
 				}	
 		} 	
+	}
 		return cmmMat;
 	}
 

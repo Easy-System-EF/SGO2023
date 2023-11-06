@@ -548,8 +548,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 			if (nivel == 1 || nivel == 9) {
 				loadView("/gui/sgcp/ParcelaConsultaListAberto.fxml", (ParcelaConsultaListAbertoController controller) -> {
 					controller.user = user;
-					controller.setParPeriodoService(new ParPeriodoService());
-					controller.setParcelaService(new ParcelaService());
+					controller.setServices(new ParPeriodoService(), new ParcelaService());
 					controller.updateTableViewAberto();
 		});
 			} else {

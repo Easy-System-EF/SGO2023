@@ -16,7 +16,10 @@ public class CalculaParcela {
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static Date CalculaVencimentoDia(Date data, int parcela, int dia) {
-		Date dataVen = DataStatic.somaDiasDate(data, (parcela * dia));
+		Date dataVen = data;
+		if (dia > 1 ) {
+			dataVen = DataStatic.somaDiasDate(data, (parcela * dia));
+		}	
 //   		Calendar cal = Calendar.getInstance(); 
 //		cal.setTime(data);
 //		cal.add(Calendar.DAY_OF_MONTH, (dia * parcela));

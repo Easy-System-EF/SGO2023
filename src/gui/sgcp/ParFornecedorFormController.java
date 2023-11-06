@@ -80,6 +80,7 @@ public class ParFornecedorFormController implements Initializable {
 	@FXML
 	public void onBtPesquisaAction(ActionEvent event) {
 		try {
+			pesquisa = "";
 	  		pesquisa = textPesquisa.getText().toUpperCase().trim();
 	  		if (pesquisa != "") {
 	  			List<Fornecedor> list = forService.findPesquisa(pesquisa);
@@ -87,12 +88,13 @@ public class ParFornecedorFormController implements Initializable {
 					Alerts.showAlert("Fornecedor ", null, "Não encontrado ", AlertType.INFORMATION);
 					list = forService.findAll();
 			 	}
-				pesquisa = "";
-	  			obsListFor = FXCollections.observableArrayList(list);
-				comboBoxFornecedor.setItems(obsListFor);
-				comboBoxFornecedor.getSelectionModel().selectFirst();
-	  			notifyDataChangeListerners();
-	  			updateFormData();
+				if(list.size() > 0) {
+					obsListFor = FXCollections.observableArrayList(list);
+					comboBoxFornecedor.setItems(obsListFor);
+					comboBoxFornecedor.getSelectionModel().selectFirst();
+					notifyDataChangeListerners();
+//					updateFormData();
+				}	
 	  		}	
 		}
 		catch (DbException e) {

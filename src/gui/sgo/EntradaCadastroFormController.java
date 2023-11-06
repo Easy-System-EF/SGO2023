@@ -13,28 +13,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import db.DbException;
 import gui.listerneres.DataChangeListener;
 import gui.sgcp.FornecedorCadastroFormController;
-import gui.sgcpmodel.entities.Compromisso;
 import gui.sgcpmodel.entities.Fornecedor;
-import gui.sgcpmodel.entities.Parcela;
-import gui.sgcpmodel.entities.TipoConsumo;
-import gui.sgcpmodel.entities.consulta.ParPeriodo;
-import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.FornecedorService;
-import gui.sgcpmodel.services.ParPeriodoService;
-import gui.sgcpmodel.services.ParcelaService;
-import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.GrupoService;
 import gui.sgomodel.services.MaterialService;
 import gui.util.Alerts;
-import gui.util.CalculaParcela;
 import gui.util.Constraints;
 import gui.util.Mascaras;
 import gui.util.Utils;
@@ -66,10 +56,6 @@ public class EntradaCadastroFormController implements Initializable {
 	private Entrada entityAnterior;
 	private Material mat;
 	private Material matAnt;
-	private Compromisso entCom;
-	private ParPeriodo entPer;
-	private Fornecedor entFor;
-	private TipoConsumo entTip;
  
 	/*
 	 * dependencia service com metodo set
@@ -77,10 +63,6 @@ public class EntradaCadastroFormController implements Initializable {
 	private EntradaService service;
 	private FornecedorService fornService;
 	private MaterialService matService;
-	private CompromissoService comService;
-	private TipoConsumoService tipoService;
-	private ParPeriodoService perService;
-	private ParcelaService parService;
  
 // lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
@@ -164,10 +146,6 @@ public class EntradaCadastroFormController implements Initializable {
 	int flagD = 0;
 	int flagAvisoII = 0;
  	int prz = 0;
- 	int tam = 999;
- 	int i = 0;
- 	Integer codigoFor[] = new Integer[tam]; 
- 	Integer codigoNnf[] = new Integer[tam];
 	private ObservableList<Fornecedor> obsListForn;
 	private ObservableList<Material> obsListMat;
 	public static Date  data1oOs = null;
@@ -178,26 +156,15 @@ public class EntradaCadastroFormController implements Initializable {
 		this.pesquisaMat = nome;
 	}
 	
-	public void setObjects(Entrada entity, Material mat, Compromisso entCom, ParPeriodo entPer, Parcela entPar, 
-			Fornecedor entfor, TipoConsumo entTip) {
+	public void setObjects(Entrada entity, Material mat) {
 		this.entity = entity;
 		this.mat = mat;
-		this.entCom = entCom;
-		this.entPer = entPer;
-		this.entFor = entfor;
-		this.entTip = entTip;
 	}
 	
-	public void setServices(EntradaService service, FornecedorService fornService, MaterialService matService, 
-			CompromissoService comService, TipoConsumoService tipoService, ParPeriodoService perService,
-			ParcelaService parService) {
+	public void setServices(EntradaService service, FornecedorService fornService, MaterialService matService) {
 		this.service = service;
 		this.fornService = fornService;
 		this.matService = matService;
-		this.comService = comService;
-		this.tipoService = tipoService;
-		this.perService = perService;
-		this.parService = parService;
 	}
 
 //  * o controlador tem uma lista de eventos q permite distribuiééo via metodo abaixo
@@ -233,27 +200,19 @@ public class EntradaCadastroFormController implements Initializable {
 			entity = getFormData();
 			acertaMaterial();
 			classe = "Entrada Form ";
-			
  			if (flagN == 0) {
  				matService.saveOrUpdate(mat);
  				entity.setMat(mat);
 				service.saveOrUpdate(entity);
-				if (codigoFor[i] != entity.getForn().getCodigo()) {
-					if (codigoNnf[i] != entity.getNnfEnt()) {
-						i += 1;
-						codigoFor[i] = entity.getForn().getCodigo();
-						codigoNnf[i] = entity.getNnfEnt();
-						tam = i;
-					}	
-				}	
+				EntradaCreate.compromissoCreate(entity, tipoEnt, data1oOs, data1oBal);
+				if (flagAvisoII == 0) {
+					flagAvisoII = 1;
+				}
 			}
  			entity = new Entrada();
  			notifyDataChangeListerners();
 			updateFormData();
  			if (sai == 1) {
- 				if (tam > 0 && tam < 999999) {
- 					compromissoCreate();
- 				}	
  				Utils.currentStage(event).close();
  			}
 		} catch (ValidationException e) {
@@ -376,12 +335,7 @@ public class EntradaCadastroFormController implements Initializable {
 			totAnt = tot;
 			labelTotVlrMatEnt.setText(totM);
 			labelTotVlrMatEnt.viewOrderProperty();
-			@SuppressWarnings("unused")
-			int ok = 0;
-			Optional<ButtonType> result = Alerts.showConfirmation("Conferindo ", "total");
-			if (result.get() == ButtonType.OK) {
-				ok = 1;
-			}	
+			exception.addErros("vlr", "Conferindo total - Ok");			
 		}	
   				
 		// tst se houve algum (erro com size > 0)
@@ -408,13 +362,15 @@ public class EntradaCadastroFormController implements Initializable {
 		 		  	}
 					listFor = fornService.findPesquisa(pesquisaForn);
 			 	}
-				pesquisaForn = "";
-	  			obsListForn = FXCollections.observableArrayList(listFor);
-	  			comboBoxFornEnt.setItems(obsListForn);
-	  			notifyDataChangeListerners();
-	  			updateFormData();
+				if (listFor.size() > 0) {
+					obsListForn = FXCollections.observableArrayList(listFor);
+					comboBoxFornEnt.setItems(obsListForn);
+					notifyDataChangeListerners();
+					updateFormData();
+				}	
 	  		}	
-		} catch (ParseException e) {
+		} 
+		catch (ParseException e) {
 			e.printStackTrace();
 			Alerts.showAlert("Erro pesquisando objeto", classe, e.getMessage(), AlertType.ERROR);
 		}
@@ -428,6 +384,7 @@ public class EntradaCadastroFormController implements Initializable {
 	public void onBtPesqMatAction(ActionEvent event) {
 		classe = "Material Ent Form";
 		try {
+			pesquisaMat = "";
 	  		pesquisaMat = textIniciaisMat.getText().toUpperCase().trim();
 	  		if (pesquisaMat != "") {
 	  			List<Material> listMat = matService.findPesquisa(pesquisaMat);
@@ -440,11 +397,12 @@ public class EntradaCadastroFormController implements Initializable {
 		 		  	}
 					listMat = matService.findPesquisa(pesquisaMat);
 			 	}
-				pesquisaMat = "";
-	  			obsListMat = FXCollections.observableArrayList(listMat);
-	  			comboBoxMatEnt.setItems(obsListMat);
-	  			notifyDataChangeListerners();
-	  			updateFormData();
+				if(listMat.size() > 0) {
+					obsListMat = FXCollections.observableArrayList(listMat);
+					comboBoxMatEnt.setItems(obsListMat);
+					notifyDataChangeListerners();
+					updateFormData();
+				}	
 	  		}	
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -459,9 +417,6 @@ public class EntradaCadastroFormController implements Initializable {
 	// msm processo save p/ fechar
 	@FXML
 	public void onBtCancelEntAction(ActionEvent event) {
-		if (tam > 0 && tam < 999999) {
-			compromissoCreate();
-		}	
 		if (flagAvisoII == 1) {
 			Alerts.showAlert("Atenção", "Edite seu Contas a Pagar", "Para conferir: Tipo de Consumo, "
 					+ " data de vencimento e parcela(s)", AlertType.WARNING);
@@ -472,9 +427,6 @@ public class EntradaCadastroFormController implements Initializable {
 
 	@FXML
 	public void onBtSaiEntAction(ActionEvent event) {
-		if (tam > 0 && tam < 999999) {
-			compromissoCreate();
-		}	
 		if (flagAvisoII == 1) {
 			Alerts.showAlert("Atenção", "Verifique Contas a Pagar", "Confera: Tipo de Consumo, "
 					+ " data de vencimento e parcela(s)", AlertType.WARNING);
@@ -482,119 +434,6 @@ public class EntradaCadastroFormController implements Initializable {
 		}
 		Utils.currentStage(event).close();
 	}
-
-	private void compromissoCreate() {
-		classe = "Entrada Form";
-		tam += 1;
-		Integer[] codent = new Integer[tam];
-		Double[] vlrent = new Double[tam];
-		Integer[] codcom = new Integer[tam];
-
-/*
- * cou conferir quais os regs para esse fornecedor e nf guardando o valor para comferir compromisso		
- */
-		for (i = 1 ; i < tam ; i++) {
-			if (codigoFor[i] != null) {
-				List<Entrada> listEntVlr = service.findByForNnf(codigoFor[i], codigoNnf[i]);
-				double vlr = 0.00;
-				for (Entrada e1 : listEntVlr) {
-					if (e1.getNnfEnt().equals(codigoNnf[i])) {
-						if (e1.getForn().getCodigo().equals(codigoFor[i])) {
-							vlr += e1.getQuantidadeMatEnt() * e1.getValorMatEnt();
-							vlrent[i] = vlr;
-							codent[i] = e1.getNumeroEnt();
-						}	
-					}
-				}	
-			}
-/*
- * vou conferir se ja existe o compromisso incluido ou alterado			
- */
-			classe = "Compromisso Ent Form";
-			for (i = 1 ; i < tam ; i++) {
-				if (codigoFor[i] != null || codigoFor[i] > 0) {
-					entCom = comService.findById(codigoFor[i], codigoNnf[i]);
-					if (entCom != null) {
-						if (entCom.getNnfCom().equals(codigoNnf[i]) && entCom.getCodigoFornecedorCom().equals(codigoFor[i])) {
- 						    codcom[i] = 999999999;
-							if (!entCom.getValorCom().equals(vlrent[i])) {								
-/*
- * se o valor não for igual (houve alteração), vou conferir se não há parcela(s) paga(s)
- * se houver, ja setei o codcom com 999999999 (invalido) e mando aviso
- * se não houver, vou pegar o codigo do compromisso 								
- */
-			   					codcom[i] = entCom.getIdCom();						
-			   					flagD = conferePagamento(flagD, entCom);
-								if (flagD > 0 ) {
-									codcom[i] = 999999999;
-									Alerts.showAlert("Atenção!!!   Verifique Contas a Pagar", "Forn.: " + 
-										entCom.getFornecedor().getRazaoSocial() + " " + " - Nnf: " + 
-										entCom.getNnfCom(), "Valor não confere!!! ", AlertType.ERROR);
-				   				} 
-							}
-						} 
-					}	
-				}	
-			} 	
-		}
-
-/*
- * se o nnf for maior que zero, 
- * cria ou atualiza compromisso		
- */
-		if (codigoNnf[1] != null) {
-			for (int ii = 1 ; ii < tam ; ii ++) {
-				if (codcom[ii] == null || codcom[ii] < 999999999) {
-					classe = "Tipo Consumo Ent Form";
-					List<TipoConsumo> listTipo = tipoService.findAll();
-					for (TipoConsumo tc : listTipo) {
-						if (tc.getNomeTipo().equals("Empresa")) {
-							entTip = tipoService.findById(tc.getCodigoTipo());
-						}
-					}	
-					classe = "Periodo Ent Form";
-					entPer = perService.findById(1);
-					classe = "Fornecedor Ent Form";
-					entFor = fornService.findById(codigoFor[ii]);
-					classe = "Entrada Form";
-					Entrada ent = new Entrada();
-					ent = service.findById(codent[ii]);
-					classe = "Compromisso Ent Form";
-					comService.remove(codigoFor[ii], codigoNnf[ii]);
-					parService.removeNnf(codigoNnf[ii], codigoFor[ii]);
-					codcom[ii] = null;
-					Date data1o = ent.getDataEnt();
-					if (tipoEnt == "os") {
-						data1o = data1oOs;
-					}	
-					if (tipoEnt == "bal") {
-						data1o = data1oBal;
-					}	
-					entCom = new Compromisso(codcom[ii], codigoFor[ii], entFor.getRazaoSocial(), codigoNnf[ii], 
-							ent.getDataEnt(), data1o, vlrent[ii], entFor.getParcela(), entFor.getPrazo(), 
-							entFor, entTip, entPer);
-					comService.saveOrUpdate(entCom);
-					CalculaParcela.parcelaCreate(entCom);
-					flagAvisoII = 1;
-				}
-			}
-		}	
-	}
-	
-	private int conferePagamento(int flagD, Compromisso obj) {
-	flagD = 0;
-		List<Parcela> list = parService.findByIdFornecedorNnf(obj.getCodigoFornecedorCom(), obj.getNnfCom());
-		List<Parcela> st = list.stream()
-			.filter(p -> p.getNnfPar() == (obj.getNnfCom()))
-			.filter(p -> p.getFornecedor().getCodigo() == (obj.getCodigoFornecedorCom()))  
-			.filter(p -> p.getPagoPar() > 0)
-			.collect(Collectors.toList());	
-		if (st.size() > 0) {
-			Alerts.showAlert("Erro!!! ", "Parcela paga ", "Existe(m) parcela(s) paga(s) para o Compromisso!!!", AlertType.ERROR);
-			flagD = 1;
-		}	
-		return flagD;
-	}		
 
 	/*
 	 * o contrainsts (confere)	 impede alfa em cpo numerico e delimita tamanho
@@ -698,6 +537,8 @@ public class EntradaCadastroFormController implements Initializable {
 		totM = Mascaras.formataValor(totAnt);
 		labelTotVlrMatEnt.setText(totM);
 		labelTotVlrMatEnt.viewOrderProperty();
+		labelErrorVlrMatEnt.setText("");
+		labelErrorVlrMatEnt.viewOrderProperty();
 		textIniciaisForn.setText(pesquisaForn);
 		textIniciaisMat.setText(pesquisaMat);
 	}
@@ -729,17 +570,6 @@ public class EntradaCadastroFormController implements Initializable {
 		labelErrorDataEnt.setText((fields.contains("data") ? erros.get("data") : ""));
 		labelErrorQtdMatEnt.setText((fields.contains("qtd") ? erros.get("qtd") : ""));
 		labelErrorVlrMatEnt.setText((fields.contains("vlr") ? erros.get("vlr") : ""));
-		labelErrorVlrMatEnt.setText((fields.contains("confirma") ? erros.get("confirma") : ""));
-		if (fields.contains("confirma")) {
-			Alerts.showAlert("Fechamento", null, "Conferindo total", AlertType.INFORMATION);
-				try {	totM = Mascaras.formataValor(tot);
-						labelTotVlrMatEnt.setText(totM);
-						labelTotVlrMatEnt.viewOrderProperty();
-					}
-				 	catch (ParseException e) {
-				 		e.printStackTrace();
-				 	}
-		}
 	}
 	
 	private synchronized void createDialogForn(Fornecedor obj, String absoluteName, Stage parentStage) {

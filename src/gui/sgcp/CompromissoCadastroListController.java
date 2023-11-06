@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import application.MainSgo;
+import db.DbException;
 import db.DbIntegrityException;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.entities.Compromisso;
@@ -297,8 +298,11 @@ public class CompromissoCadastroListController implements Initializable, DataCha
 	   							updateTableView();
 	   						}	
 						}
+	   					catch (DbException e) {
+	   						Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+	   					}
 	   					catch (DbIntegrityException e) {
-	   						Alerts.showAlert("Erro removendo objeto compromisso ", null, e.getMessage(), AlertType.ERROR);
+	   						Alerts.showAlert("Erro removendo objeto compromisso ", classe, e.getMessage(), AlertType.ERROR);
 	   					}	
 					}
 				}

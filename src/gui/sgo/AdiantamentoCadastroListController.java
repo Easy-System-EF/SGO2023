@@ -3,8 +3,8 @@ package gui.sgo;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +28,7 @@ import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.util.Alerts;
+import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -170,16 +171,11 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
 			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
- 	 	Date dataHoje = new Date();
- 		Calendar cal = Calendar.getInstance();
- 		cal.setTime(dataHoje);
- 		int mesHj = cal.get(Calendar.MONTH);
- 		if (mesHj == 0) {
- 			mesHj = 12;
- 		}
- 		int anoHj = cal.get(Calendar.YEAR);
+ 		LocalDate dth = DataStatic.criaLocalAtual();
+ 		int mm = DataStatic.mesDaData(dth);
+ 		int aa = DataStatic.anoDaData(dth);
  		List<Adiantamento> list = new ArrayList<>();
-		list = service.findMesTipo(mesHj, anoHj, tipo);
+		list = service.findMesTipo(mm, aa, tipo);
   		obsList = FXCollections.observableArrayList(list);
   		tableViewAdiantamento.setItems(obsList);
 		initRemoveButtons();

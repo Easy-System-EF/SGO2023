@@ -166,6 +166,7 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 	public void onBtPesqMatAction(ActionEvent event) {
 		classe = "Material Ent Form";
 		try {
+			pesquisa = "";
 	  		pesquisa = textPesquisa.getText().toUpperCase().trim();
 	  		if (pesquisa != "") {
 	  			List<Material> listMat = matService.findPesquisa(pesquisa);
@@ -178,11 +179,12 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		 		  	}
 					listMat = matService.findPesquisa(pesquisa);
 			 	}
-				pesquisa = "";
-	  			obsListMat = FXCollections.observableArrayList(listMat);
-	  			comboBoxMatVir.setItems(obsListMat);
-	  			notifyDataChangeListerners();
-	  			updateFormData();
+				if(listMat.size() > 0) {
+					obsListMat = FXCollections.observableArrayList(listMat);
+					comboBoxMatVir.setItems(obsListMat);
+					notifyDataChangeListerners();
+					updateFormData();
+				}	
 	  		}	
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -224,9 +226,6 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 			classe = "OrcVirtual Form ";
 			service.saveOrUpdate(entity);
 			entity = new OrcVirtual();
-			labelPrecoMatVir.setText("0,00");
-			labelTotalMatVir.setText("0,00");
-			pesquisa = "";
 			notifyDataChangeListerners();
 			updateFormData();
 
@@ -405,6 +404,8 @@ public class OrcVirtualCadastroFormController implements Initializable, DataChan
 		String vlr2 = Mascaras.formataValor(totAnt);
 		labelTotalMatVir.setText(vlr2);
 		labelTotalMatVir.viewOrderProperty();
+		labelErrorTotalMatVir.setText("");
+		labelErrorTotalMatVir.viewOrderProperty();
 		textPesquisa.setText(pesquisa);		
 	}
 

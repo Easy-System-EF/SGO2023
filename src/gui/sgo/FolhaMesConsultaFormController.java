@@ -184,15 +184,12 @@ public class FolhaMesConsultaFormController implements Initializable {
 			classe = "Funcionario Dados 1 ";
  			Funcionario funcionario = new Funcionario();
  			List<Funcionario> fun = funService.findAll(ano, mes);
- 			fun.add(funcionario);
- 			for (Funcionario f : fun) {
- 				if (f.getCodigoFun() != null) {
- 					funcionario = funService.findById(f.getCodigoFun());
- 					funcionario.setComissaoFun(0.00);
- 					funcionario.setAdiantamentoFun(0.00);
- 					funService.saveOrUpdate(funcionario);
- 				}	
- 			}
+ 			
+			fun.forEach(f -> {
+				f.setComissaoFun(0.0);
+				f.setAdiantamentoFun(0.0);
+				funService.saveOrUpdate(f);
+			}); 			
  			
  			classe = "Adiantamento Dados 1";
  			List<Adiantamento> adianto = adService.findMes(mes, ano);

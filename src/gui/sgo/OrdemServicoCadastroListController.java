@@ -200,7 +200,10 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		cal.setTime(dataHj);
 		int mm = cal.get(Calendar.MONTH) + 1;
 		int aa = cal.get(Calendar.YEAR) - 1;
-		mm = 1;
+		if (mm > 1) {
+			mm -= 1;
+		}
+//		mm = 1;
  		List<OrdemServico> list = service.findByMesAnoList(mm, aa);
   		obsList = FXCollections.observableArrayList(list);
   		tableViewOrdemServico.setItems(obsList);

@@ -59,6 +59,8 @@ public class CompromissoCadastroFormController implements Initializable {
  //	carrega os dados do formulario	
 	private Compromisso entity;
 	private Compromisso entOld;
+	@SuppressWarnings("unused")
+	private Fornecedor forn;
 	
  //	carrega dados do banco na cri��o do formulario - inje��o de dependencia
 	private CompromissoService service;
@@ -242,11 +244,12 @@ public class CompromissoCadastroFormController implements Initializable {
 		 		  	}
 					listFor = fornecedorService.findPesquisa(pesquisa);
 			 	}
-				pesquisa = "";
-	  			obsList = FXCollections.observableArrayList(listFor);
-	  			comboBoxFornecedor.setItems(obsList);
-	  			notifyDataChangeListeners();
-	  			updateFormData();
+				if(listFor.size() > 0) {
+					obsList = FXCollections.observableArrayList(listFor);
+					comboBoxFornecedor.setItems(obsList);
+					notifyDataChangeListeners();
+					updateFormData();
+				}	
 	  		}	
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -351,6 +354,9 @@ public class CompromissoCadastroFormController implements Initializable {
   			}
   		}
   		
+  		if (obj.getPrazoCom() == 1)
+  		
+ 		forn = comboBoxFornecedor.getValue();
  		obj.setFornecedor(comboBoxFornecedor.getValue());
  		obj.setCodigoFornecedorCom(comboBoxFornecedor.getValue().getCodigo());
  		obj.setNomeFornecedorCom((comboBoxFornecedor.getValue().getRazaoSocial()));
@@ -369,6 +375,13 @@ public class CompromissoCadastroFormController implements Initializable {
  		}
  		
 		obj.setTipoConsumo(comboBoxTipoConsumo.getValue());
+		
+		if (obj.getPrazoCom() == 1 && obj.getParcelaCom() == 1) {
+			obj.setSituacaoCom(1);
+		} else {
+			obj.setSituacaoCom(0);
+		}
+		
   		if (exception.getErros().size() > 0) {
 			throw exception;
 		}

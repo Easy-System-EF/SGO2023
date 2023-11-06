@@ -167,7 +167,7 @@ public class ReceberRelatorioPagoController implements Initializable, DataChange
   				(ReceberRelatorioImprimePagoController contI) -> {
   			  		contI.setReceber(obj);
   			  		contI.setServices(new ReceberService(), new EmpresaService());
-  			  		contI.setCli(codCli);
+//  			  		contI.setCli(codCli);
   			  		contI.setOpcao(opcao);	
   			  		contI.numEmp = numEmp;
   		});

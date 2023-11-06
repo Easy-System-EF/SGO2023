@@ -93,6 +93,7 @@ public class RecClienteFormController implements Initializable {
 	@FXML
 	public void onBtPesquisaAction(ActionEvent event) {
 		try {
+			pesquisa = "";
 		    pesquisa = textPesquisa.getText().toUpperCase().trim();
 		    List<Cliente> list = service.findPesquisa(pesquisa);
 			if (list.size() == 0) { 
@@ -100,7 +101,6 @@ public class RecClienteFormController implements Initializable {
 				codigo = null;
 				list = service.findAll();
 		 	}
-			pesquisa = "";
 	 		obsList = FXCollections.observableArrayList(list);
 			comboBoxCliente.setItems(obsList);
 			comboBoxCliente.getSelectionModel().selectFirst();

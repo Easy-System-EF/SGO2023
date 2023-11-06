@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.MainSgo;
+import db.DbException;
 import db.DbIntegrityException;
 import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.Material;
@@ -251,6 +252,9 @@ public class MaterialCadastroListController implements Initializable, DataChange
 					service.remove(obj.getCodigoMat());
 					updateTableView();
 				}	
+				catch (DbException e) {
+					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
+				}
 				catch (DbIntegrityException e) {
 					Alerts.showAlert("Erro removendo objeto", classe, e.getMessage(), AlertType.ERROR);
 				}	

@@ -147,7 +147,7 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 								  String.format("%17s%s", "Km..: ", orcamento.getKmFinalOrc());
 						linha04 = String.format("Cliente..: %s", orcamento.getClienteOrc());
 						linha05 = String.format("Atendente: %s", orcamento.getFuncionarioOrc());
- 					 	linha06 = String.format("                             Material");
+ 					 	linha06 = String.format("                             Material"); 
 					 	linha07 = "*****************************************************************"; 
 					 	linha08 = "Nome                                 Qtd        Preço       Valor";					 			
 
@@ -191,16 +191,14 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 							bwO.write(linha09); 
 						 	bwO.newLine();
  						}
-						String sub = FormataGabarito.formataStringQualquer(61, 10);
-						String desc = FormataGabarito.formataStringQualquer(61, 10);
-						String tot = FormataGabarito.formataStringQualquer(61, 10);
+						
 						if (orcamento.getDescontoOrc() > 0) {
 							descontoOrc = orcamento.getDescontoOrc();
 							subTotalOrc = totalOrc;
-							linha10 = String.format("%s%s%s", "SubTotal", sub, df.format(subTotalOrc));
-							linha11 = String.format("%s%s%s", "Desconto", desc, df.format(descontoOrc));
-							totalOrc -= descontoOrc;
-							linha12 = String.format("%s%s%s", "Total   ", tot, df.format(totalOrc));
+							linha10 = String.format("%s%57s", "SubTotal", df.format(subTotalOrc));
+							linha11 = String.format("%s%57s", "Desconto", df.format(descontoOrc)); 
+							totalOrc -= descontoOrc;							
+							linha12 = String.format("%s%60s", "Total", df.format(totalOrc));
 							bwO.write(linha10);
 							bwO.newLine();
 							bwO.write(linha11);
@@ -208,8 +206,8 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 							bwO.write(linha12);
 							bwO.newLine();
 						} else {
-							linha10 = String.format("%s%s%s", "Total   ", tot, df.format(totalOrc));
-							bwO.write(linha10);
+							linha12 = String.format("%s%60s", "Total", df.format(totalOrc));
+							bwO.write(linha12);
 							bwO.newLine();
 						}
  					}

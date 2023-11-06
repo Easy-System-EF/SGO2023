@@ -140,7 +140,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
  						linha01 = "                             Balcão";
 						linha02 = String.format("Número...: %6d", balcao.getNumeroBal()) +
 						          String.format("%18s%s", "Data: ", sdf.format(balcao.getDataBal()));
- 					 	linha03 = String.format("                             Material");
+ 					 	linha03 = String.format("                             Material"); 
 					 	linha04 = "*****************************************************************"; 
 					 	linha05 = "Nome                                 Qtd        Preço       Valor";					 			
 
@@ -163,7 +163,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 							
 						listVir = virService.findAll();
 						for (OrcVirtual v : listVir) {
-							if (v.getNumeroBalVir() == numBal) {
+							if (v.getNumeroBalVir().equals(numBal)) {
 								if (v.getMaterial().getNomeMat().length() > 35) {
 									nomeMat = v.getMaterial().getNomeMat().substring(0, 35);
 								} else {
@@ -185,7 +185,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 							linha07 = String.format("%s%57s", "SubTotal", df.format(subTotalBal));
 							linha08 = String.format("%s%57s", "Desconto", df.format(descontoBal));
 							totalBal -= descontoBal;
-							linha09 = String.format("%s%57s", "Total   ", df.format(totalBal));
+							linha09 = String.format("%s%60s", "Total", df.format(totalBal));
 							bwO.write(linha07);
 							bwO.newLine();
 							bwO.write(linha08);
@@ -193,7 +193,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 							bwO.write(linha09);
 							bwO.newLine();
 						} else {
-							linha07 = String.format("%s%57s", "Total   ", df.format(totalBal));
+							linha07 = String.format("%s%60s", "Total", df.format(totalBal));
 							bwO.write(linha07);
 							bwO.newLine();
 						}

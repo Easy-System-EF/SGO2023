@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import gui.listerneres.DataChangeListener;
-import gui.sgcpmodel.entities.Parcela;
 import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
@@ -316,15 +315,6 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			
  			Double sumAberto = parService.findSumAberto(dataInicialRecAberto, dataFinalRecAberto);
  			Double sumPago = parService.findSumPago(dataInicialDespPago, dataFinalDespPago);
- 			List<Parcela> listPara = parService.findAllAberto();
- 			for (Parcela pa : listPara) {
- 				sumAberto += pa.getTotalPar();
- 			}
- 			List<Parcela> listParp = parService.findAllPago();
- 			for (Parcela p : listParp) {
- 				sumPago += p.getTotalPar();
- 			}
- 			
  			Double sumFolha = 0.00;
  			
 // som salarios		

@@ -166,6 +166,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 	@FXML
 	public void onBtPesquisaAction(ActionEvent event) {
 		classe = "Adiantamento Adi Form";
+		pesquisa = "";
 		try {
 			pesquisa = textIniciais.getText().toUpperCase().trim();
 			if (pesquisa != "") {
@@ -181,11 +182,12 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 					listFun = funService.findPesquisa(pesquisa, cal.get(Calendar.YEAR), (data.getMonth() + 1));
 					listFun.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
 				}
-				pesquisa = "";
-				obsListFun = FXCollections.observableArrayList(listFun);
-				comboBoxFun.setItems(obsListFun);
-				notifyDataChangeListerners();
-				updateFormData();
+				if(listFun.size() > 0) {
+					obsListFun = FXCollections.observableArrayList(listFun);
+					comboBoxFun.setItems(obsListFun);
+					notifyDataChangeListerners();
+					updateFormData();
+				}	
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -279,6 +281,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		entCom.setFornecedor(entFor);
 		entCom.setTipoConsumo(entTip);
 		entCom.setParPeriodo(entPer);
+		entCom.setSituacaoCom(1);
 		comService.saveOrUpdate(entCom);
 		CalculaParcela.parcelaCreate(entCom);
 	}

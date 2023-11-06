@@ -25,11 +25,8 @@ import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.entities.Parcela;
 import gui.sgcpmodel.entities.TipoConsumo;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
-import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
-import gui.sgcpmodel.services.ParcelaService;
-import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.dao.BalcaoCommitDao;
 import gui.sgomodel.dao.DaoFactory;
 import gui.sgomodel.entities.Adiantamento;
@@ -775,10 +772,8 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 			controller.tipoEnt = tipoEnt;
  // injetando passando parametro obj
 			controller.setPesquisa(mat2.getNomeMat());
-			controller.setObjects(obj, mat, objCom, objPer, objPar, objFor, objTipo);
-			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService(), 
-					new CompromissoService(), new TipoConsumoService(), new ParPeriodoService(),
-					new ParcelaService());
+			controller.setObjects(obj, mat);
+			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService());
  // injetando tb o forn service vindo da tela de formulario fornform
 			controller.loadAssociatedObjects();
 // inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...

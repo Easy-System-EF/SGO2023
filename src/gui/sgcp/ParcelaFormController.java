@@ -16,7 +16,9 @@ import java.util.Set;
 
 import db.DbException;
 import gui.listerneres.DataChangeListener;
+import gui.sgcpmodel.entities.Compromisso;
 import gui.sgcpmodel.entities.Parcela;
+import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.util.Alerts;
 import gui.util.Constraints;
@@ -98,9 +100,11 @@ public class ParcelaFormController implements Initializable {
   
 //	carrega os dados do formulario	
 	private Parcela entity;
+	private Compromisso com;
 		
 //	carrega dados do banco na cri��o do formulario - inje��o de dependencia
  	private ParcelaService parService;
+ 	private CompromissoService comService;
 	
 	  
 	public void setParcela(Parcela entity) {
@@ -108,8 +112,9 @@ public class ParcelaFormController implements Initializable {
 	}
   	
 //	busca os dados no bco de dados	
-	public void setParcelaService (ParcelaService parService) {
+	public void setServices (ParcelaService parService, CompromissoService comService) {
  		this.parService = parService;
+ 		this.comService = comService;
  	}
 
 //	armazena dados a serem atz no bco de dados	
@@ -125,19 +130,22 @@ public class ParcelaFormController implements Initializable {
  		if (parService == null) {
 			throw new IllegalStateException("Serviço esta nulo");
  		} 
-		if (entity.getPagoPar() > 0) {
-			Alerts.showAlert("Aviso ", "Parcela quitada ", "sem acesso ", AlertType.INFORMATION);
-		} else { 		
-			try { entity = getFormData();
-  				parService.saveUpdate(entity);
- 				notifyDataChangeListeners();
- 				updateFormData();
-				Utils.currentStage(event).close();
-			} catch (ValidationException e) {
-				setErrorMessages(e.getErros());
-			} catch (DbException e) {
-				Alerts.showAlert("Erro salvando objeto ", classe , e.getMessage(), AlertType.ERROR);
-			}
+//		if (entity.getPagoPar() > 0) {
+//			Alerts.showAlert("Aviso ", "Parcela quitada ", "sem acesso ", AlertType.INFORMATION);
+		try { entity = getFormData();
+  			parService.saveUpdate(entity);
+  			com = comService.findById(entity.getCodigoFornecedorPar(), entity.getNnfPar());
+  			if (com.getParcelaCom().equals(entity.getNumeroPar())) {
+  				com.setSituacaoCom(1);
+  				comService.saveOrUpdate(com); 				
+  			}
+ 			notifyDataChangeListeners();
+ 			updateFormData();
+			Utils.currentStage(event).close();
+		} catch (ValidationException e) {
+			setErrorMessages(e.getErros());
+		} catch (DbException e) {
+			Alerts.showAlert("Erro salvando objeto ", classe , e.getMessage(), AlertType.ERROR);
 		}	
  	}
 
@@ -266,11 +274,12 @@ public class ParcelaFormController implements Initializable {
 		}
 	
 		if (entity.getTotalPar() != null) {
-			vlr = entity.getTotalPar();
+			vlr = entity.getValorPar() + entity.getJurosPar() - entity.getDescontoPar();
 			vlrM = Mascaras.formataValor(vlr); 
 			labelTotalPar.setText(vlrM);
 		}
  
+		entity.setPagoPar(entity.getTotalPar());
 		if (entity.getPagoPar() != null) {
 			textPagoPar.setText(String.format("%.2f", entity.getPagoPar()));
 		}

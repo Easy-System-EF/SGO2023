@@ -161,6 +161,37 @@ public class Datas {
 //			System.out.println(fol);
 //		}
 
+//		CompromissoService comService = new CompromissoService();
+//		Compromisso com = new Compromisso();
+//		ParcelaService parService = new ParcelaService();
+//
+//		int count = 0;
+//		List<Parcela> list = parService.findAllPago();
+//		for (Parcela p : list) {
+//System.out.println("p " + p.getIdPar() + " " + p.getCodigoFornecedorPar() + " " + p.getNnfPar() + " " + p.getNumeroPar());			
+//			com = comService.findById(p.getCodigoFornecedorPar(), p.getNnfPar());
+//System.out.println("com " + com.getIdCom() + " " + com.getCodigoFornecedorCom() + " " + com.getNnfCom() + " " + com.getParcelaCom());
+//			if (com.getIdCom() != null) {
+//				if (com.getParcelaCom().equals(p.getNumeroPar())) {
+//					com.setSituacaoCom(1);
+//					comService.saveOrUpdate(com);
+//					count += 1;
+//				}	
+//			}
+//		}
+//		System.out.println(count);
+//		
+//
+	 	int tam = 2;
+	 	Integer codigoFor[] = new Integer[tam];
+	 	for (int i = 0; i < tam ; i++) {
+	 		codigoFor[i] = i;
+System.out.println(codigoFor[i]);
+		if (codigoFor[i] != 0) {
+			codigoFor[i] = 23;
+System.out.println(codigoFor[i]);			
+		}
+	 	}	
 		
 	}
 }

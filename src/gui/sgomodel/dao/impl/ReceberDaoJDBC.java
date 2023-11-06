@@ -238,8 +238,12 @@ public class ReceberDaoJDBC implements ReceberDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement("SELECT *, parPeriodo.* " + "FROM receber " + "INNER JOIN parPeriodo "
-					+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + "WHERE ValorPagoRec = 0.00 "
+			st = conn.prepareStatement(
+					"SELECT *, parPeriodo.* " + 
+						"FROM receber " + 
+							"INNER JOIN parPeriodo "
+								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + 
+							"WHERE ValorPagoRec = 0.00 "
 					+ "ORDER BY DataVencimentoRec ");
 
 			rs = st.executeQuery();

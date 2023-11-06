@@ -273,11 +273,12 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 					}
 					listCli = cliService.findPesquisa(pesquisa);
 			 	}
-				pesquisa = "";
-	  			obsListCli = FXCollections.observableArrayList(listCli);
-	  			comboBoxCliente.setItems(obsListCli);
-	  			notifyDataChangeListerners();
-	  			updateFormData();
+				if(listCli.size() > 0) {
+					obsListCli = FXCollections.observableArrayList(listCli);
+					comboBoxCliente.setItems(obsListCli);
+					notifyDataChangeListerners();
+					updateFormData();
+				}	
 	  		}	
 		} catch (ParseException e) {
 			e.printStackTrace();

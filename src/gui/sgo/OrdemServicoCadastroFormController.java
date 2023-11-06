@@ -24,11 +24,8 @@ import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.entities.Parcela;
 import gui.sgcpmodel.entities.TipoConsumo;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
-import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
-import gui.sgcpmodel.services.ParcelaService;
-import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.dao.DaoFactory;
 import gui.sgomodel.dao.OSCommitDao;
 import gui.sgomodel.entities.Adiantamento;
@@ -204,6 +201,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	Double servico = 0.00;
 	Date data1oOs = null;
 	String tipoEnt = null;
+	String grava = null;
 	int ultimaNF = 0;
 	int flagAlert = 0;
 	Calendar cal = Calendar.getInstance();
@@ -291,7 +289,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	 */
 	@FXML
 	public void onBtSaveOSAction(ActionEvent event) {
-		ValidationException exception1 = new ValidationException("Validation exception1");
 		if (entity == null) {
 			throw new IllegalStateException("Entidade OS nula");
 		}
@@ -304,18 +301,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			}
 			entity = getFormData();
 			confereSaldo(event);
-			if (flagg == 0) {
-				flagg = 2;
-			}
-			if (flagg == 2) {
-				if (flagAlert == 0) {
-					flagAlert = 1;
-					Alerts.showAlert(null, "processamento longo", "aguarde", AlertType.WARNING);
-					exception1.addErros("nf", "processamento longo - Ok ");
-					if (exception1.getErros().size() > 0) {
-						throw exception1;
-					}	
-				}
+			if (grava == "sim") {
 				classe = "OS Form Material ";
 				updateMaterialOS();
 				classe = "Ordem de Serviço Form ";
@@ -335,12 +321,12 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				classe = "OS Commit ";
 				OSCommitDao osCommit = DaoFactory.createOSCommitDao();
 				osCommit.gravaOS(entity, orcamento, periodo, nota, veiculo, adiantamento, listMatCommit);
-			}
+			}	
+			labelErrorNnfOS.setText("");
+			labelErrorNnfOS.viewOrderProperty();
 			notifyDataChangeListerners();
 			updateFormData();
-			if (flagg == 2) {
-				Utils.currentStage(event).close();
-			}	
+			Utils.currentStage(event).close();
 		} catch (ValidationException e) {
 			setErrorMessages(e.getErros());
 		} catch (DbException e) {
@@ -376,9 +362,9 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 					}	
 					matService.saveOrUpdate(mat1);
 					if(v.getQuantidadeMatVir() > mat1.getSaldoMat()) {
-						flagg = 1;
+						grava = "nao";
 						somaSaldo(event, v.getQuantidadeMatVir(), mat1.getCodigoMat());
-						if (flagg == 2) {
+						if (grava == "sim") {
 							mat1 = matService.findById(v.getMaterial().getCodigoMat());
 							v.setMaterial(mat1);
 							v.setCustoMatVir(mat1.getPrecoMat());
@@ -413,7 +399,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 							"/gui/sgo/EntradaCadastroForm.fxml", parentStage);
 			mat2 = matService.findById(cod);
 			if (qtd <= mat2.getSaldoMat()) {
-				flagg = 2;
+				grava = "sim";
 			}
 			notifyDataChangeListerners();
 			try {
@@ -429,7 +415,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			ValidationException exception = new ValidationException("Validation exception");
 			Material mat3 = new Material();
 			classe = "OS Form virtual ";
-			if (flagg == 2) {
+			if (grava == "sim") {
 				List<OrcVirtual> listVir = virService.findByOrcto(entity.getOrcamentoOS());
 				for (OrcVirtual ov : listVir) {
 					if (ov.getNumeroOrcVir().equals(entity.getOrcamentoOS())) {
@@ -540,7 +526,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		adiantamento.setSituacaoFun(fun.getSituacao().getNomeSit());
 		adiantamento.setSalarioFun(fun.getCargo().getSalarioCargo());
 		adiantamento.setComissaoFun(0.00);
-				
+		
 		adiantamento.setNumeroAdi(null);
 		adiantamento.setDataAdi(new Date());
 		adiantamento.percComissao = fun.getCargo().getComissaoCargo();
@@ -727,6 +713,13 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		cal.setTime(obj.getDataOS());
 		obj.setMesOs(cal.get(Calendar.MONTH) + 1);
 		obj.setAnoOs(cal.get(Calendar.YEAR));
+
+		if (flagg == 0) {
+			flagg = 1;
+			exception.addErros("nf", "processamento longo - Ok ");
+		}	
+		
+		
 		// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
@@ -908,10 +901,8 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
  // injetando passando parametro obj
 			
 			controller.setPesquisa(mat.getNomeMat());
-			controller.setObjects(obj, mat, objCom, objPer, objPar, objFor, objTipo);
-			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService(), 
-					new CompromissoService(), new TipoConsumoService(), new ParPeriodoService(),
-					new ParcelaService());
+			controller.setObjects(obj, mat);
+			controller.setServices(new EntradaService(), new FornecedorService(), new MaterialService());
  // injetando tb o forn service vindo da tela de formulario fornform
 			controller.loadAssociatedObjects();
 // inscrevendo p/ qdo o evento (esse) for disparado executa o metodo -> onDataChangeList...

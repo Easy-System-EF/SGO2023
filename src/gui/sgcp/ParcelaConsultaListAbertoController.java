@@ -17,6 +17,7 @@ import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.entities.Parcela;
 import gui.sgcpmodel.entities.TipoConsumo;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
+import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
@@ -129,10 +130,6 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
   		this.parService = parService;
   		this.perService = perService;
  	}
-
-	public void setParcelaService(ParcelaService parService) {
-		this.parService = parService;
-	}
 
 	public void setFornecedor(Fornecedor fornecedor) {
 		this.fornecedor = fornecedor;
@@ -273,7 +270,7 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
 			perService.update(per);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			Alerts.showAlert("ParseException ", "Erro Data ", e.getMessage(), AlertType.ERROR);
+			Alerts.showAlert("ParseException ", "Por periodo - Erro Data ", e.getMessage(), AlertType.ERROR);
 		}
 	}
 
@@ -383,7 +380,7 @@ public class ParcelaConsultaListAbertoController implements Initializable, DataC
 			ParcelaFormController controller = loader.getController();
 // injetando passando parametro obj 			
 			controller.setParcela(obj);
-			controller.setParcelaService(new ParcelaService());
+			controller.setServices(new ParcelaService(), new CompromissoService());
 
 // injetando tb o forn service vindo da tela de formulario fornform
 			controller.loadAssociatedObjects();

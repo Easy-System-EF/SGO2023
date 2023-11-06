@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.MainSgo;
@@ -25,17 +26,14 @@ import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.entities.Adiantamento;
-import gui.sgomodel.entities.Anos;
 import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.Cargo;
 import gui.sgomodel.entities.Cliente;
-import gui.sgomodel.entities.Empresa;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Grupo;
 import gui.sgomodel.entities.Login;
 import gui.sgomodel.entities.Material;
-import gui.sgomodel.entities.Meses;
 import gui.sgomodel.entities.NotaFiscal;
 import gui.sgomodel.entities.OrcVirtual;
 import gui.sgomodel.entities.Orcamento;
@@ -45,17 +43,14 @@ import gui.sgomodel.entities.ReposicaoVeiculo;
 import gui.sgomodel.entities.Situacao;
 import gui.sgomodel.entities.Veiculo;
 import gui.sgomodel.services.AdiantamentoService;
-import gui.sgomodel.services.AnosService;
 import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.CargoService;
 import gui.sgomodel.services.ClienteService;
-import gui.sgomodel.services.EmpresaService;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.GrupoService;
 import gui.sgomodel.services.LoginService;
 import gui.sgomodel.services.MaterialService;
-import gui.sgomodel.services.MesesService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrcamentoService;
@@ -77,6 +72,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -120,7 +116,6 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 
  	private ObservableList<Copia> obsList;
 
-	int count = 0;
 	String arq = "";
 	String crip = "";
 	Date dataI = new Date(System.currentTimeMillis());
@@ -132,6 +127,8 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	public static String file = "";
 	public static String unid = null;
 	public static String path = null;
+	String status = "";
+	int count = 0;
  	public String user = "usuário";			
  	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
  	SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -152,28 +149,31 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 
  	@FXML
   	public void onBtOkAdiAction(ActionEvent event) throws ParseException {
- 		 Stage parentStage = Utils.currentStage(event);
+		Optional<ButtonType> result = Alerts.showConfirmation("Processo lento", "Confirma?");
+		if (result.get() == ButtonType.OK) {
+			status = "<<<aguarde>>>";
+			count = 0;
+			updateTableView();
+			Stage parentStage = Utils.currentStage(event);
 // instanciando novo obj depto e injetando via
- 		 createDialogForm("/gui/copia/CopiaForm.fxml", parentStage);
- 		 updateTableView();
- 		 executaBack();
+			createDialogForm("/gui/copia/CopiaForm.fxml", parentStage);
+			updateTableView();
+			executaBack();
+		}	
    	}
  	
- 	public void executaBack() throws ParseException {
+	public void executaBack() throws ParseException {
  		if (unid != null) {
  			count = 0;
  			adiantamento();
- 			anos();
  			balcao();
  			cargo();
  			cliente();
- 			empresa();
  			entrada();
  			funcionario();
  			grupo();
  			login();
  			material();
- 			meses();
  			notaFiscal();
  			virtual();
  			orcamento();
@@ -189,7 +189,8 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
  			tipo();
 			limpaBackUp();
 			gravaBackUp();
- 	 		labelFile.setText("Kbou!!!");
+			status = "             Kbou!!!";
+ 	 		labelFile.setText(status);
  	 		labelFile.viewOrderProperty();
  	 		labelCount.viewOrderProperty();
  		}	
@@ -224,7 +225,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 					}
 				}
 				String data = sdfAno.format(a.getDataAdi());
-				arq = (a.getNumeroAdi() + " , " + data + " , " + a.getValeAdi() + " , " +  
+				arq = (" ADIANTAMENTO " + a.getNumeroAdi() + " , " + data + " , " + a.getValeAdi() + " , " +  
 						a.getMesAdi() + " , " + a.getAnoAdi() + " , " + a.getValorAdi() + " , " + a.getOsAdi() + " , " + 
 						a.getBalcaoAdi() + " , " +  a.getComissaoAdi() + " , " + a.getTipoAdi() + " , " + a.getSalarioAdi()
 						+ " , " + a.getCodigoFun() + " , " + a.getNomeFun() + " , " + a.getMesFun() + " , " + a.getAnoFun()
@@ -245,32 +246,6 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		}
 	}
 	
-	public void anos() {
-		file = "Anos";
-		path = unid + meioSgo + file + ext;
-		AnosService anoService = new AnosService();
-		arq = "";
-		crip = "";
-		List<Anos> listA = anoService.findAllId();
-		try {BufferedWriter bwAno = new BufferedWriter(new FileWriter(path));
-			for(Anos a: listA) {
-				count += 1;
-				arq = (a.getNumeroAnos() + " , " + a.getAnoAnos() + " , " + a.getAnoAnos());
-				crip = Cryptograf.criptografa(arq);
-				bwAno.write(crip);
-				bwAno.newLine();
-			}
-			bwAno.close();
-		}
-		catch(	IOException e2) {
-			e2.getMessage();	 			
-		}
-		finally {					
-			labelCount.setText(String.valueOf(count));
-			labelCount.viewOrderProperty();
-		}
-	}
-
 	public void balcao() {
 		file = "Balcao";
 		path = unid + meioSgo + file + ext;
@@ -283,7 +258,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dataBal = sdfAno.format(b.getDataBal());
 				String dataPri = sdfAno.format(b.getDataPrimeiroPagamentoBal());
-				arq = (b.getNumeroBal() + " , " + dataBal + " , " + b.getFuncionarioBal() + " , " + b.getDescontoBal() 
+				arq = (" BALCAO " + b.getNumeroBal() + " , " + dataBal + " , " + b.getFuncionarioBal() + " , " + b.getDescontoBal() 
 				+ " , " + b.getTotalBal() + " , " + b.getPagamentoBal() + " , " + dataPri + " , " + 
 						b.getNnfBal() + " , " + b.getObservacaoBal() + " , " + b.getMesBal() + " , " + b.getAnoBal() + " , " + 
 				 b.getFuncionario().getCodigoFun());
@@ -312,7 +287,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Cargo c: listC) {
 				count += 1;
-				arq = (c.getCodigoCargo() + " , " + c.getNomeCargo() + " , " + c.getSalarioCargo() + " , " + c.getComissaoCargo());
+				arq = (" CARGO " + c.getCodigoCargo() + " , " + c.getNomeCargo() + " , " + c.getSalarioCargo() + " , " + c.getComissaoCargo());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -338,40 +313,12 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Cliente c: listC) {
 				count += 1;
-				arq = (c.getCodigoCli() + " , " + c.getNomeCli() + " , " + c.getRuaCli() + " , " + c.getNumeroCli() + " , " + 
+				arq = (" CLIENTE " + c.getCodigoCli() + " , " + c.getNomeCli() + " , " + c.getRuaCli() + " , " + c.getNumeroCli() + " , " + 
 						c.getComplementoCli() + " , " + c.getBairroCli() + " , " + c.getCidadeCli() + " , " + c.getUfCli()
 						 + " , " + c.getCepCli() + " , " + c.getDdd01Cli() + " , " + c.getTelefone01Cli() + " , " + 
 						c.getDdd02Cli() + " , " + c.getTelefone02Cli() + " , " + c.getEmailCli() + " , " + c.getPessoaCli()
 						 + " , " + c.getCpfCli() + " , " + c.getCnpjCli() + " , " + c.getValorClass() + " , " + 
 						c.getPercentualClass() + " , " + c.getLetraClass() + " , " + c.getVisitaClass());
-				crip = Cryptograf.criptografa(arq);
-				bwC.write(crip);
-				bwC.newLine();
-			}
-			bwC.close();
-		}
-		catch(	IOException e2) {
-			e2.getMessage();	 			
-		}
-		finally {					
-			labelCount.setText(String.valueOf(count));
-			labelCount.viewOrderProperty();
-		}
-	}
-	
-	public void empresa() {
-		file = "Empresa";
-		path = unid + meioSgo + file + ext;
-		EmpresaService empService = new EmpresaService();
-		arq = "";
-		crip = "";
-		String crip = "";
-		List<Empresa> listV = empService.findAll();
-		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
-			for(Empresa e : listV) {
-				count += 1;
-				arq = (e.getNumeroEmp() + " , " + e.getNomeEmp() + " , " + e.getEnderecoEmp() + " , " + e.getTelefoneEmp()
-				 	+ " , " + e.getEmailEmp() + " , " + e.getPixEmp());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -397,7 +344,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 			for(Entrada e : listE) {
 				count += 1;
 				String dataEnt = sdfAno.format(e.getDataEnt());
-				arq = (e.getNumeroEnt() + " , " + e.getNnfEnt()  + " , " + dataEnt + " , " + e.getNomeFornEnt() + " , " + 
+				arq = (" ENTRADA " + e.getNumeroEnt() + " , " + e.getNnfEnt()  + " , " + dataEnt + " , " + e.getNomeFornEnt() + " , " + 
 						e.getNomeMatEnt() + " , " + e.getQuantidadeMatEnt() + " , " + e.getValorMatEnt() + " , " + 
 						e.getForn().getCodigo() + " , " + e.getMat().getCodigoMat());
 				
@@ -426,7 +373,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Funcionario f : listF) {
 				count += 1;
-				arq = (f.getCodigoFun() + " , " + f.getNomeFun() + " , " + f.getEnderecoFun() + " , " + f.getBairroFun()
+				arq = (" FUNCIONARIO " + f.getCodigoFun() + " , " + f.getNomeFun() + " , " + f.getEnderecoFun() + " , " + f.getBairroFun()
 				 	+ " , " + f.getCidadeFun() + " , " + f.getUfFun() + " , " + f.getCepFun() + " , " + f.getDddFun()
 				 	 + " , " + f.getTelefoneFun() + " , " + f.getCpfFun() + " , " + f.getPixFun() + " , "  + 
 				 	 f.getComissaoFun() + " , " + f.getAdiantamentoFun() + " , " + f.getMesFun() + " , " + f.getAnoFun() 
@@ -457,7 +404,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Grupo g : listF) {
 				count += 1;
-				arq = (g.getCodigoGru() + " , " + g.getNomeGru());
+				arq = (" GRUPO " + g.getCodigoGru() + " , " + g.getNomeGru());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -488,7 +435,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				String dataMax = sdfAno.format(l.getMaximaLog());
 				String dataAce = sdfAno.format(l.getAcessoLog());
 
-				arq = (l.getNumeroLog() + " , " + l.getSenhaLog() + " , " + l.getNomeLog() + " , " + l.getNivelLog()
+				arq = (" LOGIN " + l.getNumeroLog() + " , " + l.getSenhaLog() + " , " + l.getNomeLog() + " , " + l.getNivelLog()
 				 + " , " + l.getAlertaLog() + " , " + dataLog + " , " + dataVen + " , " + 
 						dataMax + " , " + dataAce + " , " + l.getEmpresaLog());
 				crip = Cryptograf.criptografa(arq);
@@ -517,37 +464,11 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 			for(Material m : listM) {
 				count += 1;
 				String dataMat = sdfAno.format(m.getDataCadastroMat());
-				arq = (m.getCodigoMat() + " , " + m.getGrupoMat() + " , " +  m.getNomeMat() + " , " + m.getEstMinMat() + " , " + 
+				arq = (" MATERIAL " + m.getCodigoMat() + " , " + m.getGrupoMat() + " , " +  m.getNomeMat() + " , " + m.getEstMinMat() + " , " + 
 						m.getSaldoMat() + " , " + m.getSaidaCmmMat() + " , " + m.getCmmMat() + " , " + m.getPrecoMat() 
 						+ " , " + m.getVendaMat() + " , " + m.getVidaKmMat() + " , " + m.getVidaMesMat() + " , " + 
 						m.getPercentualClass() + " , " + m.getLetraClass() + " , " + dataMat + " , " + 
 						m.getGrupo().getCodigoGru());
-				crip = Cryptograf.criptografa(arq);
-				bwC.write(crip);
-				bwC.newLine();
-			}
-			bwC.close();
-		}
-		catch(	IOException e2) {
-			e2.getMessage();	 			
-		}
-		finally {					
-			labelCount.setText(String.valueOf(count));
-			labelCount.viewOrderProperty();
-		}
-	}
-	
-	public void meses() {
-		file = "Meses";
-		path = unid + meioSgo + file + ext;
-		MesesService mesService = new MesesService();
-		arq = "";
-		crip = "";
-		List<Meses> listM = mesService.findAll();
-		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
-			for(Meses m : listM) {
-				count += 1;
-				arq = (m.getNumeroMes() + " , " + m.getNomeMes());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -573,7 +494,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(NotaFiscal n : listN) {
 				count += 1;
-				arq = (n.getCodigoNF() + " , " + n.getNumeroNF() + " , " + n.getBalcaoNF() + " , " + n.getOsNF());
+				arq = (" NF " + n.getCodigoNF() + " , " + n.getNumeroNF() + " , " + n.getBalcaoNF() + " , " + n.getOsNF());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -599,7 +520,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(OrcVirtual v : listV) {
 				count += 1;
-				arq = (v.getNumeroVir() + " , " + v.getMaterial().getNomeMat() + " , " + v.getQuantidadeMatVir() + " , " + 
+				arq = (" VIRTUAL " + v.getNumeroVir() + " , " + v.getMaterial().getNomeMat() + " , " + v.getQuantidadeMatVir() + " , " + 
 						v.getPrecoMatVir() + " , " + v.getTotalMatVir() + " , " + v.getNumeroOrcVir() + " , " + 
 						v.getNumeroBalVir() + " , " + v.getMaterial().getCodigoMat() + " , " + v.getCustoMatVir());
 				crip = Cryptograf.criptografa(arq);
@@ -628,7 +549,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 			for(Orcamento o : listO) {
 				count += 1;
 				String dataOrc = sdfAno.format(o.getDataOrc());
-				arq = (o.getNumeroOrc() + " , " + dataOrc + " , " + o.getClienteOrc() + " , " + o.getFuncionarioOrc()
+				arq = (" ORCTO " + o.getNumeroOrc() + " , " + dataOrc + " , " + o.getClienteOrc() + " , " + o.getFuncionarioOrc()
 				 + " , " + o.getPlacaOrc() + " , " + o.getKmInicialOrc() + " , " + o.getKmFinalOrc() + " , " + 
 						o.getDescontoOrc() + " , " + o.getTotalOrc() + " , " + o.getOsOrc() + " , " + o.getMesOrc() + " , " + 
 				 o.getAnoOrc() + " , " + o.getCliente().getCodigoCli() + " , " + o.getFuncionario().getCodigoFun());
@@ -659,8 +580,8 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dataOs = sdfAno.format(o.getDataOS());
 				String dataPri = sdfAno.format(o.getDataPrimeiroPagamentoOS());
-				arq = (o.getNumeroOS() + " , " + dataOs + " , " + o.getOrcamentoOS() + " , " + o.getPlacaOS() + " , " + 
-						o.getClienteOS() + " , " + o.getValorOS() + " , " + o.getParcelaOS() + " , " + o.getPrazoOS()
+				arq = (" ORDEMSERVICO " + o.getNumeroOS() + " , " + dataOs + " , " + o.getOrcamentoOS() + " , " + o.getPlacaOS()
+						+ " , " + o.getClienteOS() + " , " + o.getValorOS() + " , " + o.getParcelaOS() + " , " + o.getPrazoOS()
 						 + " , " + o.getPagamentoOS() + " , " + dataPri + " , " + o.getNnfOS()
 						 + " , " + o.getObservacaoOS() + " , " + o.getKmOS() + " , " + o.getMesOs() + " , " + o.getAnoOs()
 						 + " , " + o.getOrcamento().getNumeroOrc());
@@ -692,7 +613,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				String dataOs = sdfAno.format(r.getDataOsRec());
 				String dataVen = sdfAno.format(r.getDataVencimentoRec());
 				String dataPag = sdfAno.format(r.getDataPagamentoRec());
-				arq = (r.getNumeroRec() + " , " + r.getFuncionarioRec() + " , " + r.getClienteRec() + " , " + 
+				arq = (" RECEBER " + r.getNumeroRec() + " , " + r.getFuncionarioRec() + " , " + r.getClienteRec() + " , " + 
 				r.getNomeClienteRec() + " , " + r.getOsRec() + " , " + dataOs + " , " + r.getPlacaRec() 
 				+ " , " + r.getParcelaRec() + " , " + r.getFormaPagamentoRec() + " , " + r.getValorRec() + " , " + 
 				dataVen + " , " + dataPag + " , " + r.getPeriodo().getIdPeriodo() + " , " + 
@@ -724,7 +645,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dtRep = sdfAno.format(r.getDataRep());
 				String dtPro = sdfAno.format(r.getProximaDataRep());
-				arq = (r.getNumeroRep() + " , " + r.getOsRep()+ " , " + dtRep + " , " +  r.getPlacaRep() + " , " +
+				arq = (" REPOSICAO " + r.getNumeroRep() + " , " + r.getOsRep()+ " , " + dtRep + " , " +  r.getPlacaRep() + " , " +
 						r.getClienteRep() + " , " + r.getDddClienteRep() + " , " + r.getTelefoneClienteRep() + " , " + 
 						r.getCodigoMaterialRep() + " , " + r.getMaterialRep() + " , " +  r.getKmTrocaRep() + " , " + 
 						r.getProximaKmRep() + " , " + dtPro);
@@ -753,7 +674,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Situacao s : listS) {
 				count += 1;
-				arq = (s.getNumeroSit() + " , " + s.getNomeSit());
+				arq = (" SITUACAO " + s.getNumeroSit() + " , " + s.getNomeSit());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -782,7 +703,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				if (v.getModeloVei() == null) {
 					v.setModeloVei(" ");
 				}
-				arq = (v.getNumeroVei() + " , " + v.getPlacaVei() + " , " + v.getKmInicialVei() + " , " + 
+				arq = (" VEICULO " + v.getNumeroVei() + " , " + v.getPlacaVei() + " , " + v.getKmInicialVei() + " , " + 
 						v.getKmFinalVei() + " , " + v.getModeloVei() + " , " + v.getAnoVei());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
@@ -801,7 +722,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	
 	public void compromisso() {
 		file = "Compromisso";
-		path = unid + meioSgo + file + ext;
+		path = unid + meioSgcp + file + ext;
 		CompromissoService comService = new CompromissoService();
 		arq = "";
 		crip = "";
@@ -811,11 +732,11 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dtCom = sdfAno.format(c.getDataCom());
 				String dtVen = sdfAno.format(c.getDataVencimentoCom());
-				arq = (c.getIdCom() + " , " + c.getFornecedor().getCodigo() + " , " + c.getFornecedor().getRazaoSocial()
+				arq = (" COMPROMISSO " + c.getIdCom() + " , " + c.getFornecedor().getCodigo() + " , " + c.getFornecedor().getRazaoSocial()
 						 + " , " + c.getNnfCom() + " , " + dtCom + " , " + dtVen + " , " + 
 						c.getValorCom() + " , " + c.getParcelaCom() + " , " + c.getPrazoCom() + " , " + 
 						 c.getFornecedor().getCodigo() + " , " + c.getTipoConsumo().getCodigoTipo() + " , " + 
-						c.getParPeriodo().getIdPeriodo());
+						c.getParPeriodo().getIdPeriodo() + " , " + c.getSituacaoCom() );
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -833,7 +754,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	
 	public void fornecedor() {
 		file = "Fornecedor";
-		path = unid + meioSgo + file + ext;
+		path = unid + meioSgcp + file + ext;
 		FornecedorService forService = new FornecedorService();
 		arq = "";
 		crip = "";
@@ -841,7 +762,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(Fornecedor f : listF) {
 				count += 1;
-				arq = (f.getCodigo() + " , " + f.getRazaoSocial() + " , " + f.getRua() + " , " + 
+				arq = (" FORN " + f.getCodigo() + " , " + f.getRazaoSocial() + " , " + f.getRua() + " , " + 
 						f.getNumero() + " , " + f.getComplemento() + " , " + f.getBairro() + " , " + f.getCidade()
 						 + " , " + f.getUf() + " , " + f.getCep() + " , " + f.getDdd01() + " , " + f.getTelefone01()
 						 + " , " + f.getDdd02() + " , " + f.getTelefone02() + " , " + f.getContato() + " , " + 
@@ -864,7 +785,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	
 	public void parcela() {
 		file = "Parcela";
-		path = unid + meioSgo + file + ext;
+		path = unid + meioSgcp + file + ext;
 		ParcelaService parService = new ParcelaService();
 		arq = "";
 		crip = "";
@@ -874,7 +795,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dtVen = sdfAno.format(p.getDataVencimentoPar());
 				String dtPag = sdfAno.format(p.getDataPagamentoPar());
-				arq = (p.getIdPar() + " , " + p.getCodigoFornecedorPar() + " , " + p.getNomeFornecedorPar() + " , " + 
+				arq = (" PARCELA " + p.getIdPar() + " , " + p.getCodigoFornecedorPar() + " , " + p.getNomeFornecedorPar() + " , " + 
 						p.getNnfPar() + " , " + p.getNumeroPar() + " , " + dtVen + " , " + 
 						p.getValorPar() + " , " + p.getDescontoPar() + " , " + p.getJurosPar() + " , " + p.getTotalPar()
 						 + " , " + p.getPagoPar() + " , " + dtPag + " , " + p.getFornecedor().getCodigo()
@@ -896,7 +817,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	
 	public void periodo() {
 		file = "ParPeriodo";
-		path = unid + meioSgo + file + ext;
+		path = unid + meioSgcp + file + ext;
 		ParPeriodoService perService = new ParPeriodoService();
 		arq = "";
 		crip = "";
@@ -906,7 +827,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 				count += 1;
 				String dti = sdfAno.format(p.getDtiPeriodo());
 				String dtf = sdfAno.format(p.getDtfPeriodo());
-				arq = (p.getIdPeriodo() + " , " + dti + " , " + dtf + " , " + 
+				arq = (" PERIODO " + p.getIdPeriodo() + " , " + dti + " , " + dtf + " , " + 
 						p.getFornecedor().getCodigo() + " , " + p.getTipoConsumo().getCodigoTipo());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
@@ -925,7 +846,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	
 	public void tipo() {
 		file = "TipoConsumidor";
-		path = unid + meioSgo + file + ext;
+		path = unid + meioSgcp + file + ext;
 		TipoConsumoService tipoService = new TipoConsumoService();
 		arq = "";
 		crip = "";
@@ -933,7 +854,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
 			for(TipoConsumo t : listT) {
 				count += 1;
-				arq = (t.getCodigoTipo() + " , " + t.getNomeTipo());
+				arq = (" TIPO " + t.getCodigoTipo() + " , " + t.getNomeTipo());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -968,8 +889,10 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
- 		labelFile.setText("<<<aguarde>>>");
+ 		labelFile.setText(status);
+ 		labelFile.viewOrderProperty();
  		labelCount.setText(String.valueOf(count));
+ 		labelCount.viewOrderProperty();
  		List<Copia> list = new ArrayList<>();
 		list = service.findAll();
   		obsList = FXCollections.observableArrayList(list);
@@ -992,15 +915,16 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		int ano1 = DataStatic.anoDaData(dt1);
 		int mes1 = DataStatic.mesDaData(dt1);
 		int dia1 = DataStatic.diaDaData(dt1);
+		int countM = 0;
+		int countY = 0;
 		
 		List<Copia> listLimpa = service.findAll();
+
 		for (Copia b : listLimpa) {
 			LocalDate dtB = DataStatic.converteTimeFormataString(b.getDataIBackUp());
 			int anoB = DataStatic.anoDaData(dtB);
 			int mesB = DataStatic.mesDaData(dtB);
 			int diaB = DataStatic.diaDaData(dtB);
-			int countM = 0;
-			int countY = 0;
 
 			if(ano1 == anoB && mes1 == mesB && dia1 == diaB && b.getUnidadeBackUp().equals(unid)) {
 				service.remove(b.getIdBackUp());
