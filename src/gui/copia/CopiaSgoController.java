@@ -10,11 +10,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.MainSgo;
-import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.entities.Compromisso;
 import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.entities.Parcela;
@@ -72,7 +70,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -82,7 +79,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class CopiaSgoController implements Initializable, DataChangeListener {
+public class CopiaSgoController implements Initializable {
 
 	@FXML
 	private VBox vBoxBackUp;
@@ -129,6 +126,7 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 	public static String path = null;
 	String status = "";
 	int count = 0;
+	int flagStart = 0;
  	public String user = "usuário";			
  	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
  	SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -136,8 +134,6 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
  	private CopiaService service;
  	private Copia entity;
  	
-	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
-
  	public void setBackUpService(CopiaService service) {
  		this.service = service;
  	}
@@ -149,17 +145,14 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 
  	@FXML
   	public void onBtOkAdiAction(ActionEvent event) throws ParseException {
-		Optional<ButtonType> result = Alerts.showConfirmation("Processo lento", "Confirma?");
-		if (result.get() == ButtonType.OK) {
 			status = "<<<aguarde>>>";
-			count = 0;
+			flagStart = 1;
 			updateTableView();
 			Stage parentStage = Utils.currentStage(event);
-// instanciando novo obj depto e injetando via
 			createDialogForm("/gui/copia/CopiaForm.fxml", parentStage);
-			updateTableView();
 			executaBack();
-		}	
+			flagStart = 0;
+			updateTableView();
    	}
  	
 	public void executaBack() throws ParseException {
@@ -895,21 +888,15 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
  		labelCount.viewOrderProperty();
  		List<Copia> list = new ArrayList<>();
 		list = service.findAll();
+ 		if (flagStart == 1) {
+ 			list.removeIf(x -> x.getDataIBackUp() != null);
+ 			list.add(new Copia(null, null, "   Processamento", null, null));
+ 			list.add(new Copia(null, null, "<<<aguarde>>>", null, null));
+ 		}
   		obsList = FXCollections.observableArrayList(list);
   		tableViewBackUp.setItems(obsList);
 	}
 
-	private void notifyDataChangeListerners() {
-		for (DataChangeListener listener : dataChangeListeners) {
-			listener.onDataChanged();
-		}
-	}
-
-	@Override
-	public void onDataChanged() {
-		updateTableView();
-	}
-	
 	public void limpaBackUp() {
 		LocalDate dt1 = DataStatic.dateParaLocal(dataI);
 		int ano1 = DataStatic.anoDaData(dt1);
@@ -957,7 +944,6 @@ public class CopiaSgoController implements Initializable, DataChangeListener {
 		entity.setDataFBackUp(dtf);
 		entity.setUnidadeBackUp(unid);
 		service.saveOrUpdate(entity);
-		notifyDataChangeListerners();
 		updateTableView();
  	}
  	

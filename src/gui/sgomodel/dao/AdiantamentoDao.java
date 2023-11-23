@@ -20,5 +20,9 @@ public interface AdiantamentoDao {
  	List<Adiantamento> findAllId();
 	Double findByTotalCom(Integer mes, Integer ano, Integer codFun);
 	Double findByTotalAdi(Integer mes, Integer ano, Integer codFun);
+	Double findByTotalComAnual(Integer ano, Integer codFun);
+	Double findByTotalAdiAnual(Integer ano, Integer codFun);
+	Double findByTotalComOS(Integer os);
+	Double findByTotalComBal(Integer bal);
 }
   

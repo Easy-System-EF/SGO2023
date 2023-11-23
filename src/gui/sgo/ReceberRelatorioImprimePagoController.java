@@ -9,6 +9,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import gui.sgomodel.entities.Empresa;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.EmpresaService;
 import gui.sgomodel.services.ReceberService;
+import gui.util.DataStatic;
 import gui.util.Imprimir;
 import gui.util.Utils;
 import javafx.event.ActionEvent;
@@ -242,7 +244,16 @@ public class ReceberRelatorioImprimePagoController implements Initializable, Ser
 
 	private List <Receber> titulo(Receber receber, Integer codCli, char opcao) {
    		if (opcao == 't') {
- 			list = service.findAllPago();
+ 			LocalDate ldt = DataStatic.criaLocalAtual();
+ 			int mm = DataStatic.mesDaData(ldt);
+ 			int aa = DataStatic.anoDaData(ldt);
+ 			int df = DataStatic.ultimoDiaMes(ldt);
+ 			LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 01);
+ 			df = DataStatic.ultimoDiaMes(dt1);
+ 			Date dti = DataStatic.localParaDateSdfAno(dt1);
+ 			dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+ 			Date dtf = DataStatic.localParaDateSdfAno(dt1);
+ 			list = service.findAllPago(dti, dtf);
  			nomeCab = "Contas Recebidas";
   		}
   		if (opcao == 'p') {

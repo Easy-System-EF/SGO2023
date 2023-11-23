@@ -312,6 +312,47 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 		}
 	} 
 	
+	@Override
+	public List<Balcao> findAno(Integer aa) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					 "SELECT balcao.*, funcionario.* " +
+							   "FROM balcao " +
+						 		 "INNER JOIN funcionario " +
+					 				 "ON balcao.FuncionarioIdBal = funcionario.CodigoFun " +
+						 		 "WHERE anoBal = ? " +
+							"ORDER BY NumeroBal");
+			
+			st.setInt(1, aa);
+			
+			rs = st.executeQuery();
+			
+ 			List<Balcao> list = new ArrayList<>();
+ 			Funcionario fun = new Funcionario();
+  			Map<Integer, Funcionario> mapFun = new HashMap<>();
+ 			
+			while (rs.next()) 
+ 			{ 	fun = mapFun.get(rs.getInt("FuncionarioIdBal"));
+  			    if (fun == null)
+  			    { 	fun = instantiateFuncionario(rs);
+  			    	mapFun.put(rs.getInt("FuncionarioIdBal"),fun);
+  			    }
+ 			    Balcao obj = instantiateBalcao(rs, fun);
+  				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
 	private Balcao instantiateBalcao(ResultSet rs, Funcionario fun) throws SQLException {
 		Balcao bal = new Balcao();
 		bal.setNumeroBal(rs.getInt("NumeroBal"));

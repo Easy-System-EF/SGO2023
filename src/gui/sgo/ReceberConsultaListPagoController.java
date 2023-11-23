@@ -2,6 +2,8 @@ package gui.sgo;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +19,8 @@ import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
+import gui.util.DataStatic;
+import gui.util.Mascaras;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -182,7 +186,16 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
  		labelUser.setText(user);
  		List<Receber> list = new ArrayList<>();
  		if (opcao == "t") {
- 			list = service.findAllPago();
+ 			LocalDate ldt = DataStatic.criaLocalAtual();
+ 			int mm = DataStatic.mesDaData(ldt);
+ 			int aa = DataStatic.anoDaData(ldt);
+ 			int df = DataStatic.ultimoDiaMes(ldt);
+ 			LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 01);
+ 			df = DataStatic.ultimoDiaMes(dt1);
+ 			Date dti = DataStatic.localParaDateSdfAno(dt1);
+ 			dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+ 			Date dtf = DataStatic.localParaDateSdfAno(dt1);
+ 			list = service.findAllPago(dti, dtf);
  		}
  		if (codCli != null) {
  			if (opcao == "c") {
@@ -194,7 +207,56 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 		}	
 		if (list.size() == 0) {
 			Alerts.showAlert(null, "Contas Recebidas ", "Não há registro para opção ", AlertType.INFORMATION);
-		}	
+		} else {
+			Date dt  = new Date();
+			double pix = 0.0;
+			double deb = 0.0;
+			double din = 0.0;
+			double cc  = 0.0;
+			double tot = 0.0;
+			
+			for (Receber r : list) {
+				if (r.getFormaPagamentoRec().equals("Dinheiro")) {
+					din += r.getValorPagoRec();
+				}
+				if (r.getFormaPagamentoRec().equals("Pix")) {
+					pix += r.getValorPagoRec();
+				}
+				if (r.getFormaPagamentoRec().equals("Débito") || r.getFormaPagamentoRec().equals("Debito")) {
+					deb += r.getValorPagoRec();
+				}
+				if (r.getFormaPagamentoRec().equals("CC")) {
+					cc += r.getValorPagoRec();
+				}
+				tot +=r.getValorPagoRec();
+			}
+			String vlrDin = "";
+			String vlrPix = "";
+			String vlrDeb = "";
+			String vlrCC = "";
+			String vlrTot = "";
+			String total = "";
+			try {
+				vlrDin = Mascaras.formataValor(din);
+				vlrPix = Mascaras.formataValor(pix);
+				vlrDeb = Mascaras.formataValor(deb);
+				vlrCC = Mascaras.formataValor(cc);
+				vlrTot = Mascaras.formataValor(tot);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			total = "Total dinheiro... " + "R$" + vlrDin;
+			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			total = "Total pix.......... " + "R$" + vlrPix;
+			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			total = "Total débito..... " + "R$" + vlrDeb;
+			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			total = "Total CC.......... " + "R$" + vlrCC;
+			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			total = "Total geral....... " + "R$" + vlrTot;
+			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+		}
+
   		labelTitulo.setText(String.format("%s ", nomeTitulo));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewReceber.setItems(obsList);

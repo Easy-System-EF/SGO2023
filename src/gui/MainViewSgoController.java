@@ -33,6 +33,7 @@ import gui.sgo.ClienteCadastroListController;
 import gui.sgo.ClienteMVRConsultaListController;
 import gui.sgo.ComissaoConsultaListController;
 import gui.sgo.EntradaCadastroListController;
+import gui.sgo.FechamentoAnoConsultaListController;
 import gui.sgo.FechamentoMesConsultaListController;
 import gui.sgo.FolhaMesConsultaListController;
 import gui.sgo.FuncionarioCadastroListController;
@@ -54,6 +55,7 @@ import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.CargoService;
 import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.EntradaService;
+import gui.sgomodel.services.FechamentoAnoService;
 import gui.sgomodel.services.FechamentoMesService;
 import gui.sgomodel.services.FolhaMesService;
 import gui.sgomodel.services.FuncionarioService;
@@ -82,8 +84,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class MainViewSgoController implements Initializable, DataChangeListener {
+public class MainViewSgoController extends javax.swing.JFrame  implements Initializable, DataChangeListener {
 	
+	private static final long serialVersionUID = 1L;
+
 	@FXML
 	private MenuItem menuItemFornecedor;
 
@@ -163,6 +167,9 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 	private MenuItem menuItemConsultaFechamentoMes;
 	
 	@FXML
+	private MenuItem menuItemConsultaFechamentoAno;
+	
+	@FXML
 	private MenuItem menuItemConsultaClienteMVRList;
 	
 	@FXML
@@ -179,6 +186,9 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 
 	@FXML
 	private Button btLogin;
+
+//	@FXML
+//	private ImageView ivCarro;
 
 	@FXML
 	private Label labelUser;
@@ -692,8 +702,28 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 				loadView("/gui/sgo/FechamentoMesConsultaList.fxml", (FechamentoMesConsultaListController controller) -> {
 					controller.user = user;
 					controller.setServices(new FechamentoMesService());
-		   			controller.updateTableView();
+//		   			controller.updateTableView();
 		});
+			} else {
+				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
+			}
+		}	
+	}
+  
+	@FXML
+	public void onMenuItemConsultaFechamentoAnoAction() {
+		classe = "Consulta Fechamento Ano ";
+		if (senha != "Ok") {
+			temLogar();
+		} 
+		if (senha == "Ok") {
+			if (nivel == 1 || nivel == 9) {
+				loadView("/gui/sgo/FechamentoAnoConsultaList.fxml", (FechamentoAnoConsultaListController controller) -> {
+					controller.user = user;
+					controller.setServices(new FechamentoAnoService());
+		   			controller.updateTableView();
+		   			controller.montaForm();
+				});
 			} else {
 				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
 			}
@@ -716,6 +746,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
+					controller.mrvForm();
 		});
 			} else {
 				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
@@ -739,6 +770,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
+					controller.mvrForm();
 		});
 			} else {
 				Alerts.showAlert(null, "Acesso negado ", null, AlertType.WARNING);
@@ -801,8 +833,46 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 
 	private void initializeNodes() {
 		labelUser.setText(user);
+//		onCarro();
+
+//		Image imagem = new Image("carro.png");
+//		JLabel label = new JLabel(imagem);
+//		  add(label);
+//		  label.setBounds(60, 30, 40, 60);
+//			setSize(20, 80);
+//			  label.setBorder(null);
+		
+		
+			  
+//		ivCarro.setImage(imagem);	  
+			  
+//		Icon carro = new ImageIcon("\\java\\carro.png");
+//		JLabel imagem = new JLabel(carro);
+//		label.setBounds(100, 100, 40, 40);
+//		add(imagem);		
+		
+//		imagem = new JLabel("Símbolo do Java", carro, SwingConstants.CENTER);
+//		label.setHorizontalTextPosition( SwingConstants.CENTER );
+//		label.setVerticalTextPosition( SwingConstants.BOTTOM );
+//		Icon xicara = new ImageIcon("xicara.png");
+//		  imagem = new JLabel(xicara);
+//			setLocationRelativeTo(this);
+//		  setVisible(true);
+		
+//		ImageIcon image = new ImageIcon("caminho_da_imagem_virá_aqui");
+//		JLabel imagelabel = new JLabel(image);
+	
+//		JLabel carro = new JLabel(image);
+//		carro.setIcon(new javax.swing.ImageIcon(getClass().getResource("image")));
+//		carro.setBounds(100, 20, 20, 20);
+//		add(carro);
 	}
 
+//	private void onCarro() {
+//		Image imagem = new Image("carro.png");
+//		ivCarro.setImage(imagem);	  		
+//	}
+	
 	private void temLogar() {
 		Alerts.showAlert("Erro login!!!", null, "Tem que logar ", AlertType.ERROR);
 	}
@@ -810,7 +880,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 	/*
 	 * interface consumer <T>, passa a ser fun��o 
 	 * generica synchronized garante processo inteiro sem interrup��o
-	 */
+	 */ 
 	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializingAction) {
 //	private synchronized void loadView(String absoluteName) {
 		try {
@@ -841,6 +911,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 // para executar a a��o -> fun��o accept do consumer			
 			initializingAction.accept(controller);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Alerts.showAlert("IO Exception", classe + "Erro carregando a página", e.getMessage(), AlertType.ERROR);
 		}
 	}
@@ -872,7 +943,6 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 			dialogStage.showAndWait();
 		}
 		catch (IOException e) {
-			e.printStackTrace();
 			Alerts.showAlert("IO Exception", classe + "Erro carregando tela", e.getMessage(), AlertType.ERROR);
 		}
 //		catch (ParseException p) {

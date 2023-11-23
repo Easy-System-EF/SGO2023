@@ -2,6 +2,7 @@
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.EmpresaService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
+import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -216,7 +218,16 @@ public class ReceberRelatorioPagoController implements Initializable, DataChange
  		labelUser.setText(user);
  		List<Receber> list = new ArrayList<>();
  		if (opcao == 't') {
- 			list = service.findAllPago();
+ 			LocalDate ldt = DataStatic.criaLocalAtual();
+ 			int mm = DataStatic.mesDaData(ldt);
+ 			int aa = DataStatic.anoDaData(ldt);
+ 			int df = DataStatic.ultimoDiaMes(ldt);
+ 			LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 01);
+ 			df = DataStatic.ultimoDiaMes(dt1);
+ 			Date dti = DataStatic.localParaDateSdfAno(dt1);
+ 			dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+ 			Date dtf = DataStatic.localParaDateSdfAno(dt1);
+ 			list = service.findAllPago(dti, dtf);
  			if (list.size() == 0) {
  				Alerts.showAlert("Contas Recebidas ", "Recebidas", "Não há pagamento ", AlertType.INFORMATION);
  			}	

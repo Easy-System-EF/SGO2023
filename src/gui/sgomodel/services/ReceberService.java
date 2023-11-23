@@ -27,8 +27,8 @@ public class ReceberService {
    		return dao.findAllAberto();
 	} 
 	
-	public List<Receber> findAllPago() {
-   		return dao.findAllPago();
+	public List<Receber> findAllPago(Date dti, Date dtf) {
+   		return dao.findAllPago(dti, dtf);
 	} 
 	
 	public Double sumPagoCli(int cod) {

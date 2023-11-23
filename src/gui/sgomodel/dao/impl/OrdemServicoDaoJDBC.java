@@ -379,6 +379,46 @@ public class OrdemServicoDaoJDBC implements OrdemServicoDao {
 	} 
 	
 	@Override
+	public List<OrdemServico> findAno(Integer ano) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+ 							 "SELECT *, orcamento.* " + 
+ 								"FROM ordemServico " + 
+ 									"INNER JOIN orcamento " +  
+ 										"ON ordemServico.OrcamentoId = orcamento.NumeroOrc " + 
+ 									"WHERE AnoOS = ? " +
+ 										"ORDER BY NumeroOS"); 			
+			
+			st.setInt(1, ano);
+			rs = st.executeQuery();
+			
+ 			List<OrdemServico> list = new ArrayList<>();
+ 			Orcamento orc = new Orcamento();
+  			Map<Integer, Orcamento> mapOrc = new HashMap<>();
+ 			
+			while (rs.next()) 
+ 			{ 	orc = mapOrc.get(rs.getInt("OrcamentoId"));
+ 				if (orc == null)
+ 				{ 	orc =	instantiateOrcamento(rs);
+ 					mapOrc.put(rs.getInt("OrcamentoId"), orc);
+ 				}
+ 			    OrdemServico obj = instantiateOrdemServico(rs, orc);
+  				list.add(obj);
+ 			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
 	public List<OrdemServico> findMesAnoList(Integer mes, Integer ano) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;

@@ -14,5 +14,6 @@ public interface BalcaoDao {
  	List<Balcao> findAll();
  	List<Balcao> findAllId();
 	List<Balcao> findMesAno(Integer mm, Integer aa);
+	List<Balcao> findAno(Integer aa);
 }
   

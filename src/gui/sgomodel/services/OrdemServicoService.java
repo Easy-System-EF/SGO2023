@@ -34,6 +34,10 @@ public class OrdemServicoService {
 		return dao.findMesAno(mes, ano);
 	} 
 
+	public List<OrdemServico> findByAno(int ano) {
+		return dao.findAno(ano);
+	} 
+
 	public List<OrdemServico> findByMesAnoList(int mes, int ano) {
 		return dao.findMesAnoList(mes, ano);
 	} 

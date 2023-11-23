@@ -3,6 +3,7 @@ package gui.sgo;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -31,6 +32,7 @@ import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
+import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -109,7 +111,7 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
 // auxiliar
  	String classe = "Dados Fechamento Mensal";
  	public static String nomeMes = null;
- 	public static Integer numAno = null;
+ 	int flagStart = 0;
  	 
  	// injeta a dependencia com set (invers�o de controle de inje�ao)	
  	public void setServices(FechamentoMesService service) {
@@ -118,6 +120,8 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
  	
 	@FXML
 	public void onBtMesesMensalAction(ActionEvent event) {
+		updateTableView();
+  		flagStart = 1;
 		Stage parentStage = Utils.currentStage(event);
 		FechamentoMes obj = new FechamentoMes();
 		Adiantamento objAdi = new Adiantamento();
@@ -144,9 +148,13 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
 	 						  new ParPeriodoService(),
 	 						  new ReceberService());
 			contF.loadAssociatedObjects();
+ 			contF.subscribeDataChangeListener(this);
 			contF.updateFormData();
  		});
 		updateTableView();
+		service.zeraAll();
+  		flagStart = 0;
+  		nomeMes = null;
 	}
 	 	 	
  	private synchronized <T> void createDialogOpcao(String absoluteName, Stage parentStage, Consumer<T> initializeAction) {
@@ -181,19 +189,13 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
 		tableColumnOsMensal.setCellValueFactory(new PropertyValueFactory<>("OsMensal"));
 		tableColumnBalMensal.setCellValueFactory(new PropertyValueFactory<>("BalMensal"));
 		tableColumnDataMensal.setCellValueFactory(new PropertyValueFactory<>("DataMensal"));
-//		Utils.formatTableColumnDate(tableColumnDataMensal, "dd/MM/yyyy");
 		tableColumnClienteMensal.setCellValueFactory(new PropertyValueFactory<>("ClienteMensal"));
 		tableColumnFuncionarioMensal.setCellValueFactory(new PropertyValueFactory<>("FuncionarioMensal"));
 		tableColumnValorOsMensal.setCellValueFactory(new PropertyValueFactory<>("ValorOsMensal"));
-//		Utils.formatTableColumnDouble(tableColumnValorOsMensal, 2);
 		tableColumnValorMaterialMensal.setCellValueFactory(new PropertyValueFactory<>("ValorMaterialMensal"));
-//		Utils.formatTableColumnDouble(tableColumnValorMaterialMensal, 2);
 		tableColumnValorComissaoMensal.setCellValueFactory(new PropertyValueFactory<>("ValorComissaoMensal"));
-//		Utils.formatTableColumnDouble(tableColumnValorComissaoMensal, 2);
 		tableColumnValorResultadoMensal.setCellValueFactory(new PropertyValueFactory<>("ValorResultadoMensal"));
-//		Utils.formatTableColumnDouble(tableColumnValorResultadoMensal, 2);
 		tableColumnValorAcumuladoMensal.setCellValueFactory(new PropertyValueFactory<>("ValorAcumuladoMensal"));
-//		Utils.formatTableColumnDouble(tableColumnValorAcumuladoMensal, 2);
   		// para tableview preencher o espa�o da tela scroolpane, referencia do stage		
  		Stage stage = (Stage) MainSgo.getMainScene().getWindow();
  		tableViewMensal.prefHeightProperty().bind(stage.heightProperty());
@@ -208,16 +210,36 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
  */  
  	public void updateTableView() {
  		if (service == null) {
-			throw new IllegalStateException("Servi�o Dados est� vazio");
+			throw new IllegalStateException("Serviço Dados está vazio");
  		}
  		labelUser.setText(user);
+ 		int ano = 0;
  		List<FechamentoMes> list = new ArrayList<>();
- 		if (numAno != null) {
- 			labelTitulo.setText("Fechamento mes : " + nomeMes + "/" + numAno);
- 			classe = "Dados Folha";
- 			list = service.findAll();
- 			obsList = FXCollections.observableArrayList(list);
- 		}	
+ 		if (ano == 0) {
+ 			LocalDate ldt = DataStatic.criaLocalAtual();
+ 			ano = DataStatic.anoDaData(ldt);
+ 			labelTitulo.setText("Fechamento mes ");
+ 		} 
+ 		if (nomeMes != null) {		
+ 			labelTitulo.setText("Fechamento mes : " + nomeMes + "/" + ano);
+ 		} else {
+ 			labelTitulo.setText("Fechamento mes :                           "); 			
+ 		}
+ 		
+ 		classe = "Dados Folha";
+ 		list = service.findAll();
+ 		if (list.size() == 0 && flagStart == 0) {
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, "processamento", null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, null, "<<<aguarde>>>", null, null, null, null, null, null, null));
+ 		}
+ 		obsList = FXCollections.observableArrayList(list);
 		tableViewMensal.setItems(obsList);
 	}
 

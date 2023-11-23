@@ -212,7 +212,6 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 		if (obj.getAno() == null) {
 			exception.addErros("anos", "ano inválido");
 		}
-		FechamentoMesConsultaListController.numAno = aa;
 
 		LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 20);
 		df = DataStatic.ultimoDiaMes(dt1);

@@ -265,14 +265,21 @@ public class ReceberDaoJDBC implements ReceberDao {
 	}
 
 	@Override
-	public List<Receber> findAllPago() {
+	public List<Receber> findAllPago(Date dti, Date dtf) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement("SELECT * " + "FROM receber " + "INNER JOIN parPeriodo "
-					+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + "WHERE ValorPagoREc > 0.00 "
-					+ "ORDER BY - DataVencimentoRec, ParcelaRec ");
+			st = conn.prepareStatement(
+					"SELECT * " + 
+						"FROM receber " + 
+							"INNER JOIN parPeriodo " +
+								"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + 
+							"WHERE (ValorPagoREc > 0.00 ) AND (DataVencimentoRec >= ? ) AND (DataVencimentoRec <= ? ) " +
+					 	"ORDER BY - DataVencimentoRec, ParcelaRec ");
 
+			st.setDate(1, new java.sql.Date(dti.getTime()));
+			st.setDate(2, new java.sql.Date(dtf.getTime()));
+			
 			rs = st.executeQuery();
 
 			List<Receber> list = new ArrayList<>();
@@ -480,11 +487,14 @@ public class ReceberDaoJDBC implements ReceberDao {
 		try {
 			st = conn.prepareStatement(
 
-					"SELECT * " + "FROM receber " + "INNER JOIN parPeriodo "
-							+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
-							+ "WHERE  DataPagamentoRec >= DataOsRec AND "
-							+ "receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
-							+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " + "ValorPagoRec > 0.00 "
+					"SELECT * " + 
+						"FROM receber " + 
+							"INNER JOIN parPeriodo "
+								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
+									+ "WHERE  DataPagamentoRec >= DataOsRec AND "
+										+ "receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
+										+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " 
+										+ "ValorPagoRec > 0.00 "
 							+ "ORDER BY DataVencimentoRec, ParcelaRec ");
 
 			rs = st.executeQuery();

@@ -16,5 +16,6 @@ public interface OrdemServicoDao {
  	List<OrdemServico> findPlaca(String str);
  	List<OrdemServico> findMesAno(Integer mes, Integer ano);
  	List<OrdemServico> findMesAnoList(Integer mes, Integer ano);
+ 	List<OrdemServico> findAno(Integer ano);
 }
   

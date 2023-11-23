@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.MainSgo;
-import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.services.MaterialService;
 import gui.util.Alerts;
@@ -24,7 +23,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
  
-public class MaterialMVRConsultaListController implements Initializable, DataChangeListener {
+public class MaterialMVRConsultaListController implements Initializable {
 
 // inje��o de dependenia sem implementar a classe (instanciat)
 // acoplamento forte - implementa via set
@@ -76,7 +75,7 @@ public class MaterialMVRConsultaListController implements Initializable, DataCha
 		initializeNodes();
  	}
  	
-	private void mrvForm() {
+	public void mvrForm() {
 		Optional<ButtonType> result = Alerts.showConfirmation("Pode demorar um pouco", "Confirma?");
 		if (result.get() == ButtonType.OK) {
 			MVRConsultaForm mvr = new MVRConsultaForm();
@@ -85,7 +84,14 @@ public class MaterialMVRConsultaListController implements Initializable, DataCha
 			mvr.materialPercentual();
 			mvr.materialClassifica();
 			ok = 1;
-		}	
+		} else {
+			ok = 2;
+		}
+		try {
+			updateTableView();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 	
 // comportamento padr�o para iniciar as colunas 	
@@ -111,27 +117,24 @@ public class MaterialMVRConsultaListController implements Initializable, DataCha
  		if (service == null) {
 			throw new IllegalStateException("Serviço está vazio");
  		}
-		mrvForm();
+		char nd = ' ';
 		List<Material> list = new ArrayList<>();
  		labelUser.setText(user);
+ 		if (ok == 0) {
+ 			list.add(new Material(null, null, "processando", null, null, null, null, null, null, null, null, null, nd, null, null));
+ 			list.add(new Material(null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, null, nd, null, null));
+ 		}
 		if (ok == 1) {
 			labelUser.setText(user);
 			list = service.findMVR();
 			list.removeIf(x -> x.getPercentualClass() == null || x.getPercentualClass() == 0);		
 		}	
+		if (ok > 1) {
+			list = service.findPesquisa("xyzowndh");
+		}
  		obsList = FXCollections.observableArrayList(list);
 		tableViewMaterial.setItems(obsList);
 		initializeNodes();
 	}
 
-// *  atualiza minha lista dataChanged com dados novos 	
-	@Override
-	public void onDataChanged() {
-		try {
-			updateTableView();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
  }

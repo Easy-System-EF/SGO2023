@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane blendMode="DIFFERENCE" prefHeight="102.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.FechamentoMesConsultaFormController">
+<AnchorPane blendMode="DIFFERENCE" prefHeight="102.0" prefWidth="383.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.FechamentoMesConsultaFormController">
    <children>
       <Label layoutX="17.0" layoutY="63.0" text="Meses" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
          <font>
@@ -44,14 +44,14 @@
             <Insets bottom="2.0" top="2.0" />
          </padding>
       </Button>
-      <Label fx:id="labelErrorComboBoxMeses" layoutX="386.0" layoutY="63.0" prefHeight="19.0" prefWidth="216.0" text=" " textFill="#eb1d1d" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="15.0">
+      <Label fx:id="labelErrorComboBoxMeses" layoutX="386.0" layoutY="63.0" prefHeight="19.0" prefWidth="188.0" text=" " textFill="#eb1d1d" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="15.0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
          <padding>
             <Insets bottom="2.0" left="5.0" top="2.0" />
          </padding></Label>
-      <Label fx:id="labelErrorComboBoxAnos" prefHeight="14.0" prefWidth="216.0" text=" " textFill="#e40505" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="45.0">
+      <Label fx:id="labelErrorComboBoxAnos" prefHeight="15.0" prefWidth="188.0" text=" " textFill="#e40505" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="45.0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>

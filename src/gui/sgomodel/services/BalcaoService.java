@@ -30,6 +30,10 @@ public class BalcaoService {
 		return dao.findMesAno(mes, ano);
 	} 
 
+	public List<Balcao> findByAno(int ano) {
+		return dao.findAno(ano);
+	} 
+
 // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
 	public void saveOrUpdate(Balcao obj) {

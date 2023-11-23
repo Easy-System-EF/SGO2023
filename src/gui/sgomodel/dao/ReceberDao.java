@@ -13,7 +13,7 @@ public interface ReceberDao {
  	void removeOS(int numOs);
    	List<Receber> findByAllOs(Integer os);
   	List<Receber> findAllAberto();
-  	List<Receber> findAllPago();
+  	List<Receber> findAllPago(Date dti, Date dtf);
   	Double sumPagoCli(int cod);
   	Double findPagoOsMes(Date dti, Date dtf);
   	Double findPagoBalMes(Date dti, Date dtf);

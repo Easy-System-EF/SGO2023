@@ -34,6 +34,22 @@ public class AdiantamentoService {
    		return dao.findByTotalAdi(mes, ano, codFun);
 	} 
 	
+	public Double findByTotalComAnual(Integer ano, Integer codFun) {
+   		return dao.findByTotalComAnual(ano, codFun);
+	} 
+	
+	public Double findByTotalAdiAnual(Integer ano, Integer codFun) {
+   		return dao.findByTotalAdiAnual(ano, codFun);
+	} 
+	
+	public Double findByTotalComOS(Integer os) {
+   		return dao.findByTotalComOS(os);
+	} 
+	
+	public Double findByTotalComBal(Integer bal) {
+   		return dao.findByTotalComBal(bal);
+	} 
+	
 	public List<Adiantamento> findPesquisaFun(String str) {
 		return dao.findPesquisaFun(str);
 	}

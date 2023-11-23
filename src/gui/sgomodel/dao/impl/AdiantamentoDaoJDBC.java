@@ -180,6 +180,114 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 	}
 
 	@Override
+	public Double findByTotalComAnual(Integer ano, Integer codFun) {
+		Double totCom = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					
+			"select SUM(ComissaoAdi) AS total from adiantamento " +
+					"WHERE adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+	
+			st.setInt(1, ano);
+			st.setInt(2, codFun);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totCom = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return totCom;
+	}
+
+	@Override
+	public Double findByTotalAdiAnual(Integer ano, Integer codFun) {
+		Double totAdi = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+			
+			"select SUM(ValeAdi) AS total from adiantamento " +
+				"WHERE adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+
+			st.setInt(1, ano);
+			st.setInt(2, codFun);
+			
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totAdi = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return totAdi;
+	}
+
+	@Override
+	public Double findByTotalComOS(Integer os) {
+		Double totCom = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					
+			"select SUM(ComissaoAdi) AS total from adiantamento " +
+					"WHERE adiantamento.OsAdi = ? "); 
+	
+			st.setInt(1, os);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totCom = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return totCom;
+	}
+
+	@Override
+	public Double findByTotalComBal(Integer bal) {
+		Double totAdi = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+			
+			"select SUM(ValeAdi) AS total from adiantamento " +
+				"WHERE adiantamento.BalcaoAdi = ? "); 
+
+			st.setInt(1, bal);
+			
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totAdi = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return totAdi;
+	}
+
+	@Override
 	public void deleteById(Integer codigo) {
 		PreparedStatement st = null;
 		try {

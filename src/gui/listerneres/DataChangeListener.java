@@ -3,7 +3,7 @@ package gui.listerneres;
 public interface DataChangeListener {
 
 /*
- * evento disparado qdo houver mudança
+ * evento disparado qdo houver mudanÃ§a tela cï¿½a
  */
 	void onDataChanged();
 		

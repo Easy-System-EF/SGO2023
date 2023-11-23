@@ -124,7 +124,9 @@ public class RecClienteFormController implements Initializable {
 			List<Cliente> listOk = new ArrayList<>();
 			if (pesquisa != "") { 
 				listOk = service.findPesquisa(pesquisa);
-				codigo = listOk.get(0).getCodigoCli();
+				if (listOk.size() > 0) {
+					codigo = listOk.get(0).getCodigoCli();
+				}	
 			} else {	
 				listOk = service.findAll();
 		 	}			
@@ -149,6 +151,7 @@ public class RecClienteFormController implements Initializable {
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
 		}
 	}
+	
 
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
 	private void notifyDataChangeListerners() {
@@ -207,11 +210,11 @@ public class RecClienteFormController implements Initializable {
   * transforma string da tela p/ o destino no bco de dados 
   */
  	public void updateFormData() {
- 		if (entity == null)
- 		{	throw new IllegalStateException("Entidade esta nula");
+ 		if (entity == null) {
+ 			throw new IllegalStateException("Entidade esta nula");
  		}
 // se for uma inclusao, vai posicionar no 1o depto//destino (First)
-		comboBoxCliente.getSelectionModel().selectFirst();
+ 		comboBoxCliente.getSelectionModel().selectFirst();
      }
  	
 //	carrega dados do bco  dentro 
