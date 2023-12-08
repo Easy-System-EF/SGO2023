@@ -148,10 +148,10 @@ public class CopiaSgoController implements Initializable {
 			status = "<<<aguarde>>>";
 			flagStart = 1;
 			updateTableView();
+			flagStart = 0;
 			Stage parentStage = Utils.currentStage(event);
 			createDialogForm("/gui/copia/CopiaForm.fxml", parentStage);
 			executaBack();
-			flagStart = 0;
 			updateTableView();
    	}
  	

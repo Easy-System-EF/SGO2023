@@ -218,7 +218,6 @@ public class EntradaDaoJDBC implements EntradaDao {
 	public List<Entrada> findByForNnf(int codfor, int nnf) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
-System.out.println("jdbc " + codfor + " " + nnf);		
 		try 
 		{	st = conn.prepareStatement( 
 					 "SELECT *, fornecedor.Codigo, material.CodigoMat "
@@ -250,7 +249,6 @@ System.out.println("jdbc " + codfor + " " + nnf);
   					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
   				}
   			    Entrada obj = instantiateEntrada(rs, forn, prod);
-System.out.println("jdbc " + obj);  			    
   			    list.add(obj);
   			}
 			return list;

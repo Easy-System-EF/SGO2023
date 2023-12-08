@@ -9,7 +9,7 @@ import gui.sgomodel.dao.impl.CargoDaoJDBC;
 import gui.sgomodel.dao.impl.ClienteDaoJDBC;
 import gui.sgomodel.dao.impl.EmpresaDaoJDBC;
 import gui.sgomodel.dao.impl.EntradaDaoJDBC;
-import gui.sgomodel.dao.impl.FechamentoAnoDaoJDBC;
+import gui.sgomodel.dao.impl.FechamentoAnualDaoJDBC;
 import gui.sgomodel.dao.impl.FechamentoMesDaoJDBC;
 import gui.sgomodel.dao.impl.FolhaMesDaoJDBC;
 import gui.sgomodel.dao.impl.FuncionarioDaoJDBC;
@@ -102,8 +102,9 @@ public class DaoFactory {
   	public static FechamentoMesDao createFechamentoMesDao() {
 		return new FechamentoMesDaoJDBC(DB.getConnection());
 	}
-  	public static FechamentoAnoDao createFechamentoAnoDao() {
-		return new FechamentoAnoDaoJDBC(DB.getConnection());
+  	
+  	public static FechamentoAnualDao createFechamentoAnualDao() {
+		return new FechamentoAnualDaoJDBC(DB.getConnection());
 	}
   	public static AnosDao createAnosDao() {
 		return new AnosDaoJDBC(DB.getConnection());

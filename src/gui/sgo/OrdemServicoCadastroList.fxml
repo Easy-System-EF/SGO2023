@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="273.0" prefWidth="645.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.OrdemServicoCadastroListController">
+<VBox prefHeight="273.0" prefWidth="679.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.OrdemServicoCadastroListController">
    <children>
       <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="560.0">
         <items>
@@ -42,14 +42,14 @@
       <TableView fx:id="tableViewOrdemServico" blendMode="DARKEN" prefHeight="235.0" prefWidth="645.0">
         <columns>
           <TableColumn fx:id="tableColumnNumeroOS" editable="false" prefWidth="55.0" text="Número" />
-          <TableColumn fx:id="tableColumnDataOS" editable="false" prefWidth="67.0" text="Data" />
-            <TableColumn fx:id="tableColumnOrcamentoOS" editable="false" prefWidth="70.0" text="Orçamento" />
-            <TableColumn fx:id="tableColumnClienteOS" editable="false" prefWidth="161.0" text="Cliente" />
-            <TableColumn fx:id="tableColumnPlacaOS" editable="false" prefWidth="59.0" text="Placa" />
-            <TableColumn fx:id="tableColumnValorOS" editable="false" prefWidth="62.0" text="Valor" />
-            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="55.0" text=" " />
-            <TableColumn fx:id="tableColumnREMOVE" editable="false" prefWidth="55.0" text=" " />
-            <TableColumn fx:id="tableColumnList" editable="false" prefWidth="54.0" text=" " />
+          <TableColumn fx:id="tableColumnDataOS" editable="false" prefWidth="81.0" text="Data" />
+            <TableColumn fx:id="tableColumnOrcamentoOS" editable="false" text="Orçamento" />
+            <TableColumn fx:id="tableColumnClienteOS" editable="false" prefWidth="147.0" text="Cliente" />
+            <TableColumn fx:id="tableColumnPlacaOS" editable="false" prefWidth="64.0" text="Placa" />
+            <TableColumn fx:id="tableColumnValorOS" editable="false" prefWidth="67.0" text="Valor" />
+            <TableColumn fx:id="tableColumnEDITA" editable="false" prefWidth="57.0" text=" " />
+            <TableColumn fx:id="tableColumnREMOVE" editable="false" prefWidth="57.0" text=" " />
+            <TableColumn fx:id="tableColumnList" editable="false" prefWidth="57.0" text=" " />
         </columns>
          <effect>
             <Blend />

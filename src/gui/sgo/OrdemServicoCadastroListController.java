@@ -205,6 +205,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		}
 //		mm = 1;
  		List<OrdemServico> list = service.findByMesAnoList(mm, aa);
+ 		
   		obsList = FXCollections.observableArrayList(list);
   		tableViewOrdemServico.setItems(obsList);
 		initEditButtons();
@@ -336,11 +337,12 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		        setGraphic(null); 
 		        return; 
 		      } 
-	    	  setGraphic(button); 
-		    	  button.setOnAction( 
+		      if (obj.getPagamentoOS() == null) {
+		    	  setGraphic(button); 
+		    	  	button.setOnAction( 
 						event -> createDialogForm(obj, objOrc, objVir, objMat, objRec, objRep, objGru, objPer, 
 								"/gui/sgo/OrdemServicoCadastroForm.fxml", Utils.currentStage(event)));
-		      		
+		      }	
 		    } 
 		  	});
 	}

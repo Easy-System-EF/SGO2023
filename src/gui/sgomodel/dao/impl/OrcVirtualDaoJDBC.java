@@ -184,6 +184,29 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 	}
 
 	@Override
+	public Double findByCustoOrc(Integer numOrc) {
+		Double totOrc = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					"SELECT SUM(QuantidadeMatVir * CustoMatVir) AS 'total' FROM orcVirtual WHERE NumeroOrcVir = ? "); 
+			
+			st.setInt(1, numOrc);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totOrc = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+		}
+		return totOrc;
+	}
+
+	@Override
 	public Double findByTotalBal(Integer numBal) {
 		Double totBal = null;
 		PreparedStatement st = null;
@@ -191,6 +214,30 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
    		try {
 			st = conn.prepareStatement(
 					"SELECT SUM(TotalMatVir) AS 'total' FROM orcVirtual WHERE NumeroBalVir = ? "); 
+			
+			st.setInt(1, numBal);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				totBal = rs.getDouble("total");
+			}	
+   		}
+ 		catch (SQLException e) {
+			throw new DbException ( "Erro!!! " + classe + "não totalizado " + e.getMessage()); }
+ 		finally {
+ 			DB.closeStatement(st);
+ 			DB.closeResultSet(rs);
+		}
+		return totBal;
+	}
+
+	@Override
+	public Double findByCustoBal(Integer numBal) {
+		Double totBal = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+   		try {
+			st = conn.prepareStatement(
+					"SELECT SUM(QuantidadeMatVir * CustoMatVir) AS 'total' FROM orcVirtual WHERE NumeroBalVir = ? "); 
 			
 			st.setInt(1, numBal);
 			rs = st.executeQuery();

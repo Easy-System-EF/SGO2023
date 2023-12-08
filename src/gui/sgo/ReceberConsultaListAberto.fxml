@@ -54,8 +54,8 @@
         <columns>
             <TableColumn fx:id="tableColumnNumeroOsRec" editable="false" prefWidth="53.0" text="OS" />
             <TableColumn fx:id="tableColumnDataOsRec" editable="false" prefWidth="72.0" text="Data" />
-            <TableColumn fx:id="tableColumnClienteRec" editable="false" prefWidth="186.0" text="Cliente" />
-            <TableColumn fx:id="tableColumnPlacaRec" editable="false" prefWidth="56.0" text="Placa" />
+            <TableColumn fx:id="tableColumnClienteRec" editable="false" prefWidth="174.0" text="Cliente" />
+            <TableColumn fx:id="tableColumnPlacaRec" editable="false" prefWidth="68.0" text="Placa" />
             <TableColumn fx:id="tableColumnParcelaRec" editable="false" prefWidth="54.0" text="Parcela" />
             <TableColumn fx:id="tableColumnVencimentoRec" editable="false" prefWidth="85.0" text="Vencimento" />
             <TableColumn fx:id="tableColumnValorRec" editable="false" prefWidth="60.0" text="Valor" />

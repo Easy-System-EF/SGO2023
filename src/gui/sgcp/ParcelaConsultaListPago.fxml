@@ -54,11 +54,11 @@
             <Blend mode="DIFFERENCE" opacity="0.0" />
          </effect>
       </ToolBar>
-      <TableView fx:id="tableViewParcela" blendMode="DARKEN" prefHeight="64.0" prefWidth="653.0">
+      <TableView fx:id="tableViewParcela" blendMode="DARKEN" prefHeight="64.0" prefWidth="712.0">
         <columns>
-            <TableColumn fx:id="tableColumnFornecedor" editable="false" prefWidth="130.0" text="Fornecedor" />
-            <TableColumn fx:id="tableColumnNNF" editable="false" prefWidth="45.0" text="NNF" />
-            <TableColumn fx:id="tableColumnVencimento" editable="false" prefWidth="69.0" text="Vencto" />
+            <TableColumn fx:id="tableColumnFornecedor" editable="false" prefWidth="122.0" text="Fornecedor" />
+            <TableColumn fx:id="tableColumnNNF" editable="false" prefWidth="48.0" text="NNF" />
+            <TableColumn fx:id="tableColumnVencimento" editable="false" prefWidth="74.0" text="Vencto" />
             <TableColumn fx:id="tableColumnParcela" editable="false" prefWidth="38.0" text="Parc" />
             <TableColumn fx:id="tableColumnValor" editable="false" prefWidth="64.0" text="Valor" />
             <TableColumn fx:id="tableColumnJuros" editable="false" prefWidth="40.0" text="Juros" />

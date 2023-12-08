@@ -12,15 +12,11 @@ import java.util.ResourceBundle;
 import application.MainSgo;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.services.ParcelaService;
-import gui.sgomodel.entities.Adiantamento;
-import gui.sgomodel.entities.Balcao;
-import gui.sgomodel.entities.FechamentoAno;
+import gui.sgomodel.entities.FechamentoAnual;
 import gui.sgomodel.entities.Orcamento;
-import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
-import gui.sgomodel.services.FechamentoAnoService;
-import gui.sgomodel.services.FuncionarioService;
+import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.OrdemServicoService;
@@ -38,49 +34,40 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
  
-public class FechamentoAnoConsultaListController implements Initializable, DataChangeListener, Serializable {
+public class FechamentoAnualConsultaListController implements Initializable, DataChangeListener, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 // inje��o de dependenia sem implementar a classe (instanciat)
 // acoplamento forte - implementa via set
-	private FechamentoAnoService service;
-//	private FechamentoAno entity;
+	private FechamentoAnualService service;
+//	private Anual entity;
 	
 	@FXML
- 	private TableView<FechamentoAno> tableViewAnual;
+ 	private TableView<FechamentoAnual> tableViewAnual;
 
 // c/ entidade e coluna	
 	
  	@FXML
- 	private TableColumn<FechamentoAno, Integer> tableColumnOsAnual;
+ 	private TableColumn<FechamentoAnual, Integer> tableColumnMesAnual;
 
  	@FXML
- 	private TableColumn<FechamentoAno, String> tableColumnBalAnual;
+ 	private TableColumn<FechamentoAnual, Integer> tableColumnDoctoAnual;
 
    	@FXML
- 	private TableColumn<FechamentoAno, String> tableColumnDataAnual;
- 	
-   	@FXML
- 	private TableColumn<FechamentoAno, String> tableColumnClienteAnual;
- 	
-   	@FXML
- 	private TableColumn<FechamentoAno, String> tableColumnFuncionarioAnual;
- 	
-   	@FXML
-   	private TableColumn<FechamentoAno, String> tableColumnValorOsAnual;
+   	private TableColumn<FechamentoAnual, String> tableColumnValorAnual;
    	
    	@FXML
-   	private TableColumn<FechamentoAno, String> tableColumnValorMaterialAnual;
+   	private TableColumn<FechamentoAnual, String> tableColumnValorCustoAnual;
    	
    	@FXML
-   	private TableColumn<FechamentoAno, String> tableColumnValorComissaoAnual;
+   	private TableColumn<FechamentoAnual, String> tableColumnValorComissaoAnual;
    	
    	@FXML
-   	private TableColumn<FechamentoAno, String> tableColumnValorResultadoAnual;
+   	private TableColumn<FechamentoAnual, String> tableColumnValorResultadoAnual;
 
    	@FXML
-   	private TableColumn<FechamentoAno, String> tableColumnValorAcumuladoAnual;   	
+   	private TableColumn<FechamentoAnual, String> tableColumnValorAcumuladoAnual;   	
    	
 	@FXML
 	private Label labelTitulo;
@@ -89,16 +76,16 @@ public class FechamentoAnoConsultaListController implements Initializable, DataC
 	private Label labelUser;
 
 // carrega aqui lista Updatetableview (metodo)
- 	private ObservableList<FechamentoAno> obsList;
+ 	private ObservableList<FechamentoAnual> obsList;
  
 // auxiliar
- 	String classe = "Dados Fechamento Anual";
+ 	String classe = "Anual";
  	int flagStart = 0;
  	int numAno = 0;
 	public String user = "";
 		 	 
  	// injeta a dependencia com set (invers�o de controle de inje�ao)	
- 	public void setServices(FechamentoAnoService service) {
+ 	public void setServices(FechamentoAnualService service) {
  		this.service = service;
  	}
  	
@@ -108,20 +95,16 @@ public class FechamentoAnoConsultaListController implements Initializable, DataC
 		service.zeraAll();
 		Optional<ButtonType> result = Alerts.showConfirmation("Processamento", "<<<aguarde>>>");
 		if (result.get() == ButtonType.OK) {
-			FechamentoAno obj = new FechamentoAno();
-			Adiantamento objAdi = new Adiantamento();
+			FechamentoAnual obj = new FechamentoAnual();
 			Orcamento objOrc = new Orcamento();
-			Balcao objBal = new Balcao();
-			Receber objRec = new Receber();
-			FechamentoAnoConsultaFormController contF = new FechamentoAnoConsultaFormController();
-			contF.setDadosEntityes(obj, objOrc, objAdi, objBal, objRec);
+			FechamentoAnualConsultaFormController contF = new FechamentoAnualConsultaFormController();
+			contF.setDadosEntityes(obj, objOrc);
 			contF.setServiceAll(
-		      new FechamentoAnoService(),
+		      new FechamentoAnualService(),
 			  new AdiantamentoService(),
 			  new OrdemServicoService(),
 			  new OrcamentoService(),
 			  new OrcVirtualService(),
-			  new FuncionarioService(),
 			  new BalcaoService(),
 			  new ParcelaService(),
 			  new ReceberService());
@@ -147,13 +130,10 @@ public class FechamentoAnoConsultaListController implements Initializable, DataC
 	// comportamento padr�o para iniciar as colunas 	
  	private void initializeNodes() {
 		labelTitulo.setText("Fechamento Anual ");
-		tableColumnOsAnual.setCellValueFactory(new PropertyValueFactory<>("OsAnual"));
-		tableColumnBalAnual.setCellValueFactory(new PropertyValueFactory<>("BalAnual"));
-		tableColumnDataAnual.setCellValueFactory(new PropertyValueFactory<>("DataAnual"));
-		tableColumnClienteAnual.setCellValueFactory(new PropertyValueFactory<>("ClienteAnual"));
-		tableColumnFuncionarioAnual.setCellValueFactory(new PropertyValueFactory<>("FuncionarioAnual"));
-		tableColumnValorOsAnual.setCellValueFactory(new PropertyValueFactory<>("ValorOsAnual"));
-		tableColumnValorMaterialAnual.setCellValueFactory(new PropertyValueFactory<>("ValorMaterialAnual"));
+		tableColumnMesAnual.setCellValueFactory(new PropertyValueFactory<>("MesAnual"));
+		tableColumnDoctoAnual.setCellValueFactory(new PropertyValueFactory<>("DoctoAnual"));
+		tableColumnValorAnual.setCellValueFactory(new PropertyValueFactory<>("ValorAnual"));
+		tableColumnValorCustoAnual.setCellValueFactory(new PropertyValueFactory<>("ValorCustoAnual"));
 		tableColumnValorComissaoAnual.setCellValueFactory(new PropertyValueFactory<>("ValorComissaoAnual"));
 		tableColumnValorResultadoAnual.setCellValueFactory(new PropertyValueFactory<>("ValorResultadoAnual"));
 		tableColumnValorAcumuladoAnual.setCellValueFactory(new PropertyValueFactory<>("ValorAcumuladoAnual"));
@@ -174,7 +154,7 @@ public class FechamentoAnoConsultaListController implements Initializable, DataC
 			throw new IllegalStateException("Serviço Dados está vazio");
  		}
  		labelUser.setText(user); 		
-		List<FechamentoAno> list = new ArrayList<>();
+		List<FechamentoAnual> list = new ArrayList<>();
  	
 		if (numAno == 0) {
 			LocalDate ldt = DataStatic.criaLocalAtual();
@@ -184,15 +164,15 @@ public class FechamentoAnoConsultaListController implements Initializable, DataC
 		classe = "Fechamento anual ";
 		list = service.findAll();
 		if (list.size() == 0 && flagStart == 0) {
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, null, null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, "processamento", null, null, null, null, null));
-			list.add(new FechamentoAno(null, null, null, null, null, "<<<aguarde>>>", null, null, null, null, null));
+//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
+			list.add(new FechamentoAnual(null, null, "processamento", null, null, null, null, null));
+			list.add(new FechamentoAnual(null, null, "<<<aguarde>>>", null, null, null, null, null));
 		}
 		obsList = FXCollections.observableArrayList(list);
 		tableViewAnual.setItems(obsList);

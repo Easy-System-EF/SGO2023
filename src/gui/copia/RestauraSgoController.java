@@ -87,6 +87,7 @@ public class RestauraSgoController implements Initializable, DataChangeListener 
 
  	private ObservableList<Restaura> obsList;
 
+	int flagStart = 0;
 	Integer count = 0;
 	Integer countAk = 0;
 	String arq = "";
@@ -121,12 +122,13 @@ public class RestauraSgoController implements Initializable, DataChangeListener 
 
  	@FXML
   	public void onBtOkAdiAction(ActionEvent event) throws ParseException {
+		flagStart = 1;
+		updateTableView();
+		flagStart = 0;
  		 Stage parentStage = Utils.currentStage(event);
-// instanciando novo obj depto e injetando via
  		 createDialogForm("/gui/copia/RestauraForm.fxml", parentStage);
-// 		 service.zeraAll();
- 		 updateTableView();
  		 executaBack();
+ 		 updateTableView();
    	}
  	
  	public void executaBack() throws ParseException {
@@ -384,6 +386,10 @@ public class RestauraSgoController implements Initializable, DataChangeListener 
  		labelUser.setText(user);
  		labelFile.setText("<<<aguarde>>>");
  		labelCount.setText(String.valueOf(count));
+ 		if (flagStart == 1) {
+ 			listR.add(new Restaura(null, "  Processamento", null, null));
+ 			listR.add(new Restaura(null, "  <<<aguarde>>>", null, null));
+ 		}
   		obsList = FXCollections.observableArrayList(listR);
   		tableViewRestaura.setItems(obsList);
 	}

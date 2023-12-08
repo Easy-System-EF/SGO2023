@@ -49,7 +49,7 @@ public class RestauraVirtual implements Serializable {
 					vir.setNumeroBalVir(Integer.parseInt(campo[6]));
 					vir.setMaterial(matService.findById(Integer.parseInt(campo[7])));					
 					vir.setCustoMatVir(Double.parseDouble(campo[8]));
-					virService.saveOrUpdate(vir);
+					virService.insertBackUp(vir);
 					count += 1;
 				}
 			}	

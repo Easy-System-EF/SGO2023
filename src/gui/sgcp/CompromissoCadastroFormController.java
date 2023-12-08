@@ -319,11 +319,10 @@ public class CompromissoCadastroFormController implements Initializable {
   		
 
    		if (textParcelaCom.getText() == null || textParcelaCom.getText().trim().contentEquals("")) {
- 			exception.addErros("parcela", "Parcela não pode ser 0");	
+ 			exception.addErros("parcela", "Parcela é obrigatória");	
  		}
-   		else {
-   			obj.setParcelaCom(Utils.tryParseToInt(textParcelaCom.getText()));
-   		}
+		obj.setParcelaCom(Utils.tryParseToInt(textParcelaCom.getText()));
+
    		if (obj.getParcelaCom() != null) {
    			int par = obj.getParcelaCom();
    			int ok = 1;
@@ -338,11 +337,11 @@ public class CompromissoCadastroFormController implements Initializable {
   		if (textPrazoCom.getText() == null || textPrazoCom.getText().trim().contentEquals("")) { 
 			exception.addErros("prazo", "Prazo não pode ser nulo");	
 		}
-  		else {
-  			obj.setPrazoCom(Utils.tryParseToInt(textPrazoCom.getText()));
-  			if (obj.getParcelaCom() > 1 && obj.getPrazoCom() == 1) { 
-  				exception.addErros("prazo", "Parcela não é única, prazo tem que ser > 1"); 
-  			}
+		obj.setPrazoCom(Utils.tryParseToInt(textPrazoCom.getText()));
+		if (obj.getParcelaCom() != null) {
+			if (obj.getParcelaCom() > 1 && obj.getPrazoCom() == 1) { 
+				exception.addErros("prazo", "Parcela não é única, prazo tem que ser > 1");
+			}	
   		}	
   
   		if (obj.getPrazoCom() != null) {
@@ -353,8 +352,6 @@ public class CompromissoCadastroFormController implements Initializable {
   				exception.addErros("prazo", "Prazo = 1(a vista), 10, 14, 21, 30 ou 60(dias)");	
   			}
   		}
-  		
-  		if (obj.getPrazoCom() == 1)
   		
  		forn = comboBoxFornecedor.getValue();
  		obj.setFornecedor(comboBoxFornecedor.getValue());
@@ -376,10 +373,12 @@ public class CompromissoCadastroFormController implements Initializable {
  		
 		obj.setTipoConsumo(comboBoxTipoConsumo.getValue());
 		
-		if (obj.getPrazoCom() == 1 && obj.getParcelaCom() == 1) {
-			obj.setSituacaoCom(1);
-		} else {
-			obj.setSituacaoCom(0);
+		if (obj.getPrazoCom() != null) {
+			if (obj.getPrazoCom() == 1 && obj.getParcelaCom() == 1) {
+				obj.setSituacaoCom(1);
+			} else {
+				obj.setSituacaoCom(0);
+			}	
 		}
 		
   		if (exception.getErros().size() > 0) {
@@ -463,7 +462,10 @@ public class CompromissoCadastroFormController implements Initializable {
    		if (entity.getDataCom() != null) {
 			dpDataCom.setValue(LocalDate.ofInstant(entity.getDataCom().toInstant(), ZoneId.systemDefault()));
  		}
- 
+   		if (entity.getDataCom() != null) {
+			dpDataCom.setValue(LocalDate.ofInstant(entity.getDataCom().toInstant(), ZoneId.systemDefault()));
+ 		}
+
    		if (entity.getDataVencimentoCom() != null) {
 			dpDataVencimentoCom.setValue(LocalDate.ofInstant(entity.getDataVencimentoCom().toInstant(), ZoneId.systemDefault()));
  		}

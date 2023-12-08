@@ -38,6 +38,10 @@ public class OrcVirtualService {
    		return dao.findByTotalOrc(orc);
 	} 
 	
+	public Double findByCustoOrc(Integer orc) {
+   		return dao.findByCustoOrc(orc);
+	} 
+	
 	public void zeraAll() {
    		dao.zeroAll();
 	} 
@@ -52,6 +56,10 @@ public class OrcVirtualService {
 	
 	public Double findByTotalBal(Integer bal) {
    		return dao.findByTotalBal(bal);
+	} 
+	
+	public Double findByCustoBal(Integer bal) {
+   		return dao.findByCustoBal(bal);
 	} 
 	
 // * inserindo ou atualizando via dao

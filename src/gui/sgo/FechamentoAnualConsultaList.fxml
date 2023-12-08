@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="288.0" prefWidth="639.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.FechamentoAnualConsultaListController">
+   <children>
+      <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="560.0">
+        <items>
+            <Label fx:id="labelTitulo" prefHeight="22.0" prefWidth="441.0">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <padding>
+                  <Insets bottom="2.0" left="200.0" top="2.0" />
+               </padding>
+            </Label>
+            <Label fx:id="labelUser" textFill="#8ae8de">
+               <font>
+                  <Font size="12.0" />
+               </font>
+               <padding>
+                  <Insets left="100.0" right="5.0" />
+               </padding>
+            </Label>
+        </items>
+         <effect>
+            <Blend />
+         </effect>
+      </ToolBar>
+      <TableView fx:id="tableViewAnual" blendMode="DARKEN" prefHeight="235.0" prefWidth="669.0">
+        <columns>
+            <TableColumn fx:id="tableColumnMesAnual" editable="false" prefWidth="67.0" text="Mes" />
+            <TableColumn fx:id="tableColumnDoctoAnual" editable="false" prefWidth="108.0" text="Docto" />
+            <TableColumn fx:id="tableColumnValorAnual" editable="false" minWidth="0.0" prefWidth="87.0" text="Valor" />
+            <TableColumn fx:id="tableColumnValorCustoAnual" editable="false" prefWidth="79.0" text="Custo" />
+            <TableColumn fx:id="tableColumnValorComissaoAnual" editable="false" prefWidth="85.0" text="- Comissão" />
+            <TableColumn fx:id="tableColumnValorResultadoAnual" editable="false" prefWidth="99.0" text="= Resultado" />
+            <TableColumn fx:id="tableColumnValorAcumuladoAnual" editable="false" maxWidth="2000.0" prefWidth="101.0" text="+ Acumuldo" />
+        </columns>
+         <effect>
+            <Blend />
+         </effect>
+      </TableView>
+   </children>
+</VBox>

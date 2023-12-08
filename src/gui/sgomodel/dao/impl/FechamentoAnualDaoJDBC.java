@@ -10,44 +10,40 @@ import java.util.List;
 
 import db.DB;
 import db.DbException;
-import gui.sgomodel.dao.FechamentoAnoDao;
-import gui.sgomodel.entities.FechamentoAno;
+import gui.sgomodel.dao.FechamentoAnualDao;
+import gui.sgomodel.entities.FechamentoAnual;
   
-public class FechamentoAnoDaoJDBC implements FechamentoAnoDao {
+public class FechamentoAnualDaoJDBC implements FechamentoAnualDao {
 	
 // tb entra construtor p/ conex�o
 	private Connection conn;
 	
-	public FechamentoAnoDaoJDBC (Connection conn) {
+	public FechamentoAnualDaoJDBC (Connection conn) {
 		this.conn = conn;
 	}
 
 	String classe = "Fechamento Ano ";
 	
 	@Override
-	public void insert(FechamentoAno obj) {
+	public void insert(FechamentoAnual obj) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
   		try {
 			st = conn.prepareStatement(
-					"INSERT INTO FechamentoAno " +
-				      "(OsAnual, BalAnual, DataAnual, ClienteAnual, FuncionarioAnual, " +
-                      "ValorOsAnual, ValorMaterialAnual, ValorComissaoAnual, ValorResultadoAnual, " +
+					"INSERT INTO FechamentoAnual " +
+				      "(MesAnual, DoctoAnual, ValorAnual, ValorCustoAnual, ValorComissaoAnual, ValorResultadoAnual, " +
 				      "ValorAcumuladoAnual ) " +
   				      "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+				      "(?, ?, ?, ?, ?, ?, ? )",
  					 Statement.RETURN_GENERATED_KEYS); 
 
-			st.setString(1, obj.getOsAnual());
-			st.setString(2, obj.getBalAnual());
-			st.setString(3, obj.getDataAnual());
-			st.setString(4, obj.getClienteAnual());
-			st.setString(5, obj.getFuncionarioAnual());
- 			st.setString(6, obj.getValorOsAnual());
- 			st.setString(7, obj.getValorMaterialAnual());
- 			st.setString(8, obj.getValorComissaoAnual());
- 			st.setString(9, obj.getValorResultadoAnual());
- 			st.setString(10, obj.getValorAcumuladoAnual());
+			st.setString(1, obj.getMesAnual());
+			st.setString(2, obj.getDoctoAnual());
+ 			st.setString(3, obj.getValorAnual());
+ 			st.setString(4, obj.getValorCustoAnual());
+ 			st.setString(5, obj.getValorComissaoAnual());
+ 			st.setString(6, obj.getValorResultadoAnual());
+ 			st.setString(7, obj.getValorAcumuladoAnual());
  			
  			int rowsaffectad = st.executeUpdate();
 			
@@ -72,21 +68,21 @@ public class FechamentoAnoDaoJDBC implements FechamentoAnoDao {
 	}
  
 	@Override
-	public List<FechamentoAno> findAll() {
+	public List<FechamentoAnual> findAll() {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement( 
 					"SELECT * " +
-						"From FechamentoAno " +	
+						"From FechamentoAnual " +	
 					"ORDER BY NumeroAnual");
 			
 			rs = st.executeQuery();
 			
-			List<FechamentoAno> list = new ArrayList<>();
+			List<FechamentoAnual> list = new ArrayList<>();
 			
 			while (rs.next()) {
-				FechamentoAno obj = instantiateFechamento(rs);
+				FechamentoAnual obj = instantiateFechamento(rs);
  				list.add(obj);
  			}
 			return list;
@@ -106,7 +102,7 @@ public class FechamentoAnoDaoJDBC implements FechamentoAnoDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement( 
-					"TRUNCATE TABLE sgo.FechamentoAno " );
+					"TRUNCATE TABLE FechamentoAnual " );
 
 			st.executeUpdate();
 
@@ -120,16 +116,13 @@ public class FechamentoAnoDaoJDBC implements FechamentoAnoDao {
 		}
 	} 
 	
-	private FechamentoAno instantiateFechamento(ResultSet rs) throws SQLException {
-		FechamentoAno dados = new FechamentoAno();
+	private FechamentoAnual instantiateFechamento(ResultSet rs) throws SQLException {
+		FechamentoAnual dados = new FechamentoAnual();
  		dados.setNumeroAnual(rs.getInt("NumeroAnual"));
- 		dados.setOsAnual(rs.getString("OsAnual"));
- 		dados.setBalAnual(rs.getString("BalAnual"));
-		dados.setDataAnual(rs.getString("DataAnual"));
-		dados.setClienteAnual(rs.getString("ClienteAnual"));
-		dados.setFuncionarioAnual(rs.getString("FuncionarioAnual"));
- 		dados.setValorOsAnual(rs.getString("ValorOsAnual"));
- 		dados.setValorMaterialAnual(rs.getString("ValorMaterialAnual"));
+ 		dados.setMesAnual(rs.getString("MesAnual"));
+ 		dados.setDoctoAnual(rs.getString("DoctoAnual"));
+ 		dados.setValorAnual(rs.getString("ValorAnual"));
+ 		dados.setValorCustoAnual(rs.getString("ValorCustoAnual"));
  		dados.setValorComissaoAnual(rs.getString("ValorComissaoAnual"));
  		dados.setValorResultadoAnual(rs.getString("ValorResultadoAnual"));
  		dados.setValorAcumuladoAnual(rs.getString("ValorAcumuladoAnual"));

@@ -5,7 +5,9 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -23,6 +25,7 @@ import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.services.EmpresaService;
 import gui.util.Alerts;
+import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -315,16 +318,36 @@ public class ParcelaPrintRelatorioPagoController implements Initializable, DataC
  	private void somaTotal() {
   		double soma = 0.00;
   		List<ParPeriodo> listPer = perService.findAll();
-		for (ParPeriodo per : listPer)
-		{	codFor = per.getFornecedor().getCodigo();
+		for (ParPeriodo per : listPer) {
+			codFor = per.getFornecedor().getCodigo();
 		    codTipo = per.getTipoConsumo().getCodigoTipo();
 		}    
  		List<Parcela> list = new ArrayList<>();
-  		if (opcao == 'o')
-		{	list = parService.findAllPago();
+  		if (opcao == 'o') {
+			list = parService.findAllPago();
+ 			LocalDate ldt = DataStatic.criaLocalAtual();
+ 			int aa = DataStatic.anoDaData(ldt);
+ 			int mm = DataStatic.mesDaData(ldt);
+ 			int df = DataStatic.ultimoDiaMes(ldt);
+ 			int dd = 01;
+ 			
+ 			Date dt = new Date();
+ 			Calendar cal = Calendar.getInstance();
+ 			cal.setTime(dt);
+ 			
+ 			cal.set(Calendar.DAY_OF_MONTH, dd);
+ 			cal.set(Calendar.MONTH, mm - 1);
+ 			cal.set(Calendar.YEAR, aa);
+ 			Date dti = cal.getTime();
+ 			
+ 			cal.set(Calendar.DAY_OF_MONTH, df);
+ 			cal.set(Calendar.MONTH, mm - 1);
+ 			cal.set(Calendar.YEAR, aa);
+ 			Date dtf = cal.getTime();
+ 			list.removeIf(x -> x.getDataPagamentoPar().before(dti) || x.getDataPagamentoPar().after(dtf));
 		}	 
-  		if (opcao == 'q')
- 		{	list = parService.findPeriodoPago();
+  		if (opcao == 'q') {
+ 			list = parService.findPeriodoPago();
  		}
   		if (opcao == 'g') {
   			if (codigo == null) {
@@ -333,8 +356,8 @@ public class ParcelaPrintRelatorioPagoController implements Initializable, DataC
   				list = parService.findByIdFornecedorPago(codFor);
   			}
   		}	
- 		if (opcao == 'u')
-		{	list = parService.findByIdTipoPago(codTipo);
+ 		if (opcao == 'u') {
+			list = parService.findByIdTipoPago(codTipo);
 		}
 
  		if (list.size() == 0) {

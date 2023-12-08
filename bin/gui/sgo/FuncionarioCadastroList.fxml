@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="307.0" prefWidth="689.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.FuncionarioCadastroListController">
+<VBox prefHeight="307.0" prefWidth="696.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.sgo.FuncionarioCadastroListController">
    <children>
       <ToolBar blendMode="DIFFERENCE" prefHeight="40.0" prefWidth="560.0">
         <items>
@@ -44,10 +44,10 @@
           <TableColumn fx:id="tableColumnCodigoFun" editable="false" prefWidth="54.0" text="Código" />
             <TableColumn fx:id="tableColumnNomeFun" editable="false" prefWidth="175.0" text="Nome" />
             <TableColumn fx:id="tableColumnDddFun" editable="false" prefWidth="39.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefoneFun" editable="false" prefWidth="62.0" text="Telefone" />
-            <TableColumn fx:id="tableColumnCargoFun" editable="false" prefWidth="99.0" text="Cargo" />
-            <TableColumn fx:id="tableColumnPixFun" editable="false" minWidth="0.0" prefWidth="136.0" text="Pix" />
-            <TableColumn fx:id="tableColumnSituacaoFun" editable="false" prefWidth="59.0" text="Situação" />
+            <TableColumn fx:id="tableColumnTelefoneFun" editable="false" prefWidth="89.0" text="Telefone" />
+            <TableColumn fx:id="tableColumnCargoFun" editable="false" prefWidth="86.0" text="Cargo" />
+            <TableColumn fx:id="tableColumnPixFun" editable="false" minWidth="0.0" prefWidth="128.0" text="Pix" />
+            <TableColumn fx:id="tableColumnSituacaoFun" editable="false" prefWidth="67.0" text="Situação" />
             <TableColumn fx:id="tableColumnEDITA" editable="false" minWidth="0.0" prefWidth="51.0" text=" " />
         </columns>
          <effect>

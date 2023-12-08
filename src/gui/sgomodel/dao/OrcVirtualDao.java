@@ -21,6 +21,8 @@ public interface OrcVirtualDao {
 	List<OrcVirtual> findByBalcaoMat(Integer bal, int cod);
 	Double findByTotalOrc(Integer orc);
 	Double findByTotalBal(Integer bal);
+	Double findByCustoOrc(Integer orc);
+	Double findByCustoBal(Integer bal);
 	void zeroAll();
 }
   

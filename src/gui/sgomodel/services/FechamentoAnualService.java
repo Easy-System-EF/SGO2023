@@ -3,18 +3,18 @@ package gui.sgomodel.services;
 import java.util.List;
 
 import gui.sgomodel.dao.DaoFactory;
-import gui.sgomodel.dao.FechamentoAnoDao;
-import gui.sgomodel.entities.FechamentoAno;
+import gui.sgomodel.dao.FechamentoAnualDao;
+import gui.sgomodel.entities.FechamentoAnual;
   
-public class FechamentoAnoService {
+public class FechamentoAnualService {
 
 // dependencia - injeta com padrao factory que vai buscar no bco de dados
 // retornando o dao.findAll 
-	private FechamentoAnoDao dao = DaoFactory.createFechamentoAnoDao();
+	private FechamentoAnualDao dao = DaoFactory.createFechamentoAnualDao();
 
 //    criar no fornecedorlist uma dependencia no forn controlador para esse metodo, 
 //	carregando e mostrando na view		
-	public List<FechamentoAno> findAll() {
+	public List<FechamentoAnual> findAll() {
    		return dao.findAll();
 	} 
 	
@@ -24,7 +24,7 @@ public class FechamentoAnoService {
 	
 // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 
-	public void insert(FechamentoAno obj) {
+	public void insert(FechamentoAnual obj) {
 			dao.insert(obj);
 	}	
 }

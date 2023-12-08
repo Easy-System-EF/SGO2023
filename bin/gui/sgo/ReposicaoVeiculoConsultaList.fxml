@@ -50,11 +50,11 @@
         <columns>
             <TableColumn fx:id="tableColumnNumeroOsRep" editable="false" prefWidth="55.0" text="OS" />
             <TableColumn fx:id="tableColumnDataOsRep" editable="false" prefWidth="72.0" text="Data" />
-            <TableColumn fx:id="tableColumnClienteRep" editable="false" prefWidth="130.0" text="Cliente" />
-            <TableColumn fx:id="tableColumnPlacaRep" editable="false" prefWidth="56.0" text="Placa" />
+            <TableColumn fx:id="tableColumnClienteRep" editable="false" prefWidth="123.0" text="Cliente" />
+            <TableColumn fx:id="tableColumnPlacaRep" editable="false" prefWidth="63.0" text="Placa" />
             <TableColumn fx:id="tableColumnDDDRep" editable="false" prefWidth="33.0" text="DDD" />
-            <TableColumn fx:id="tableColumnTelefoneRep" editable="false" prefWidth="62.0" text="Telefone" />
-            <TableColumn fx:id="tableColumnMaterialRep" editable="false" prefWidth="133.0" text="Material" />
+            <TableColumn fx:id="tableColumnTelefoneRep" editable="false" prefWidth="69.0" text="Telefone" />
+            <TableColumn fx:id="tableColumnMaterialRep" editable="false" prefWidth="126.0" text="Material" />
             <TableColumn fx:id="tableColumnKmRep" editable="false" prefWidth="52.0" text="Km" />
             <TableColumn fx:id="tableColumnDataRep" editable="false" prefWidth="71.0" text="Data" />
             <TableColumn fx:id="tableColumnREMOVE" prefWidth="285.0" text=" " />

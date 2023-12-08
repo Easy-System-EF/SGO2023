@@ -8,7 +8,7 @@
 
 <VBox blendMode="DIFFERENCE" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="441.0" prefWidth="462.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label prefHeight="20.0" prefWidth="392.0" text="Sistema Gerencial Automotivo   v.23.06.01" textFill="#3a0fe8">
+      <Label prefHeight="20.0" prefWidth="392.0" text="Sistema Gerencial Automotivo   v.23.12.01" textFill="#3a0fe8">
          <font>
             <Font size="16.0" />
          </font>
@@ -104,7 +104,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <Label text="- Financeiro do Mes">
+      <Label text="- Financeiro: Mes / Ano">
          <font>
             <Font size="14.0" />
          </font>

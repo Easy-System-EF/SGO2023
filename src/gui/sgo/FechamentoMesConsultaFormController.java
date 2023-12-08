@@ -78,7 +78,6 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	private Orcamento orc;
 	@SuppressWarnings("unused")
 	private Adiantamento adianto;
-	private Funcionario fun;
 	@SuppressWarnings("unused")
 	private Balcao bal;
 	@SuppressWarnings("unused")
@@ -132,12 +131,11 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 
 	Calendar cal = Calendar.getInstance();
 
-	public void setDadosEntityes(FechamentoMes entity, Orcamento orc, Adiantamento adianto, Funcionario fun, Balcao bal,
+	public void setDadosEntityes(FechamentoMes entity, Orcamento orc, Adiantamento adianto, Balcao bal,
 			Receber receber) {
 		this.entity = entity;
 		this.orc = orc;
 		this.adianto = adianto;
-		this.fun = fun;
 		this.bal = bal;
 		this.receber = receber;
 	}
@@ -326,74 +324,54 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  				}				
  			}
 		
-// zera comiss�o		
- 			classe = "Adiantamento ";
- 			List<Adiantamento> adZera = adService.findMes(mm, aa);
- 			for (Adiantamento a : adZera) {
- 				if (a.getCodigoFun() != null) {
- 					if (a.getComissaoAdi() > 0 || a.getValeAdi() > 0) {
- 						classe = "Funcionario Dados 1 ";
- 						fun = funService.findById(a.getCodigoFun());
- 						fun.setComissaoFun(adService.findByTotalCom(mm, aa, fun.getCodigoFun()));
- 						fun.setAdiantamentoFun(adService.findByTotalAdi(mm, aa, fun.getCodigoFun()));
- 						funService.saveOrUpdate(fun);
- 					}	
- 				}	
- 			}
-		
 // monta dados OS		
 			classe = "OS ";
 			int  sumOs = 0;
 			Double sumVlrOs = 0.00;
 			List<OrdemServico> listOs = osService.findByMesAno(mm, aa);
 			sumOs = listOs.size();
-			if (listOs.size() > 0) {
-				classe = "Virtual ";
-				List<OrcVirtual> listVir = new ArrayList<>();
-				for (OrdemServico o : listOs) {
-					if (o.getNumeroOS() != null) {
-						double sumMatOs = 0.00;
-						dados.setBalMensal("   ---");
-						dados.setOsMensal(String.valueOf(o.getNumeroOS()));
-						dados.setDataMensal(sdf.format(o.getDataOS()));
-						dados.setValorOsMensal(Mascaras.formataValor(o.getValorOS()));
-						sumVlrOs += o.getValorOS();
-						classe = "Orcamento ";
-						orc = orcService.findById(o.getOrcamentoOS());
-						classe = "OrcVirtual ";
-						listVir = virService.findByOrcto(orc.getNumeroOrc());
-						dados.setClienteMensal(orc.getClienteOrc());
-						dados.setFuncionarioMensal(orc.getFuncionarioOrc().substring(0, 20));
+			List<OrcVirtual> listVir = new ArrayList<>();
+			for (OrdemServico o : listOs) {
+				if (o.getNumeroOS() != null) {
+					double sumMatOs = 0.00;
+					dados.setBalMensal("   ---");
+					dados.setOsMensal(String.valueOf(o.getNumeroOS()));
+					dados.setDataMensal(sdf.format(o.getDataOS()));
+					List<Receber> listR = recService.findByAllOs(o.getNumeroOS());
+					double vlr = 0.0;
+					for (Receber r : listR) {
+						vlr += r.getValorPagoRec();
+					}
+					dados.setValorOsMensal(Mascaras.formataValor(vlr));
+					sumVlrOs += vlr;
+					orc = orcService.findById(o.getOrcamentoOS());
+					listVir = virService.findByOrcto(orc.getNumeroOrc());
+					listVir.removeIf(x -> x.getMaterial().getNomeMat().equals("Mão de obra"));
+					listVir.removeIf(x -> x.getMaterial().getNomeMat().equals("Serviço"));
+					dados.setClienteMensal(orc.getClienteOrc());
+					dados.setFuncionarioMensal(orc.getFuncionarioOrc().substring(0, 20));
 
-						for (OrcVirtual v : listVir) {
-							if (v.getNumeroOrcVir() != null) {
-								if (v.getMaterial().getGrupo().getNomeGru().equals("Mão de obra") || 
-										v.getMaterial().getGrupo().getNomeGru().equals("Serviço")) {
-										nada = 0;
-								} else {	
-									sumMatOs += (v.getCustoMatVir() * v.getQuantidadeMatVir());
-								}
-							}
-						}
-						sumMaterial += sumMatOs;
+					for (OrcVirtual v : listVir) {
+						sumMatOs += (v.getCustoMatVir() * v.getQuantidadeMatVir());
+					}
+					sumMaterial += sumMatOs;
 
-						if (dados.getValorResultadoMensal() == null ) {
-							dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
-							dados.setValorAcumuladoMensal(Mascaras.formataValor(0.00));
-						}
-						dados.setValorComissaoMensal(Mascaras.formataValor(0.00));
-						dados.setValorMaterialMensal(Mascaras.formataValor(sumMatOs));
-						dados.setValorComissaoMensal(Mascaras.formataValor(orc.getFuncionario().getComissaoFun()));
-						sumResultado = o.getValorOS() - (sumMatOs + orc.getFuncionario().getComissaoFun());
-						dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
-						sumAcumulado += sumResultado; 
-						dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
-						dados.setMes(objMes);
-						dados.setAno(objAno);	
-						classe = "Dados Fechamento ";
-						service.insert(dados);
-					}				
-				}
+					if (dados.getValorResultadoMensal() == null ) {
+						dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
+						dados.setValorAcumuladoMensal(Mascaras.formataValor(0.00));
+					}
+					dados.setValorComissaoMensal(Mascaras.formataValor(0.00));
+					dados.setValorMaterialMensal(Mascaras.formataValor(sumMatOs));
+					dados.setValorComissaoMensal(Mascaras.formataValor(adService.findByTotalComOS(o.getNumeroOS())));
+					sumFolha += adService.findByTotalComOS(o.getNumeroOS());
+					sumResultado = vlr - (sumMatOs + adService.findByTotalComOS(o.getNumeroOS()));
+					dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
+					sumAcumulado += sumResultado; 
+					dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
+					dados.setMes(objMes);
+					dados.setAno(objAno);	
+					service.insert(dados);
+				}				
 			}
 		
 // monta dados balc�o		
@@ -402,48 +380,46 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 			Double sumVlrBal = 0.00;
 			List<Balcao> listBal = balService.findByMesAno(mm, aa);
 			sumBal = listBal.size();
-			if (listBal.size() > 0) {
-				List<OrcVirtual> listVir = new ArrayList<>();
-				for (Balcao b : listBal) {
-					if (b.getNumeroBal() != null) {
-						double sumMatBal = 0.00;
-						dados.setOsMensal("   ----");
-						dados.setBalMensal(String.valueOf(b.getNumeroBal()));
-						dados.setDataMensal(sdf.format(b.getDataBal()));
-						dados.setValorOsMensal(Mascaras.formataValor(b.getTotalBal()));
-						sumVlrBal += b.getTotalBal(); 
-						dados.setClienteMensal("Balcão");
-						dados.setFuncionarioMensal(b.getFuncionarioBal().substring(0, 20));
-						classe = "OrcVirtual ";
-						listVir = virService.findByBalcao(b.getNumeroBal());
-						for (OrcVirtual vB : listVir) {
-							if (vB.getNumeroOrcVir() != null) {	
-								if (vB.getMaterial().getGrupo().getNomeGru().equals("Mão de obra") || 
-									vB.getMaterial().getGrupo().getNomeGru().equals("Serviço")) {
-									nada = 0;
-								} else {	
-									sumMatBal += (vB.getCustoMatVir() * vB.getQuantidadeMatVir());
-								}	
-							}
+			for (Balcao b : listBal) {
+				if (b.getNumeroBal() != null) {
+					double sumMatBal = 0.00;
+					dados.setOsMensal("   ----");
+					dados.setBalMensal(String.valueOf(b.getNumeroBal()));
+					dados.setDataMensal(sdf.format(b.getDataBal()));
+					dados.setValorOsMensal(Mascaras.formataValor(b.getTotalBal()));
+					List<Receber> listRec = recService.findByAllOs(b.getNumeroBal());
+					for (Receber r : listRec) {
+						if (r.getPlacaRec().equals("Balcão")) {
+							sumVlrBal += r.getValorPagoRec();
 						}
-						sumMaterial += sumMatBal;
-						if (dados.getValorResultadoMensal() == null ) {
-							dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
-							dados.setValorAcumuladoMensal(Mascaras.formataValor(0.00));
+					}	
+					dados.setClienteMensal("Balcão");
+					dados.setFuncionarioMensal(b.getFuncionarioBal().substring(0, 20));
+					listVir = virService.findByBalcao(b.getNumeroBal());
+					listVir.removeIf(x -> x.getMaterial().getNomeMat().equals("Mão de obra"));
+					listVir.removeIf(x -> x.getMaterial().getNomeMat().equals("Serviço"));
+					for (OrcVirtual vB : listVir) {
+						if (vB.getNumeroOrcVir() != null) {	
+								sumMatBal += (vB.getCustoMatVir() * vB.getQuantidadeMatVir());
 						}
-						dados.setValorComissaoMensal(Mascaras.formataValor(0.00));
-						dados.setValorMaterialMensal(Mascaras.formataValor(sumMatBal));
-						dados.setValorComissaoMensal(Mascaras.formataValor(b.getFuncionario().getComissaoFun()));
-						sumResultado = b.getTotalBal() - (sumMatBal + b.getFuncionario().getComissaoFun());
-						dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
-						sumAcumulado += sumResultado; 
-						dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
-						dados.setMes(objMes);
-						dados.setAno(objAno);	
-						classe = "Dados Fechamento ";
-						service.insert(dados);
-					}				
-				}
+					}
+					sumMaterial += sumMatBal;
+					if (dados.getValorResultadoMensal() == null ) {
+						dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
+						dados.setValorAcumuladoMensal(Mascaras.formataValor(0.00));
+					}
+					dados.setValorComissaoMensal(Mascaras.formataValor(0.00));
+					dados.setValorMaterialMensal(Mascaras.formataValor(sumMatBal));
+					dados.setValorComissaoMensal(Mascaras.formataValor(adService.findByTotalComBal(b.getNumeroBal())));
+					sumFolha += adService.findByTotalComBal(b.getNumeroBal());
+					sumResultado = b.getTotalBal() - (sumMatBal + adService.findByTotalComBal(b.getNumeroBal()));
+					dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
+					sumAcumulado += sumResultado; 
+					dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
+					dados.setMes(objMes);
+					dados.setAno(objAno);	
+					service.insert(dados);
+				}				
 			}
 // monta tributos
 			if (sumOs > 0 || sumBal > 0) {

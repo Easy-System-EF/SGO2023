@@ -33,7 +33,7 @@ import gui.sgo.ClienteCadastroListController;
 import gui.sgo.ClienteMVRConsultaListController;
 import gui.sgo.ComissaoConsultaListController;
 import gui.sgo.EntradaCadastroListController;
-import gui.sgo.FechamentoAnoConsultaListController;
+import gui.sgo.FechamentoAnualConsultaListController;
 import gui.sgo.FechamentoMesConsultaListController;
 import gui.sgo.FolhaMesConsultaListController;
 import gui.sgo.FuncionarioCadastroListController;
@@ -55,7 +55,7 @@ import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.CargoService;
 import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.EntradaService;
-import gui.sgomodel.services.FechamentoAnoService;
+import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.FechamentoMesService;
 import gui.sgomodel.services.FolhaMesService;
 import gui.sgomodel.services.FuncionarioService;
@@ -167,7 +167,7 @@ public class MainViewSgoController extends javax.swing.JFrame  implements Initia
 	private MenuItem menuItemConsultaFechamentoMes;
 	
 	@FXML
-	private MenuItem menuItemConsultaFechamentoAno;
+	private MenuItem menuItemConsultaFechamentoAnual;
 	
 	@FXML
 	private MenuItem menuItemConsultaClienteMVRList;
@@ -711,16 +711,16 @@ public class MainViewSgoController extends javax.swing.JFrame  implements Initia
 	}
   
 	@FXML
-	public void onMenuItemConsultaFechamentoAnoAction() {
-		classe = "Consulta Fechamento Ano ";
+	public void onMenuItemConsultaFechamentoAnualAction() {
+		classe = "Consulta Fechamento Anual";
 		if (senha != "Ok") {
 			temLogar();
 		} 
 		if (senha == "Ok") {
 			if (nivel == 1 || nivel == 9) {
-				loadView("/gui/sgo/FechamentoAnoConsultaList.fxml", (FechamentoAnoConsultaListController controller) -> {
+				loadView("/gui/sgo/FechamentoAnualConsultaList.fxml", (FechamentoAnualConsultaListController controller) -> {
 					controller.user = user;
-					controller.setServices(new FechamentoAnoService());
+					controller.setServices(new FechamentoAnualService());
 		   			controller.updateTableView();
 		   			controller.montaForm();
 				});

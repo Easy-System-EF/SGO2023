@@ -268,7 +268,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
    		try {
 			st = conn.prepareStatement(
 			
-			"select SUM(ValeAdi) AS total from adiantamento " +
+			"select SUM(ComissaoAdi) AS total from adiantamento " +
 				"WHERE adiantamento.BalcaoAdi = ? "); 
 
 			st.setInt(1, bal);

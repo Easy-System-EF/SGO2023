@@ -245,16 +245,26 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			total = "Total dinheiro... " + "R$" + vlrDin;
-			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
-			total = "Total pix.......... " + "R$" + vlrPix;
-			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
-			total = "Total débito..... " + "R$" + vlrDeb;
-			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
-			total = "Total CC.......... " + "R$" + vlrCC;
-			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
-			total = "Total geral....... " + "R$" + vlrTot;
-			list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			if (din > 0) {
+				total = "Total dinheiro... " + "R$" + vlrDin;
+				list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			}
+			if (pix > 0) {
+				total = "Total pix.......... " + "R$" + vlrPix;
+				list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			}
+			if (deb > 0) {
+				total = "Total débito..... " + "R$" + vlrDeb;
+				list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			}
+			if (cc > 0) {
+				total = "Total CC.......... " + "R$" + vlrCC;
+				list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			}
+			if (tot > 0) {
+				total = "Total geral....... " + "R$" + vlrTot;
+				list.add(new Receber(null, null, null, total, null, dt, null, null, null, 0.00, dt, dt, null, null, null, null, null));
+			}	
 		}
 
   		labelTitulo.setText(String.format("%s ", nomeTitulo));

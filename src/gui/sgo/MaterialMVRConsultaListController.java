@@ -121,8 +121,8 @@ public class MaterialMVRConsultaListController implements Initializable {
 		List<Material> list = new ArrayList<>();
  		labelUser.setText(user);
  		if (ok == 0) {
- 			list.add(new Material(null, null, "processando", null, null, null, null, null, null, null, null, null, nd, null, null));
- 			list.add(new Material(null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, null, nd, null, null));
+ 			list.add(new Material(null, null, "processando", null, null, null, null, null, null, null, null, 0.0, nd, null, null));
+ 			list.add(new Material(null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, 0.0, nd, null, null));
  		}
 		if (ok == 1) {
 			labelUser.setText(user);

@@ -290,7 +290,7 @@ public class ReceberConsultaListAbertoController implements Initializable, DataC
 	private void initEditButtons() {
 		  tableColumnEDITA.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
 		  tableColumnEDITA.setCellFactory(param -> new TableCell<Receber, Receber>() { 
-		    private final Button button = new Button("baixa"); 
+		    private final Button button = new Button("Baixa"); 
 		    @Override 
 		    protected void updateItem(Receber obj, boolean empty) {
 		      super.updateItem(obj, empty); 

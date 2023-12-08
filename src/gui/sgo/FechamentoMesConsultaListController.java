@@ -18,7 +18,6 @@ import gui.sgcpmodel.services.TipoConsumoService;
 import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.FechamentoMes;
-import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Orcamento;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.AdiantamentoService;
@@ -126,13 +125,12 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
 		FechamentoMes obj = new FechamentoMes();
 		Adiantamento objAdi = new Adiantamento();
 		Orcamento objOrc = new Orcamento();
-		Funcionario objFun = new Funcionario();
 		Balcao objBal = new Balcao();
 		Receber objRec = new Receber();
 		classe = "Meses ";
   		createDialogOpcao("/gui/sgo/MesAnoMForm.fxml", parentStage, 
   				(FechamentoMesConsultaFormController contF) -> {
-			contF.setDadosEntityes(obj, objOrc, objAdi, objFun, objBal, objRec);
+			contF.setDadosEntityes(obj, objOrc, objAdi, objBal, objRec);
 			contF.setServices(new FechamentoMesService(),
 						      new AdiantamentoService(),
 							  new MesesService(),

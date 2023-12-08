@@ -194,7 +194,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	// auxiliar
 	public String user = "usuário";
 	String pesquisa = "";
-	int flagg = 0;
 // saber se func tem comissao	
 	String classe = "";
 	Double maoObra = 0.00;
@@ -295,6 +294,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		if (orcService == null) {
 			throw new IllegalStateException("Serviço orçamento nulo");
 		}
+		ValidationException exception = new ValidationException("Validation exception");
 		try {
 			if (entity.getNumeroOS() != null) {
 				entAnt = entity;
@@ -317,6 +317,10 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				updateKmVeiculo();
 				if (maoObra > 0) {
 					gravaComissaoOS();
+				}
+				exception.addErros("nf", "processamento longo - Ok ");
+				if (exception.getErros().size() > 0) {
+					throw exception;
 				}
 				classe = "OS Commit ";
 				OSCommitDao osCommit = DaoFactory.createOSCommitDao();
@@ -583,70 +587,77 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 			exception.addErros("dataOS", "Data é obrigatória");
 		}
 
-		obj.setOrcamento(comboBoxOrcamento.getValue());
-		obj.setOrcamentoOS(obj.getOrcamento().getNumeroOrc());
-		obj.setPlacaOS(obj.getOrcamento().getPlacaOrc());
-		obj.setClienteOS(obj.orcamento.getClienteOrc());
-		obj.setValorOS(obj.getOrcamento().getTotalOrc());
+		if (comboBoxOrcamento.getValue() != null) {
+			obj.setOrcamento(comboBoxOrcamento.getValue());
+			obj.setOrcamentoOS(obj.getOrcamento().getNumeroOrc());
+			obj.setPlacaOS(obj.getOrcamento().getPlacaOrc());
+			obj.setClienteOS(obj.orcamento.getClienteOrc());
+			obj.setValorOS(obj.getOrcamento().getTotalOrc());
+		} else {
+			exception.addErros("orcto", "Orçamento é obrigatório");			
+		}
 		if (obj.getNumeroOS() != null) {
 			exception.addErros("dataOS", "Orçamento Fechado");
 			exception.addErros("orcto", "Sem acesso");
 			exception.addErros("parcela", "Ordem de Serviço No: " + obj.getNumeroOS());
 		}
 
-		obj.setOrcamentoOS(comboBoxOrcamento.getValue().getNumeroOrc());
-		obj.setPlacaOS(comboBoxOrcamento.getValue().getPlacaOrc());
-		obj.setClienteOS(comboBoxOrcamento.getValue().getClienteOrc());
-		obj.setValorOS(comboBoxOrcamento.getValue().getTotalOrc());
-		obj.setKmOS(comboBoxOrcamento.getValue().getKmFinalOrc());
-		int flag1 = 0;
-		if (rbParcelaUnica.isSelected()) {
-			obj.setParcelaOS(1);
-			flag1 += 1;
+		if (comboBoxOrcamento.getValue() != null) {
+			obj.setOrcamentoOS(comboBoxOrcamento.getValue().getNumeroOrc());
+			obj.setPlacaOS(comboBoxOrcamento.getValue().getPlacaOrc());
+			obj.setClienteOS(comboBoxOrcamento.getValue().getClienteOrc());
+			obj.setValorOS(comboBoxOrcamento.getValue().getTotalOrc());
+			obj.setKmOS(comboBoxOrcamento.getValue().getKmFinalOrc());
 		}
-		if (rbParcela02.isSelected()) {
-			obj.setParcelaOS(2);
-			flag1 += 1;
-		}
-		if (rbParcela03.isSelected()) {
-			obj.setParcelaOS(3);
-			flag1 += 1;
-		}
-		if (obj.getParcelaOS() == null) {
-			exception.addErros("parcela", "Parcela obrigatória");
-		}
-		if (flag1 > 1) {
-			exception.addErros("parcela", "Só pode uma opção");
-		}
-
-		int flag2 = 0;
-		if (rbPrazoAvista.isSelected()) {
-			obj.setPrazoOS(1);
-			flag2 += 1;
-		}
-		if (rbPrazo10.isSelected()) {
-			obj.setPrazoOS(10);
-			flag2 += 1;
-		}
-		if (rbPrazo15.isSelected()) {
-			obj.setPrazoOS(15);
-			flag2 += 1;
-		}
-		if (rbPrazo30.isSelected()) {
-			obj.setPrazoOS(30);
-			flag2 += 1;
-		}
-		if (obj.getPrazoOS() == null) {
-			exception.addErros("prazo", "Prazo obrigatório");
-		}
-		if (flag2 > 1) {
-			exception.addErros("prazo", "Só pode uma opção");
-		}
-		if (obj.getParcelaOS() != null) {
-			if (obj.getParcelaOS() > 1 && obj.getPrazoOS() == 1) {
-				exception.addErros("prazo", "Prazo incompatível");
+		
+			int flag1 = 0;
+			if (rbParcelaUnica.isSelected()) {
+				obj.setParcelaOS(1);
+				flag1 += 1;
 			}
-		}
+			if (rbParcela02.isSelected()) {
+				obj.setParcelaOS(2);
+				flag1 += 1;
+			}
+			if (rbParcela03.isSelected()) {
+				obj.setParcelaOS(3);
+				flag1 += 1;
+			}
+			if (obj.getParcelaOS() == null) {
+				exception.addErros("parcela", "Parcela obrigatória");
+			}
+			if (flag1 > 1) {
+				exception.addErros("parcela", "Só pode uma opção");
+			}
+
+			int flag2 = 0;
+			if (rbPrazoAvista.isSelected()) {
+				obj.setPrazoOS(1);
+				flag2 += 1;
+			}
+			if (rbPrazo10.isSelected()) {
+				obj.setPrazoOS(10);
+				flag2 += 1;
+			}
+			if (rbPrazo15.isSelected()) {
+				obj.setPrazoOS(15);
+				flag2 += 1;
+			}
+			if (rbPrazo30.isSelected()) {
+				obj.setPrazoOS(30);
+				flag2 += 1;
+			}
+			if (obj.getPrazoOS() == null) {
+				exception.addErros("prazo", "Prazo obrigatório");
+			}
+			if (flag2 > 1) {
+				exception.addErros("prazo", "Só pode uma opção");
+			}
+			if (obj.getParcelaOS() != null) {
+				if (obj.getParcelaOS() > 1 && obj.getPrazoOS() == 1) {
+					exception.addErros("prazo", "Prazo incompatível");
+				}	
+			}
 
 		int flag3 = 0;
 		if (rbPagamentoDinheiro.isSelected()) {
@@ -714,12 +725,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		obj.setMesOs(cal.get(Calendar.MONTH) + 1);
 		obj.setAnoOs(cal.get(Calendar.YEAR));
 
-		if (flagg == 0) {
-			flagg = 1;
-			exception.addErros("nf", "processamento longo - Ok ");
-		}	
-		
-		
 		// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
