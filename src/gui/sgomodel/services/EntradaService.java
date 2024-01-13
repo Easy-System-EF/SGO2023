@@ -24,15 +24,23 @@ public class EntradaService {
 	
 	public List<Entrada> findByNnf(int nnf) {
 		return dao.findByNnf(nnf);	
-} 
+	} 
 
 	public List<Entrada> findByForNnf(int forn, int nnf) {
 		return dao.findByForNnf(forn, nnf);	
-} 
+	} 
+
+	public List<Entrada> findByForn(int forn) {
+		return dao.findByForn(forn);	
+	} 
+
+	public List<Entrada> findByMat(int mat) {
+		return dao.findByMat(mat);	
+	} 
 
 	public Entrada findById(int cod) {
 		return dao.findById(cod);	
-} 
+	} 
 
 // * inserindo ou atualizando via dao
 // * se o codigo n�o existe insere, se existe altera 

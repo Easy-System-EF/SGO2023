@@ -40,10 +40,10 @@ public class MaterialMVRConsultaListController implements Initializable {
  	private TableColumn<Material, String> tableColumnNomeMat;
 
    	@FXML
- 	private TableColumn<Material, Double> tableColumnPercentualClass;
+ 	private TableColumn<Material, Double> tableColumnPercentualMat;
  	
    	@FXML
- 	private TableColumn<Material, String> tableColumnLetraClass;
+ 	private TableColumn<Material, String> tableColumnLetraMat;
  	
 	@FXML
 	private Label labelUser;
@@ -78,7 +78,7 @@ public class MaterialMVRConsultaListController implements Initializable {
 	public void mvrForm() {
 		Optional<ButtonType> result = Alerts.showConfirmation("Pode demorar um pouco", "Confirma?");
 		if (result.get() == ButtonType.OK) {
-			MVRConsultaForm mvr = new MVRConsultaForm();
+			MaterialMVRConsultaForm mvr = new MaterialMVRConsultaForm();
 			mvr.setMaterialMVRService(service);
 			mvr.materialCustoEstoque();
 			mvr.materialPercentual();
@@ -98,9 +98,9 @@ public class MaterialMVRConsultaListController implements Initializable {
  	private void initializeNodes() {
 		tableColumnCodigoMat.setCellValueFactory(new PropertyValueFactory<>("codigoMat"));;
 		tableColumnNomeMat.setCellValueFactory(new PropertyValueFactory<>("nomeMat"));
- 		tableColumnPercentualClass.setCellValueFactory(new PropertyValueFactory<>("percentualClass"));
-		Utils.formatTableColumnDouble(tableColumnPercentualClass, 2);
- 		tableColumnLetraClass.setCellValueFactory(new PropertyValueFactory<>("letraClass"));
+ 		tableColumnPercentualMat.setCellValueFactory(new PropertyValueFactory<>("percentualMat"));
+		Utils.formatTableColumnDouble(tableColumnPercentualMat, 2);
+ 		tableColumnLetraMat.setCellValueFactory(new PropertyValueFactory<>("letraMat"));
   		// para tableview preencher o espa�o da tela scroolpane, referencia do stage		
 		Stage stage = (Stage) MainSgo.getMainScene().getWindow();
 		tableViewMaterial.prefHeightProperty().bind(stage.heightProperty());
@@ -121,13 +121,13 @@ public class MaterialMVRConsultaListController implements Initializable {
 		List<Material> list = new ArrayList<>();
  		labelUser.setText(user);
  		if (ok == 0) {
- 			list.add(new Material(null, null, "processando", null, null, null, null, null, null, null, null, 0.0, nd, null, null));
- 			list.add(new Material(null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, 0.0, nd, null, null));
+ 			list.add(new Material(null, null, "processando", null, null, null, null, null, null, null, null, null, null, nd, null, null));
+ 			list.add(new Material(null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, null, null, nd, null, null));
  		}
 		if (ok == 1) {
 			labelUser.setText(user);
 			list = service.findMVR();
-			list.removeIf(x -> x.getPercentualClass() == null || x.getPercentualClass() == 0);		
+			list.removeIf(x -> x.getPercentualMat() == null || x.getPercentualMat() == 0);		
 		}	
 		if (ok > 1) {
 			list = service.findPesquisa("xyzowndh");

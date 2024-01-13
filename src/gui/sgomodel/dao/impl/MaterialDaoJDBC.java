@@ -34,28 +34,28 @@ public class MaterialDaoJDBC implements MaterialDao {
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO material " 
-					
-				      + "(GrupoMat, NomeMat, EstMinMat, SaldoMat, SaidaCmmMat, CmmMat, " 
-					  + "PrecoMat, VendaMat, vidaKmMat, vidaMesMat, PercentualClass, LetraClass, "
+				      + "(GrupoMat, NomeMat, EstMinMat, EntradaMat, SaidaMat, SaldoMat, CmmMat, " 
+					  + "PrecoMat, VendaMat, vidaKmMat, vidaMesMat, PercentualMat, LetraMat, "
 					  + "DataCadastroMat, GrupoId ) "  
   				      + "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
  					 Statement.RETURN_GENERATED_KEYS); 
 
-  			st.setInt(1, obj.getGrupoMat());
+			st.setInt(1, obj.getGrupoMat());
 			st.setString(2, obj.getNomeMat());
 			st.setDouble(3, obj.getEstMinMat());
-			st.setDouble(4, obj.getSaldoMat());
-			st.setDouble(5, obj.getSaidaCmmMat());
-			st.setDouble(6, obj.getCmmMat());
-			st.setDouble(7, obj.getPrecoMat());
-			st.setDouble(8, obj.getVendaMat());
-			st.setInt(9, obj.getVidaKmMat());
-			st.setInt(10, obj.getVidaMesMat());
-			st.setDouble(11, obj.getPercentualClass());
-			st.setString(12, String.valueOf(obj.getLetraClass()));
-			st.setDate(13, new java.sql.Date(obj.getDataCadastroMat().getTime()));
-			st.setInt(14, obj.getGrupo().getCodigoGru());
+			st.setDouble(4, obj.getEntradaMat());
+			st.setDouble(5, obj.getSaidaMat());
+			st.setDouble(6, obj.getSaldoMat());
+			st.setDouble(7, obj.getCmmMat());
+			st.setDouble(8, obj.getPrecoMat());
+			st.setDouble(9, obj.getVendaMat());
+			st.setInt(10, obj.getVidaKmMat());
+			st.setInt(11, obj.getVidaMesMat());
+			st.setDouble(12, obj.getPercentualMat());
+			st.setString(13, String.valueOf(obj.getLetraMat()));
+			st.setDate(14, new java.sql.Date(obj.getDataCadastroMat().getTime()));
+			st.setInt(15, obj.getGrupo().getCodigoGru());
   
  			int rowsaffectad = st.executeUpdate();
 			
@@ -86,29 +86,30 @@ public class MaterialDaoJDBC implements MaterialDao {
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO material " 
-					
-				      + "(CodigoMat, GrupoMat, NomeMat, EstMinMat, SaldoMat, SaidaCmmMat, CmmMat, " 
-					  + "PrecoMat, VendaMat, vidaKmMat, vidaMesMat, PercentualClass, LetraClass, "
-					  + "DataCadastroMat, GrupoId ) "  
-  				      + "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+						      + "(CodigoMat, GrupoMat, NomeMat, EstMinMat, EntradaMat, SaidaMat, SaldoMat, CmmMat, " 
+							  + "PrecoMat, VendaMat, vidaKmMat, vidaMesMat, PercentualMat, LetraMat, "
+							  + "DataCadastroMat, GrupoId ) "  
+		  				      + "VALUES " +
+						      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		 					 Statement.RETURN_GENERATED_KEYS); 
 
-  			st.setInt(1, obj.getCodigoMat());
-  			st.setInt(2, obj.getGrupoMat());
-			st.setString(3, obj.getNomeMat());
-			st.setDouble(4, obj.getEstMinMat());
-			st.setDouble(5, obj.getSaldoMat());
-			st.setDouble(6, obj.getSaidaCmmMat());
-			st.setDouble(7, obj.getCmmMat());
-			st.setDouble(8, obj.getPrecoMat());
-			st.setDouble(9, obj.getVendaMat());
-			st.setInt(10, obj.getVidaKmMat());
-			st.setInt(11, obj.getVidaMesMat());
-			st.setDouble(12, obj.getPercentualClass());
-			st.setString(13, String.valueOf(obj.getLetraClass()));
-			st.setDate(14, new java.sql.Date(obj.getDataCadastroMat().getTime()));
-			st.setInt(15, obj.getGrupo().getCodigoGru());
-  
+					st.setInt(1, obj.getCodigoMat());
+					st.setInt(2, obj.getGrupoMat());
+					st.setString(3, obj.getNomeMat());
+					st.setDouble(4, obj.getEstMinMat());
+					st.setDouble(5, obj.getEntradaMat());
+					st.setDouble(6, obj.getSaidaMat());
+					st.setDouble(7, obj.getSaldoMat());
+					st.setDouble(8, obj.getCmmMat());
+					st.setDouble(9, obj.getPrecoMat());
+					st.setDouble(10, obj.getVendaMat());
+					st.setInt(11, obj.getVidaKmMat());
+					st.setInt(12, obj.getVidaMesMat());
+					st.setDouble(13, obj.getPercentualMat());
+					st.setString(14, String.valueOf(obj.getLetraMat()));
+					st.setDate(15, new java.sql.Date(obj.getDataCadastroMat().getTime()));
+					st.setInt(16, obj.getGrupo().getCodigoGru());
+		  
  			st.executeUpdate();
 			
   		}
@@ -127,29 +128,30 @@ public class MaterialDaoJDBC implements MaterialDao {
   		try {
 			st = conn.prepareStatement(
   					"UPDATE material " +  
-  	  						"SET GrupoMat = ?, NomeMat = ?, EstMinMat = ?, SaldoMat = ?, "
-  							+ "SaidaCmmMat = ?, CmmMat = ?, PrecoMat = ?, VendaMat = ?, "
-  							+ "VidaKmMat = ?, VidaMesMat = ?, PercentualClass = ?, LetraClass = ?, "
+  	  						"SET GrupoMat = ?, NomeMat = ?, EstMinMat = ?, EntradaMat = ?, SaidaMat = ?, SaldoMat = ?, "
+  							+ "CmmMat = ?, PrecoMat = ?, VendaMat = ?, "
+  							+ "VidaKmMat = ?, VidaMesMat = ?, PercentualMat = ?, LetraMat = ?, "
   							+ "DataCadastroMat = ?, GrupoId = ? "
   							+ "WHERE (CodigoMat = ?)",
         			 Statement.RETURN_GENERATED_KEYS);
 
-  			st.setInt(1, obj.getGrupoMat());
+			st.setInt(1, obj.getGrupoMat());
 			st.setString(2, obj.getNomeMat());
 			st.setDouble(3, obj.getEstMinMat());
-			st.setDouble(4, obj.getSaldoMat());
-			st.setDouble(5, obj.getSaidaCmmMat());
-			st.setDouble(6, obj.getCmmMat());
-			st.setDouble(7, obj.getPrecoMat());
-			st.setDouble(8, obj.getVendaMat());
-			st.setInt(9, obj.getVidaKmMat());
-			st.setInt(10, obj.getVidaMesMat());
-			st.setDouble(11, obj.getPercentualClass());
-			st.setString(12, String.valueOf(obj.getLetraClass()));
-			st.setDate(13, new java.sql.Date(obj.getDataCadastroMat().getTime()));
-			st.setInt(14, obj.getGrupo().getCodigoGru());
-  			st.setInt(15, obj.getCodigoMat());
-  			
+			st.setDouble(4, obj.getEntradaMat());
+			st.setDouble(5, obj.getSaidaMat());
+			st.setDouble(6, obj.getSaldoMat());
+			st.setDouble(7, obj.getCmmMat());
+			st.setDouble(8, obj.getPrecoMat());
+			st.setDouble(9, obj.getVendaMat());
+			st.setInt(10, obj.getVidaKmMat());
+			st.setInt(11, obj.getVidaMesMat());
+			st.setDouble(12, obj.getPercentualMat());
+			st.setString(13, String.valueOf(obj.getLetraMat()));
+			st.setDate(14, new java.sql.Date(obj.getDataCadastroMat().getTime()));
+			st.setInt(15, obj.getGrupo().getCodigoGru());
+			st.setInt(16, obj.getCodigoMat());
+  
  			st.executeUpdate();
    		} 
  		catch (SQLException e) {
@@ -203,7 +205,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
 				return obj;
   			}
@@ -229,7 +231,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 						"FROM material " +
  							"INNER JOIN grupo "  +
 								"ON material.GrupoId = grupo.CodigoGru " + 
- 					"ORDER BY NomeMat");
+ 					"ORDER BY NomeMat ");
  			
 			rs = st.executeQuery();
 			
@@ -242,13 +244,14 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
    			}
 			return list;
 			
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 			throw new DbException(e.getMessage());
 		}
 		finally {
@@ -281,7 +284,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
    			}
 			return list;
@@ -307,8 +310,8 @@ public class MaterialDaoJDBC implements MaterialDao {
 						"FROM material " +
  							"INNER JOIN grupo "  +
 								"ON material.GrupoId = grupo.CodigoGru " +
- 							"WHERE PercentualClass > 0 " +
- 					"ORDER BY - PercentualClass ");
+ 							"WHERE PercentualMat > 0 " +
+ 					"ORDER BY - PercentualMat ");
  			
 			rs = st.executeQuery();
 			
@@ -321,7 +324,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
    			}
 			return list;
@@ -348,7 +351,7 @@ public class MaterialDaoJDBC implements MaterialDao {
  							"INNER JOIN grupo "  +
 								"ON material.GrupoId = grupo.CodigoGru " +
  							"WHERE PrecoMat > 0 " +
- 					"ORDER BY - PrecoMat ");
+ 					"ORDER BY PrecoMat ");
  			
 			rs = st.executeQuery();
 			
@@ -361,7 +364,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
    			}
 			return list;
@@ -401,7 +404,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 				{	gru = instantiateGrupo(rs);
 					mapGru.put(rs.getInt("GrupoId"), gru);
 				}	
-				Material obj = instantiateMaterial(rs, gru);
+				Material obj = instantiateMatMat(rs, gru);
 				list.add(obj);
    			}
 			return list;
@@ -437,7 +440,7 @@ public class MaterialDaoJDBC implements MaterialDao {
 			
 			while (rs.next()) {
 				gru = instantiateGrupo(rs);
-				mat = instantiateMaterial(rs, gru);
+				mat = instantiateMatMat(rs, gru);
 				return mat;
    			}
 			return null;
@@ -451,21 +454,22 @@ public class MaterialDaoJDBC implements MaterialDao {
 		}
 	} 
 	
- 	private Material instantiateMaterial(ResultSet rs, Grupo gru) throws SQLException {
+ 	private Material instantiateMatMat(ResultSet rs, Grupo gru) throws SQLException {
  		Material material = new Material();
    		material.setCodigoMat(rs.getInt("CodigoMat"));
   		material.setGrupoMat(rs.getInt("GrupoMat"));
   		material.setNomeMat(rs.getString("NomeMat"));
   		material.setEstMinMat(rs.getDouble("EstMinMat"));
+  		material.setEntradaMat(rs.getDouble("EntradaMat"));
+  		material.setSaidaMat(rs.getDouble("SaidaMat"));
   		material.setSaldoMat(rs.getDouble("SaldoMat"));
-  		material.setSaidaCmmMat(rs.getDouble("SaidaCmmMat"));
-  		material.setCmmMat(rs.getDouble("CmmMat"));
+  		material.calculaCmm();
   		material.setPrecoMat(rs.getDouble("PrecoMat"));
   		material.setVendaMat(rs.getDouble("VendaMat"));
   		material.setVidaKmMat(rs.getInt("VidaKmMat"));
   		material.setVidaMesMat(rs.getInt("VidaMesMat"));
-  		material.setPercentualClass(rs.getDouble("PercentualClass"));
-  		material.setLetraClass(rs.getString("LetraClass").charAt(0));
+  		material.setPercentualMat(rs.getDouble("PercentualMat"));
+  		material.setLetraMat(rs.getString("LetraMat").charAt(0));
   		material.setDataCadastroMat(new java.util.Date(rs.getTimestamp("DataCadastroMat").getTime()));
   		material.setGrupo(gru);
     	return material;

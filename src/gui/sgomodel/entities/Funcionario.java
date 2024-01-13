@@ -1,6 +1,7 @@
 package gui.sgomodel.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Funcionario implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +24,7 @@ public class Funcionario implements Serializable {
 	private String cargoFun;
 	private String situacaoFun;
 	private Double salarioFun;
+	private Date dataCadastroFun;
 	
 /*
  * atenção!!! VALE, ADIANTAMENTO e SALARIO só são utitlizados nos fechamentos com os dados apurados e veindos
@@ -44,7 +46,7 @@ public class Funcionario implements Serializable {
 	public Funcionario(Integer codigoFun, String nomeFun, String enderecoFun, String bairroFun, String cidadeFun,
 			String ufFun, String cepFun, Integer dddFun, Integer telefoneFun, String cpfFun, String pixFun,
 			Double comissaoFun, Double adiantamentoFun, Integer mesFun, Integer anoFun, String cargoFun, 
-			String situacaoFun, Double salarioFun, Cargo cargo, Situacao situacao) {
+			String situacaoFun, Double salarioFun, Date dataCadastroFun, Cargo cargo, Situacao situacao) {
 		this.codigoFun = codigoFun;
 		this.nomeFun = nomeFun;
 		this.enderecoFun = enderecoFun;
@@ -65,6 +67,7 @@ public class Funcionario implements Serializable {
 		this.cargo = cargo;
 		this.situacao = situacao;
 		this.salarioFun = salarioFun;
+		this.dataCadastroFun = dataCadastroFun;
 	}
 
 	public Integer getCodigoFun() {
@@ -230,6 +233,15 @@ public class Funcionario implements Serializable {
 		this.salarioFun = salarioFun;
 	}
 
+	
+	public Date getDataCadastroFun() {
+		return dataCadastroFun;
+	}
+
+	public void setDataCadastroFun(Date dataCadastroFun) {
+		this.dataCadastroFun = dataCadastroFun;
+	}
+
 	public void somaAdiantamento(Double vlrAdi) {
 		if (vlrAdi == null) {
 			vlrAdi = 0.00;
@@ -279,6 +291,7 @@ public class Funcionario implements Serializable {
 				+ ", dddFun=" + dddFun + ", telefoneFun=" + telefoneFun + ", cpfFun=" + cpfFun + ", pixFun=" + pixFun
 				+ ", comissaoFun=" + comissaoFun + ", adiantamentoFun=" + adiantamentoFun + ", mesFun=" + mesFun
 				+ ", anoFun=" + anoFun + ", cargoFun=" + cargoFun + ", situacaoFun=" + situacaoFun + ", salarioFun="
-				+ salarioFun + ", cargo=" + cargo + ", situacao=" + situacao + "]";
+				+ salarioFun + ", dataCadastroFun=" + dataCadastroFun + ", cargo=" + cargo + ", situacao=" + situacao
+				+ "]";
 	}
 }

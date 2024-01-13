@@ -42,8 +42,8 @@ public class OrcamentoService {
 		return dao.findMesAno(mes, ano);
 	} 
 
-	public List<Orcamento> findByMesAnoList(int mes, int ano) {
-		return dao.findMesAnoList(mes, ano);
+	public List<Orcamento> findByAberto() {
+		return dao.findAberto();
 	} 
 
 // * inserindo ou atualizando via dao

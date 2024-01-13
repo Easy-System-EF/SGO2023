@@ -430,7 +430,7 @@ public class OrcamentoDaoJDBC implements OrcamentoDao {
 	} 
 	
 	@Override
-	public List<Orcamento>  findMesAnoList(Integer mes, Integer ano) {
+	public List<Orcamento>  findAberto() {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -441,11 +441,9 @@ public class OrcamentoDaoJDBC implements OrcamentoDao {
 				 					 "on orcamento.ClienteId = cliente.CodigoCli " + 
 						 		 "INNER JOIN funcionario " +
 					 				 "ON orcamento.FuncionarioId = funcionario.CodigoFun " +
-	 									"WHERE MesOrc >= ? AND AnoOrc >= ? AND OsOrc = 0 " + 
+	 									"WHERE OsOrc = 0 " + 
 								 "ORDER BY - NumeroOrc");
 			
-			st.setInt(1, mes);
-			st.setInt(2, ano);
 			rs = st.executeQuery();
 			
  			List<Orcamento> list = new ArrayList<>();

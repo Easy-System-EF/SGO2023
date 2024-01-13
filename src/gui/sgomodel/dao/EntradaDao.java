@@ -13,6 +13,8 @@ public interface EntradaDao {
 	void zeraAll();
 	List<Entrada> findByNnf(int nnf); 
 	List<Entrada> findByForNnf(int forn, int nnf); 
+	List<Entrada> findByForn(int forn); 
+	List<Entrada> findByMat(int mat); 
 	Entrada findById(int cod); 
  	List<Entrada> findAll();
  	List<Entrada> findAllId();

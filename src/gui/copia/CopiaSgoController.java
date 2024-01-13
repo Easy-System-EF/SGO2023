@@ -221,9 +221,9 @@ public class CopiaSgoController implements Initializable {
 				arq = (" ADIANTAMENTO " + a.getNumeroAdi() + " , " + data + " , " + a.getValeAdi() + " , " +  
 						a.getMesAdi() + " , " + a.getAnoAdi() + " , " + a.getValorAdi() + " , " + a.getOsAdi() + " , " + 
 						a.getBalcaoAdi() + " , " +  a.getComissaoAdi() + " , " + a.getTipoAdi() + " , " + a.getSalarioAdi()
-						+ " , " + a.getCodigoFun() + " , " + a.getNomeFun() + " , " + a.getMesFun() + " , " + a.getAnoFun()
-						+ " , " + a.getCargoFun() + " , " + a.getSituacaoFun() + " , " + a.getSalarioFun() + " , " + 
-						a.getCargo().getCodigoCargo() + " , " + a.getSituacao().getNumeroSit());
+						+ " , " + a.getCodigoFun() + " , " + a.getNomeFun() + " , " + a.getMesFun() + " , " + a.getAnoFun() + " , " + 
+						a.getDataCadastroFun() + " , " + a.getCargoFun() + " , " + a.getSituacaoFun() + " , " + a.getSalarioFun() 
+						+ " , " + a.getCargo().getCodigoCargo() + " , " + a.getSituacao().getNumeroSit());
 				crip = Cryptograf.criptografa(arq);
 				bwAdi.write(crip);
 				bwAdi.newLine();				
@@ -371,7 +371,7 @@ public class CopiaSgoController implements Initializable {
 				 	 + " , " + f.getTelefoneFun() + " , " + f.getCpfFun() + " , " + f.getPixFun() + " , "  + 
 				 	 f.getComissaoFun() + " , " + f.getAdiantamentoFun() + " , " + f.getMesFun() + " , " + f.getAnoFun() 
 				 	 + " , " + f.getCargoFun() + " , " + f.getSituacaoFun() + " , " + f.getSalarioFun() + " , " +  
-				 	 f.getCargo().getCodigoCargo() + " , " + f.getSituacao().getNumeroSit());
+				 	 f.getDataCadastroFun() + " , " + f.getCargo().getCodigoCargo() + " , " + f.getSituacao().getNumeroSit());
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();
@@ -457,11 +457,11 @@ public class CopiaSgoController implements Initializable {
 			for(Material m : listM) {
 				count += 1;
 				String dataMat = sdfAno.format(m.getDataCadastroMat());
-				arq = (" MATERIAL " + m.getCodigoMat() + " , " + m.getGrupoMat() + " , " +  m.getNomeMat() + " , " + m.getEstMinMat() + " , " + 
-						m.getSaldoMat() + " , " + m.getSaidaCmmMat() + " , " + m.getCmmMat() + " , " + m.getPrecoMat() 
-						+ " , " + m.getVendaMat() + " , " + m.getVidaKmMat() + " , " + m.getVidaMesMat() + " , " + 
-						m.getPercentualClass() + " , " + m.getLetraClass() + " , " + dataMat + " , " + 
-						m.getGrupo().getCodigoGru());
+				arq = (" MATERIAL " + m.getCodigoMat() + " , " + m.getGrupoMat() + " , " +  m.getNomeMat() + " , " + m.getEstMinMat() 
+					+ " , " + m.getEntradaMat() + " , " + m.getSaidaMat() + " , " + m.getSaldoMat() + " , " + m.getCmmMat() 
+					+ " , " + m.getPrecoMat() + " , " + m.getVendaMat() + " , " + m.getVidaKmMat() + " , " + m.getVidaMesMat() 
+					+ " , " + m.getPercentualMat() + " , " + m.getLetraMat() + " , " + dataMat + " , " + m.getGrupo().getCodigoGru());
+				
 				crip = Cryptograf.criptografa(arq);
 				bwC.write(crip);
 				bwC.newLine();

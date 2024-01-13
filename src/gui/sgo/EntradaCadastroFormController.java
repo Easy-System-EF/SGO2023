@@ -55,7 +55,6 @@ public class EntradaCadastroFormController implements Initializable {
 	private Entrada entity;
 	private Entrada entityAnterior;
 	private Material mat;
-	private Material matAnt;
  
 	/*
 	 * dependencia service com metodo set
@@ -226,32 +225,25 @@ public class EntradaCadastroFormController implements Initializable {
 
 	private void acertaMaterial() {
 		classe = "Material Ent Form ";
-		if (flagN == 0) {
-			if (entity.getValorMatEnt() >= mat.getVendaMat()) {
-				Optional<ButtonType> result = Alerts.showConfirmation("Atenção!!!", "Custo!!! verifique o valor de venda");
-				if (result.get() == ButtonType.CANCEL) {
-					flagN = 1;
-				}	else {
-					mat.setPrecoMat(entity.getValorMatEnt());
-				}
-			} 	
-			if (flagN == 0) {
-				if (entityAnterior != null) {
-					if (mat.getCodigoMat() == (entityAnterior.getMat().getCodigoMat())) {
-						mat.saidaSaldo(entityAnterior.getQuantidadeMatEnt());
-						mat.calculaCmm();
-					} else {
-						matAnt = matService.findById(entity.getMat().getCodigoMat());
-						matAnt.saidaSaldo(entityAnterior.getQuantidadeMatEnt());
-						matService.saveOrUpdate(matAnt);
-					}
-				}	
-				mat.entraSaldo(entity.getQuantidadeMatEnt());
-				if(mat.getSaldoMat() < 0.01) {
-					Alerts.showAlert("Saldo", "saldo negativo e/ou nulo", mat.getNomeMat(), AlertType.ERROR);
-					flagN = 1;
-				} 
+		if (entity.getValorMatEnt() >= mat.getVendaMat()) {
+			Optional<ButtonType> result = Alerts.showConfirmation("Atenção!!!", "Custo!!! verifique o valor de venda");
+			if (result.get() == ButtonType.CANCEL) {
+				flagN = 1;
+			}	else {
+				mat.setPrecoMat(entity.getValorMatEnt());
 			}
+		}
+		if (entityAnterior != null) {
+			if (mat.getCodigoMat().equals(entityAnterior.getMat().getCodigoMat())) {
+				mat.setEntradaMat(entityAnterior.getQuantidadeMatEnt() * -1);
+			}	
+		} 
+		mat.setEntradaMat(entity.getQuantidadeMatEnt());
+		mat.getSaldoMat();
+		if(mat.getSaldoMat() < 0) {
+			Alerts.showAlert("Erro!!!", "saldo negativo - estornado ", mat.getNomeMat(), AlertType.ERROR);
+			mat.setEntradaMat(entity.getQuantidadeMatEnt() + -1);
+			flagN = 1;
 		}
 	}	
 	

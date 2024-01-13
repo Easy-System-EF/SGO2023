@@ -28,7 +28,6 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 		this.conn = conn;
 	}
 	
-
 	ReceberService recService = new ReceberService();
 	Receber rec = new Receber();
 
@@ -43,7 +42,6 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 		OrcVirtualService virService = new OrcVirtualService();
 		AdiantamentoService adiService = new AdiantamentoService();
 
-		Adiantamento adi = new Adiantamento();
 		Material mat = new Material();
 
 		try {
@@ -62,10 +60,9 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 			if (objAdi.getCodigoFun() == null) {
 				int nada = 0;
 			} else {	
-				adi.setDataAdi(new Date());
+				objAdi.setDataAdi(new Date());
 				adiService.saveOrUpdate(objAdi);
-			}
-			
+			}			
 			receber(objBal, objPer);
 			
 			

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +36,11 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO funcionario " +
-				      "(NomeFun, EnderecoFun, BairroFun, CidadeFun, " +
-				       "UfFun, CepFun, DddFun, TelefoneFun, " +
-				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun," +
-				       "MesFun, AnoFun, CargoFun, SituacaoFun, SalarioFun, CargoId, SituacaoId )" + 
+				      "(NomeFun, EnderecoFun, BairroFun, CidadeFun, UfFun, CepFun, DddFun, TelefoneFun, " +
+				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, " +
+				       		"SalarioFun, dataCadastroFun, CargoId, SituacaoId )" + 
   				    "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
  					 Statement.RETURN_GENERATED_KEYS); 
  
   			st.setString(1, obj.getNomeFun());
@@ -60,8 +60,9 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(15, obj.getCargoFun());
    			st.setString(16, obj.getSituacaoFun());
    			st.setDouble(17, obj.getSalarioFun());
-   			st.setInt(18, obj.getCargo().getCodigoCargo());
-   			st.setInt(19,  obj.getSituacao().getNumeroSit());
+			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setInt(19, obj.getCargo().getCodigoCargo());
+   			st.setInt(20,  obj.getSituacao().getNumeroSit());
    			
  			int rowsaffectad = st.executeUpdate();
 			
@@ -93,12 +94,11 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO funcionario " +
-				      "(CodigoFun, NomeFun, EnderecoFun, BairroFun, CidadeFun, " +
-				       "UfFun, CepFun, DddFun, TelefoneFun, " +
-				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun," +
-				       "MesFun, AnoFun, CargoFun, SituacaoFun, SalarioFun, CargoId, SituacaoId )" + 
+				      "(CodigoFun, NomeFun, EnderecoFun, BairroFun, CidadeFun, UfFun, CepFun, DddFun, TelefoneFun, " +
+				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, " + 
+				       		"SalarioFun, DataCadastroFun, CargoId, SituacaoId )" + 
   				    "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
  
   			st.setInt(1, obj.getCodigoFun());
   			st.setString(2, obj.getNomeFun());
@@ -118,8 +118,9 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(16, obj.getCargoFun());
    			st.setString(17, obj.getSituacaoFun());
    			st.setDouble(18, obj.getSalarioFun());
-   			st.setInt(19, obj.getCargo().getCodigoCargo());
-   			st.setInt(20,  obj.getSituacao().getNumeroSit());
+			st.setDate(19, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setInt(20, obj.getCargo().getCodigoCargo());
+   			st.setInt(21,  obj.getSituacao().getNumeroSit());
    			
  			st.executeUpdate();
 			
@@ -139,11 +140,10 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		try {
 			st = conn.prepareStatement(
 					"UPDATE funcionario " +
-						    "SET NomeFun = ?, EnderecoFun = ?, BairroFun = ?, CidadeFun = ?, " +
-						       "UfFun = ?, CepFun = ?, DddFun = ?, TelefoneFun = ?, " +
-						       "CpfFun = ?, PixFun = ?, " +
-						       "ComissaoFun = ?, AdiantamentoFun = ?, mesFun = ?, anoFun = ?, " +
-						       "CargoFun = ?, SituacaoFun = ?, SalarioFun = ?, CargoId = ?, SituacaoId = ? " + 
+						    "SET NomeFun = ?, EnderecoFun = ?, BairroFun = ?, CidadeFun = ?, UfFun = ?, CepFun = ?, " + 
+								"DddFun = ?, TelefoneFun = ?, CpfFun = ?, PixFun = ?, ComissaoFun = ?, AdiantamentoFun = ?, " +
+								"mesFun = ?, anoFun = ?, CargoFun = ?, SituacaoFun = ?, SalarioFun = ?, DataCadastroFun = ?, " + 
+								"CargoId = ?, SituacaoId = ? " + 
 							"WHERE (CodigoFun = ?) ",
 								Statement.RETURN_GENERATED_KEYS);
   			st.setString(1, obj.getNomeFun());
@@ -163,9 +163,10 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(15, obj.getCargoFun());
    			st.setString(16, obj.getSituacaoFun());
    			st.setDouble(17, obj.getSalarioFun());
-   			st.setInt(18, obj.getCargo().getCodigoCargo());
-   			st.setInt(19,  obj.getSituacao().getNumeroSit());
-   			st.setInt(20, obj.getCodigoFun());
+			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setInt(19, obj.getCargo().getCodigoCargo());
+   			st.setInt(20,  obj.getSituacao().getNumeroSit());
+   			st.setInt(21, obj.getCodigoFun());
 			
  			st.executeUpdate();
    		} 
@@ -229,7 +230,8 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
  	}
 
 	@Override
-	public List<Funcionario> findAll(int aa, int mm) {
+	public List<Funcionario> findAll(Date data) {
+//		public List<Funcionario> findAll(int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -240,11 +242,14 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 								+ "ON funcionario.CargoId = cargo.CodigoCargo "
 							+ "INNER JOIN situacao "
 								+ " ON funcionario.SituacaoId = situacao.NumeroSit "
-							+ "WHERE AnoFun <= ? AND MesFun <= ? "
+//								+ "WHERE AnoFun <= ? AND MesFun <= ? "
+								+ "WHERE DataCadastroFun <= ? "
 						+ "ORDER BY NomeFun ");
 			
-			st.setInt(1, aa);
-			st.setInt(2, mm);
+			st.setDate(1, new java.sql.Date(data.getTime()));
+			
+//			st.setInt(1, aa);
+//			st.setInt(2, mm);
 			rs = st.executeQuery();
 			
 			List<Funcionario> list = new ArrayList<>();
@@ -322,7 +327,8 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 	} 
 	
 	@Override
-	public List<Funcionario> findPesquisa(String str, int aa, int mm) {
+	public List<Funcionario> findPesquisa(String str, Date data) {
+//		public List<Funcionario> findPesquisa(String str, int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -333,11 +339,13 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 								+ "ON funcionario.CargoId = cargo.CodigoCargo "
 							+ "INNER JOIN situacao "
 								+ " ON funcionario.SituacaoId = situacao.NumeroSit "
-							+ "WHERE NomeFun like ? AND AnoFun <= ? AND MesFun <= ?  "
+								+ "WHERE NomeFun like ? AND DataCadastroFun <= ?   "
+//								+ "WHERE NomeFun like ? AND AnoFun <= ? AND MesFun <= ?  "
 						+ "ORDER BY NomeFun ");
 			st.setString(1, str + "%");
-			st.setInt(2, aa);
-			st.setInt(3, mm);
+			st.setDate(2, new java.sql.Date(data.getTime()));
+//			st.setInt(2, aa);
+//			st.setInt(3, mm);
 			rs = st.executeQuery();
 			
 			List<Funcionario> list = new ArrayList<>();
@@ -370,7 +378,8 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 	} 
 	
 	@Override
-	public List<Funcionario> findByAtivo(String situacao, int aa, int mm) {
+	public List<Funcionario> findByAtivo(String situacao, Date data) {
+//		public List<Funcionario> findByAtivo(String situacao, int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -381,11 +390,13 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 								 "ON funcionario.CargoId = cargo.CodigoCargo " +
 							  "INNER JOIN situacao " +
 								 " ON funcionario.SituacaoId = situacao.NumeroSit " +
-							"WHERE SituacaoFun = ? AND AnoFun <= ? AND MesFun <= ? " +
+									"WHERE SituacaoFun = ? AND DataCadastroFun <= ? " +
+//									"WHERE SituacaoFun = ? AND AnoFun <= ? AND MesFun <= ? " +
 						 "ORDER BY NomeFun ");
 			st.setString(1, situacao);
-			st.setInt(2, aa);
-			st.setInt(3, mm);
+			st.setDate(2, new java.sql.Date(data.getTime()));
+//			st.setInt(2, aa);
+//			st.setInt(3, mm);
 			rs = st.executeQuery();
 			
 			List<Funcionario> fun = new ArrayList<>();
@@ -439,6 +450,7 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    		fun.setCargoFun(rs.getString("CargoFun"));
    		fun.setSituacaoFun(rs.getString("SituacaoFun"));
    		fun.setSalarioFun(rs.getDouble("SalarioFun"));
+   		fun.setDataCadastroFun(new java.util.Date(rs.getTimestamp("DataCadastroFun").getTime()));
    		fun.setCargo(objCargo);
    		fun.setSituacao(objSit);
         return fun;

@@ -22,7 +22,6 @@ import gui.sgomodel.dao.impl.OSCommitDaoJDBC;
 import gui.sgomodel.dao.impl.OrcVirtualDaoJDBC;
 import gui.sgomodel.dao.impl.OrcamentoDaoJDBC;
 import gui.sgomodel.dao.impl.OrdemServicoDaoJDBC;
-import gui.sgomodel.dao.impl.ProdutoDaoJDBC;
 import gui.sgomodel.dao.impl.ReceberDaoJDBC;
 import gui.sgomodel.dao.impl.ReposicaoVeiculoDaoJDBC;
 import gui.sgomodel.dao.impl.SituacaoDaoJDBC;
@@ -43,10 +42,6 @@ public class DaoFactory {
 	
   	public static MaterialDao createMaterialDao() {
 		return new MaterialDaoJDBC(DB.getConnection());
-	}
-	
-  	public static ProdutoDao createProdutoDao() {
-		return new ProdutoDaoJDBC(DB.getConnection());
 	}
 	
   	public static CargoDao createCargoDao() {

@@ -20,19 +20,11 @@ public class CalculaParcela {
 		if (dia > 1 ) {
 			dataVen = DataStatic.somaDiasDate(data, (parcela * dia));
 		}	
-//   		Calendar cal = Calendar.getInstance(); 
-//		cal.setTime(data);
-//		cal.add(Calendar.DAY_OF_MONTH, (dia * parcela));
-// 		Date dataVen = cal.getTime();
 		return dataVen;
 	}
 	
 	public static Date CalculaVencimentoMes(Date data, int mes) {
 		Date dataVen = DataStatic.somaMesDate(data, mes);
-//   		Calendar cal = Calendar.getInstance(); 
-//		cal.setTime(data);
-//		cal.add(Calendar.MONTH, (mes));
-// 		Date dataVen = cal.getTime();
 		return dataVen;
 	}
 	

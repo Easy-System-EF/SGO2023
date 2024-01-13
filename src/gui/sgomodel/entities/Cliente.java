@@ -3,7 +3,6 @@ package gui.sgomodel.entities;
 
 import java.io.Serializable;
 
-import gui.sgo.MVRConsultaForm;
 import gui.sgomodel.services.ReceberService;
 
 public class Cliente implements Serializable {
@@ -255,24 +254,6 @@ public class Cliente implements Serializable {
 		ReceberService recService = new ReceberService();
 		valorClass = recService.sumPagoCli(codigoCli);
 	}
-	
-	public void percClassCli() {
-		if (valorClass > 0) {
-			percentualClass = (valorClass * 100) / MVRConsultaForm.clienteTotalReceberOs;
-		}	
-	}
-	
-	public void letraClassCli() {
-		letraClass = 'A';
-		MVRConsultaForm.clientePercentualAcum += percentualClass;
-		if (MVRConsultaForm.clientePercentualAcum > 80.00) {
-			if (MVRConsultaForm.clientePercentualAcum < 90.01) {
-				letraClass = 'B';
-			} else {
-				letraClass = 'C';
-			}
-		}
-	}	
 	
 	@Override
 	public int hashCode() {

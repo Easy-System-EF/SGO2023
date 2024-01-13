@@ -15,8 +15,12 @@ public class ParcelaService {
 
 //    criar no parcelalist uma dependencia na parc controlador para esse metodo, 
 //	carregando e mostrando na view		
-	public Double findSumAll(int ano, int mes){
- 		return dao.findSumAll(ano, mes);
+	public Double findSumAllAberto(int ano, int mes){
+ 		return dao.findSumAllAberto(ano, mes);
+	}
+	
+	public Double findSumAllPago(int ano, int mes){
+ 		return dao.findSumAllPago(ano, mes);
 	}
 	
 	public Double findSumAberto(Date dti, Date dtf){

@@ -64,7 +64,7 @@ public class FechamentoMesDaoJDBC implements FechamentoMesDao {
 					obj.setNumeroMensal(codigo);
 				}
 				else
-				{	throw new DbException("Erro!!! sem inclusão" );
+				{	throw new DbException(classe + " Erro!!! sem inclusão" );
 				}
 			}	
   		}

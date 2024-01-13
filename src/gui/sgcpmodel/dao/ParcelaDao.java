@@ -13,7 +13,8 @@ public interface ParcelaDao {
  	void deleteByNnf(int nnf, int codFor);
  	Double findSumAberto(Date dti, Date dtf);
  	Double findSumPago(Date dti, Date dtf);
- 	Double findSumAll(int ano, int mes);
+ 	Double findSumAllAberto(int ano, int mes);
+ 	Double findSumAllPago(int ano, int mes);
   	Parcela findByIdForn(int cod);
   	List<Parcela> findAll();
   	List<Parcela> findAllId();

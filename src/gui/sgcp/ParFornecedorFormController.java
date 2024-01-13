@@ -11,6 +11,7 @@ import db.DbException;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.services.FornecedorService;
+import gui.sgo.EntradaCadastroListController;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -92,8 +93,6 @@ public class ParFornecedorFormController implements Initializable {
 					obsListFor = FXCollections.observableArrayList(list);
 					comboBoxFornecedor.setItems(obsListFor);
 					comboBoxFornecedor.getSelectionModel().selectFirst();
-					notifyDataChangeListerners();
-//					updateFormData();
 				}	
 	  		}	
 		}
@@ -121,18 +120,12 @@ public class ParFornecedorFormController implements Initializable {
 			throw new IllegalStateException("Entidade nula");
 		}
 		try {
-			List<Fornecedor> listFor = new ArrayList<>();
-			if (pesquisa != "") { 
-				listFor = forService.findPesquisa(pesquisa);
-			} else {	
-				listFor = forService.findAll();
-		 	}			
-			codigo = listFor.get(0).getCodigo();
      		entity = getFormData();
      		ParcelaConsultaListAbertoController.codigo = codigo;
      		ParcelaConsultaListPagoController.codigo = codigo;
      		ParcelaPrintRelatorioAbertoController.codigo = codigo;
      		ParcelaPrintRelatorioPagoController.codigo = codigo;
+     		EntradaCadastroListController.codigoFor = codigo;
    	    	notifyDataChangeListerners();
 	    	Utils.currentStage(event).close();
 		}
@@ -203,11 +196,14 @@ public class ParFornecedorFormController implements Initializable {
 	}		
    	
  /*
-  * transforma string da tela p/ o tipo no bco de dados 
+  * transforma string da tela p/ o tipo no bco
+  * 
+  *  
+  *  de dados 
   */
  	public void updateFormData() {
- 		if (entity == null)
- 		{	throw new IllegalStateException("Entidade esta nula");
+ 		if (entity == null) {
+ 			throw new IllegalStateException("Entidade esta nula");
  		}
 // se for uma inclusao, vai posicionar no 1o depto//tipo (First)	
 		comboBoxFornecedor.getSelectionModel().selectFirst();

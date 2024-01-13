@@ -67,7 +67,6 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 	private ReceberService recService;
 	private ReposicaoVeiculoService repService;
 	private OrcamentoService orcService;
-	@SuppressWarnings("unused")
 	private OrcVirtualService virService;
 	private MaterialService matService;
 	private VeiculoService veiService;
@@ -203,7 +202,6 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		if (mm > 1) {
 			mm -= 1;
 		}
-//		mm = 1;
  		List<OrdemServico> list = service.findByMesAnoList(mm, aa);
  		
   		obsList = FXCollections.observableArrayList(list);
@@ -406,18 +404,22 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 	
 	private void updateEstoqueMaterial(int numOrc) {
 		Material mat1 = new Material();
-		OrcVirtualService virService = new OrcVirtualService();
 		List<OrcVirtual> listVirtual = virService.findByOrcto(numOrc);
+		@SuppressWarnings("unused")
+		int nada = 0;
 		for (OrcVirtual cv : listVirtual) {
 			if (cv.getNumeroVir() != null) {
 				if (cv.getNumeroOrcVir() == numOrc) {
 					mat1 = matService.findById(cv.getMaterial().getCodigoMat());
-					if (!mat1.getGrupo().getNomeGru().equals("Serviços") || !mat1.getGrupo().getNomeGru().equals("Mão de obra")) {
-						mat1.entraSaldo(cv.getQuantidadeMatVir());
-						if (mat1.getSaidaCmmMat() >= cv.getQuantidadeMatVir()) {
-							mat1.setSaidaCmmMat(-1 *  cv.getQuantidadeMatVir());
-						}	
+					if (mat1.getGrupo().getNomeGru().contains("Mão de obra") || 
+							mat1.getGrupo().getNomeGru().contains("Mão de obra") ||
+							mat1.getGrupo().getNomeGru().contains("Serviço") ||
+							mat1.getGrupo().getNomeGru().contains("Servico")) { 
+						nada = 1;
+					} else {	
+						mat1.setSaidaMat(cv.getQuantidadeMatVir() * -1);
 						mat1.getSaldoMat();
+						mat1.getCmmMat();
 						matService.saveOrUpdate(mat1);
 					}	
 				}

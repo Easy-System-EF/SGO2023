@@ -17,6 +17,6 @@ public interface OrcamentoDao {
  	List<Orcamento> findAllId();
  	List<Orcamento> findPesquisa(String str);
  	List<Orcamento> findMesAno(Integer mes, Integer ano);
- 	List<Orcamento> findMesAnoList(Integer mes, Integer ano);
+ 	List<Orcamento> findAberto();
 }
   

@@ -3,7 +3,6 @@ package gui.sgo;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -134,14 +133,9 @@ public class FuncionarioCadastroListController implements Initializable, DataCha
  		if (service == null) {
 			throw new IllegalStateException("Serviço está vazio");
  		}
- 		Date data = new Date();
- 		Calendar cal = Calendar.getInstance();
- 		cal.setTime(data);
  		labelUser.setText(user);
-		@SuppressWarnings("deprecation")
-		List<Funcionario> list = service.findAll(
-				cal.get(Calendar.YEAR), (data.getMonth() + 1));
-// aq não, mostra tudo		list.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
+		List<Funcionario> list = service.findAll(new Date());
+		// aq não, mostra tudo		list.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
   		obsList = FXCollections.observableArrayList(list);
   		tableViewFuncionario.setItems(obsList);
  		initEditButtons();

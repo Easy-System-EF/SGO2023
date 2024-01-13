@@ -3,14 +3,17 @@ package gui.sgo;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.MainSgo;
 import db.DbIntegrityException;
 import gui.listerneres.DataChangeListener;
+import gui.sgcp.ParFornecedorFormController;
 import gui.sgcpmodel.entities.Compromisso;
 import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgcpmodel.entities.Parcela;
@@ -25,6 +28,7 @@ import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.MaterialService;
 import gui.util.Alerts;
 import gui.util.CalculaParcela;
+import gui.util.DataIDataF;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -85,12 +89,25 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
  	@FXML
  	private Button btNewEnt;
  	
+	@FXML
+	private Button btFornecedor;
+
+	@FXML
+	private Button btMaterial;
+
  	@FXML
  	private Label labelUser;
 
+ 	@FXML
+ 	private Label labelTitulo;
+
  // auxiliar
  	public String user = "usuário";
+ 	public String nomeTitulo = "Entrada de Material";
+ 	public char opcao = ' ';
  	public Integer nivel = 0;
+ 	public static Integer codigoFor = null;
+ 	public static Integer codigoMat = null;
  	String classe = "Entrada List";
  	
 // carrega aqui Updatetableview (metodo)
@@ -117,6 +134,35 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
  		createDialogForm(obj, objMat, objCom, objPer, objPar, objForn, objTipo, "/gui/sgo/EntradaCadastroForm.fxml", parentStage);
    	}
 
+ 	public void onBtFornecedorAction(ActionEvent event) {
+		Stage parentStage = Utils.currentStage(event); 
+		nomeTitulo = "Consulta Entrada por Fornecedor";
+		opcao = 'F';
+  		createDialogForms("/gui/sgcp/ParFornecedorForm.fxml", objForn, objMat, (parentStage), 
+  				(ParFornecedorFormController contF) -> {
+			contF.setFornecedor(objForn);
+			contF.setService(new FornecedorService());
+			contF.loadAssociatedObjects();
+			contF.subscribeDataChangeListener(this);
+			contF.updateFormData();
+ 		});
+	}
+ 	
+ 	
+ 	public void onBtMaterialAction(ActionEvent event) {
+		Stage parentStage = Utils.currentStage(event); 
+		nomeTitulo = "Consulta Entrada por Material";
+		opcao = 'M';
+  		createDialogForms("/gui/sgo/MaterialPesquisaForm.fxml", objForn, objMat, (parentStage), 
+  				(MaterialPesquisaFormController contM) -> {
+			contM.setMaterial(objMat);
+			contM.setService(new MaterialService());
+			contM.loadAssociatedObjects();
+			contM.subscribeDataChangeListener(this);
+			contM.updateFormData();
+ 		});
+	}
+ 	
  	// injeta a dependencia com set (invers�o de controle de inje�ao)	
  	public void setServices(MaterialService matService, EntradaService service) {
  		this.matService = matService;
@@ -127,6 +173,8 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
  	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
+		codigoFor = null;
+		codigoMat = null;
  	}
 
 // comportamento padr�o para iniciar as colunas 	
@@ -156,13 +204,34 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
  		if (service == null) {
 			throw new IllegalStateException("Serviço está vazio");
  		}
+		Date dti = DataIDataF.datai();
+		Date dtf = DataIDataF.dataf();
+			 		
  		labelUser.setText(user);
-// aq vou buscar tds Id e madar pronto  		
- 		List<Entrada> list = service.findAll();
+ 		labelTitulo.setText(nomeTitulo);
+		initializeNodes();
+ 		List<Entrada> list = new ArrayList<>();
+ 		if (codigoFor != null) {
+ 			list = service.findByForn(codigoFor);
+ 	 		list.removeIf(f -> ! f.getForn().getCodigo().equals(codigoFor));
+ 		} 
+ 		if (codigoMat != null) {
+ 			list = service.findByMat(codigoMat);
+ 	 		list.removeIf(m -> ! m.getMat().getCodigoMat().equals(codigoMat));
+ 		} 
+ 		if (codigoFor == null) {
+ 			if (codigoMat == null) {
+				list = service.findAll();
+				list.removeIf(x -> x.getDataEnt().before(dti));
+				list.removeIf(x -> x.getDataEnt().after(dtf));
+ 			}	
+ 		}	
    		obsList = FXCollections.observableArrayList(list);
  		tableViewEntrada.setItems(obsList);
  		initEditButtons();
 		initRemoveButtons();
+		codigoFor = null;
+		codigoMat = null;
 	}
 
 /* 	
@@ -208,6 +277,33 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 		}
  	} 
   	
+	private synchronized <T> void createDialogForms(String absoluteName, Fornecedor obj, Material objMat, 
+			Stage parentStage, Consumer<T> initializeAction) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			Pane pane = loader.load();
+			 
+			T cont = loader.getController();
+ 			initializeAction.accept(cont);
+
+ 			Stage dialogStage = new Stage();
+			if (opcao == 'F') {
+				dialogStage.setTitle("Selecione Fornecdor                                             ");
+			}
+			if (opcao == 'M') {
+				dialogStage.setTitle("Selecione Material                                             ");
+			}
+			dialogStage.setScene(new Scene(pane));
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(parentStage);
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+			Alerts.showAlert("IO Exception", classe + "Erro carregando tela", e.getMessage(), AlertType.ERROR);
+		}
+	}
+ 
 //  atualiza minha lista dataChanged com dados novos 	
 	@Override
 	public void onDataChanged() {
@@ -276,7 +372,7 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 					String simNao = "sim";
 					simNao = verificaPago(obj, simNao);
 					if (simNao == "nao") {
-						Alerts.showAlert("Parcela Paga", "Existe patcela(s) paga(s) ", "sem exclusão", AlertType.ERROR);
+						Alerts.showAlert("Parcela Paga", "Existe(m) parcela(s) paga(s) ", "sem exclusão", AlertType.ERROR);
 					}
 					if (simNao == "sim") {
 						if (obj.getForn().getCodigo() != null) {
@@ -312,7 +408,7 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 	}
 	
 	private String confereSaldo(int nnf, int forn, String simNao) {
-		Material mat1 = new Material();
+		Material mat1;
 		List<Entrada> listEnt2 = service.findByNnf(nnf);
 		if (listEnt2.size() > 0) {
 			for (Entrada e2 : listEnt2) {
@@ -330,15 +426,14 @@ public class EntradaCadastroListController implements Initializable, DataChangeL
 	
 	private void saiMaterial(int nnf, Integer forn, String simNao) {
 		if (simNao == "sim") {
-			Material mat1 = new Material();
+			Material mat1;
 			List<Entrada> listEnt2 = service.findByNnf(nnf);
 			for (Entrada e2 : listEnt2) {
 				if (e2.getForn().getCodigo() == forn) {
 					mat1 = matService.findById(e2.getMat().getCodigoMat()); 
-					if (e2.getQuantidadeMatEnt() <= mat1.getSaldoMat()) {
-						mat1.saidaSaldo(e2.getQuantidadeMatEnt());
+					if (mat1.getSaldoMat() >= e2.getQuantidadeMatEnt()) {
+						mat1.setEntradaMat(e2.getQuantidadeMatEnt() * -1);
 						mat1.getSaldoMat();
-						mat1.setSaidaCmmMat(-1 * e2.getQuantidadeMatEnt());
 						matService.saveOrUpdate(mat1);
 					}	
 				}

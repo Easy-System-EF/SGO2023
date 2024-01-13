@@ -605,16 +605,22 @@ public class OrcVirtualDaoJDBC implements OrcVirtualDao {
 		Grupo grupo = new Grupo();
 		GrupoService gruService = new GrupoService();
  		Material material = new Material();
-   		material.setCodigoMat(rs.getInt("CodigoMat"));
+
+ 		material.setCodigoMat(rs.getInt("CodigoMat"));
   		material.setGrupoMat(rs.getInt("GrupoMat"));
-  		grupo = gruService.findById(material.getGrupoMat());
   		material.setNomeMat(rs.getString("NomeMat"));
+  		material.setEstMinMat(rs.getDouble("EstMinMat"));
+  		material.setEntradaMat(rs.getDouble("EntradaMat"));
+  		material.setSaidaMat(rs.getDouble("SaidaMat"));
+  		material.setSaldoMat(rs.getDouble("SaldoMat"));
   		material.setPrecoMat(rs.getDouble("PrecoMat"));
   		material.setVendaMat(rs.getDouble("VendaMat"));
   		material.setVidaKmMat(rs.getInt("VidaKmMat"));
   		material.setVidaMesMat(rs.getInt("VidaMesMat"));
-  		material.setCmmMat(rs.getDouble("CmmMat"));
+  		material.setPercentualMat(rs.getDouble("PercentualMat"));
+  		material.setLetraMat(rs.getString("LetraMat").charAt(0));
   		material.setDataCadastroMat(new java.util.Date(rs.getTimestamp("DataCadastroMat").getTime()));
+  		grupo = gruService.findById(material.getGrupoMat());
   		material.setGrupo(grupo);
     	return material;
 	}

@@ -712,14 +712,19 @@ public class OrcamentoCadastroFormController implements Initializable, DataChang
 		if (funService == null) {
 			throw new IllegalStateException("Funcionario Serviço esta nulo");
 		}
-		Date date = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int mm = cal.get(Calendar.MONTH) + 1;
-		int aa = cal.get(Calendar.YEAR);
+//		Date date = new Date();
+//		Calendar cal = Calendar.getInstance();
+//		cal.setTime(date);
+//		int mm = cal.get(Calendar.MONTH) + 1;
+//		int aa = cal.get(Calendar.YEAR);
 // buscando (carregando) bco de dados		
 		List<Cliente> listCli = cliService.findAll();
-		List<Funcionario> listFun = funService.findByAtivo("Ativo", aa, mm);
+		List<Funcionario> listFun = funService.findByAtivo("Ativo", new Date());
+//		List<Funcionario> listFun = funService.findByAtivo("Ativo", aa, mm);
+
+		
+		
+		
 // transf p/ obslist		
 		obsListCli = FXCollections.observableArrayList(listCli);
 		obsListFun = FXCollections.observableArrayList(listFun);

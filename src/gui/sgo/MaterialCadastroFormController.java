@@ -137,9 +137,7 @@ public class MaterialCadastroFormController implements Initializable {
 			if (entity.getCodigoMat() == null) {
 				sai = 1;
 			}
-			double saldo = entity.getSaldoMat();
     		 entity = getFormData();
-			 entity.entraSaldo(saldo);
 	    	 service.saveOrUpdate(entity);
 	    	 if (sai == 0) {
 	    		 Utils.currentStage(event).close();
@@ -181,6 +179,10 @@ public class MaterialCadastroFormController implements Initializable {
 // set CODIGO c/ utils p/ transf string em int \\ ou null		
 		obj.setCodigoMat(Utils.tryParseToInt(textCodigoMat.getText()));
 		
+ 		obj.setGrupo(comboBoxGrupo.getValue());
+ 		Grupo grupo = comboBoxGrupo.getSelectionModel().getSelectedItem();
+ 		obj.setGrupoMat(grupo.getCodigoGru());
+
 // tst name (trim elimina branco no principio ou final
 // lan�a Erros - nome do cpo e msg de erro
 		if (textNomeMat.getText() == null || textNomeMat.getText().trim().contentEquals("")) {
@@ -193,6 +195,23 @@ public class MaterialCadastroFormController implements Initializable {
 			}	
 		}
 
+		if (textEstMinMat.getText() == null || textEstMinMat.getText().trim().contentEquals("")) {
+			obj.setEstMinMat(0.00);
+		}
+
+		obj.setEstMinMat(Utils.formatDecimalIn(textEstMinMat.getText().replace(".", "")));
+		if (textVidaKmMat.getText() == null) {
+			obj.setVidaKmMat(0);
+		}
+
+		if (obj.getCodigoMat() == null) {
+			obj.setEntradaMat(0.0);
+			obj.setSaidaMat(0.0);
+			obj.getSaldoMat();
+			obj.setPrecoMat(0.0);
+			obj.getCmmMat();
+		}
+		
 		if (textVendaMat.getText() == null || textVendaMat.getText().trim().contentEquals("")) {
 			exception.addErros("venda", "Valor é obrigatório");
 			obj.setVendaMat(0.0);
@@ -202,14 +221,6 @@ public class MaterialCadastroFormController implements Initializable {
 			exception.addErros("venda", "Valor é obrigatório");
 		}
 
-		if (textEstMinMat.getText() == null || textEstMinMat.getText().trim().contentEquals("")) {
-			obj.setEstMinMat(0.00);
-		}
-
-		obj.setEstMinMat(Utils.formatDecimalIn(textEstMinMat.getText().replace(".", "")));
-		if (textVidaKmMat.getText() == null) {
-			obj.setVidaKmMat(0);
-		}
 		String kmM = textVidaKmMat.getText();
  		String kmsM2 = kmM.replace(".", "");
  		obj.setVidaKmMat(Utils.tryParseToInt(kmsM2));
@@ -219,10 +230,6 @@ public class MaterialCadastroFormController implements Initializable {
 		}
 		obj.setVidaMesMat(Utils.tryParseToInt(textVidaMesMat.getText()));
 
- 		obj.setGrupo(comboBoxGrupo.getValue());
- 		Grupo grupo = comboBoxGrupo.getSelectionModel().getSelectedItem();
- 		obj.setGrupoMat(grupo.getCodigoGru());
-
  		if (dataAnt == null) {
  			obj.setDataCadastroMat(new Date());
  		}
@@ -230,8 +237,8 @@ public class MaterialCadastroFormController implements Initializable {
  			obj.setDataCadastroMat(dataAnt);
  		}
  		
- 		obj.setPercentualClass(0.00);
- 		obj.setLetraClass(' ');
+ 		obj.setPercentualMat(0.00);
+ 		obj.setLetraMat(' ');
 
  		// tst se houve algum (erro com size > 0)		
 		if (exception.getErros().size() > 0)

@@ -29,11 +29,12 @@ public class Adiantamento extends Funcionario implements Serializable{
 	public Adiantamento(Integer codigoFun, String nomeFun, String enderecoFun, String bairroFun, String cidadeFun,
 			String ufFun, String cepFun, Integer dddFun, Integer telefoneFun, String cpfFun, String pixFun,
 			Double comissaoFun, Double adiantamentoFun, Integer mesFun, Integer anoFun, String cargoFun,
-			String situacaoFun, Double salarioFun, Cargo cargo, Situacao situacao, Integer numeroAdi, Date dataAdi,
+			String situacaoFun, Double salarioFun, Date dataCadastroFun, Cargo cargo, Situacao situacao, Integer numeroAdi, Date dataAdi,
 			Double valeAdi, Integer mesAdi, Integer anoAdi, Double valorAdi, Integer osAdi, Integer balcaoAdi,
 			Double comissaoAdi, String tipoAdi, Double salarioAdi) {
 		super(codigoFun, nomeFun, enderecoFun, bairroFun, cidadeFun, ufFun, cepFun, dddFun, telefoneFun, cpfFun, pixFun,
-				comissaoFun, adiantamentoFun, mesFun, anoFun, cargoFun, situacaoFun, salarioFun, cargo, situacao);
+				comissaoFun, adiantamentoFun, mesFun, anoFun, cargoFun, situacaoFun, salarioFun, dataCadastroFun, cargo, 
+				situacao);
 		this.numeroAdi = numeroAdi;
 		this.dataAdi = dataAdi;
 		this.valeAdi = valeAdi;

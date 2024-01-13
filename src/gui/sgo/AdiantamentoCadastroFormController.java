@@ -162,7 +162,6 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		dataChangeListeners.add(listener);
 	}
 
-	@SuppressWarnings("deprecation")
 	@FXML
 	public void onBtPesquisaAction(ActionEvent event) {
 		classe = "Adiantamento Adi Form";
@@ -170,19 +169,17 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		try {
 			pesquisa = textIniciais.getText().toUpperCase().trim();
 			if (pesquisa != "") {
-				List<Funcionario> listFun = funService.findPesquisa(
-						pesquisa, cal.get(Calendar.YEAR), (data.getMonth() + 1));
-				listFun.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
+				List<Funcionario> listFun = funService.findPesquisa(pesquisa, new Date());
 				if (listFun.size() == 0) {
 					Optional<ButtonType> result = Alerts.showConfirmation("Pesquisa sem resultado ", "Deseja incluir?");
 					if (result.get() == ButtonType.OK) {
 						Stage parentStage = Utils.currentStage(event);
 						createDialogForm(entFun, "/gui/sgb/FuncionarioForm.fxml", parentStage);
 					}
-					listFun = funService.findPesquisa(pesquisa, cal.get(Calendar.YEAR), (data.getMonth() + 1));
-					listFun.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
+					listFun = funService.findPesquisa(pesquisa, new Date());
 				}
 				if(listFun.size() > 0) {
+					listFun.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
 					obsListFun = FXCollections.observableArrayList(listFun);
 					comboBoxFun.setItems(obsListFun);
 					notifyDataChangeListerners();
@@ -309,7 +306,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 	 */
 	private Adiantamento getFormData() throws ParseException {
 		Adiantamento obj = new Adiantamento();
-		// instanciando uma exce��o, mas n�o lan�ado - validation exc....
+// instanciando uma exce��o, mas n�o lan�ado - validation exc....
 		ValidationException exception = new ValidationException("Validation exception");
 // set CODIGO c/ utils p/ transf string em int \\ ou null		
 		obj.setNumeroAdi(Utils.tryParseToInt(textNumeroAdi.getText()));
@@ -326,6 +323,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		obj.setCargo(comboBoxFun.getValue().getCargo());
 		obj.setSituacao(comboBoxFun.getValue().getSituacao());
 		obj.setSalarioFun(comboBoxFun.getValue().getCargo().getSalarioCargo());
+		obj.setDataCadastroFun(comboBoxFun.getValue().getDataCadastroFun());
 
 		if (dpDataAdi.getValue() != null) {
 			Instant instant = Instant.from(dpDataAdi.getValue().atStartOfDay(ZoneId.systemDefault()));
@@ -382,7 +380,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 				}
 			}
 		}
-		// tst se houve algum (erro com size > 0)
+// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
@@ -502,9 +500,8 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		}
 // buscando (carregando) os cargos q est�o no bco de dados via Dialogform
  		labelUser.setText(user);
-		@SuppressWarnings("deprecation")
-		List<Funcionario> list = funService.findByAtivo(
-				"Ativo", cal.get(Calendar.YEAR) , (data.getMonth()+ 1));
+		List<Funcionario> list = funService.findByAtivo("Ativo", new Date());
+//		"Ativo", cal.get(Calendar.YEAR) , (data.getMonth()+ 1));
 // transf p/ obslist		
 		list.removeIf(x -> x.getNomeFun().contains("Consumo Próprio"));
 		obsListFun = FXCollections.observableArrayList(list);

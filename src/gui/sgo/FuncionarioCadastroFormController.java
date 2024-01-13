@@ -219,8 +219,12 @@ public class FuncionarioCadastroFormController implements Initializable {
 		cal.setTime(data);
 		int mm = cal.get(Calendar.MONTH) + 1;
 		int aa = cal.get(Calendar.YEAR);
-		List<Funcionario> listFun = service.findAll(aa, mm);
- // instanciando uma exce��o, mas n�o lan�ado - validation exc....		
+		List<Funcionario> listFun = service.findAll(new Date());
+//		List<Funcionario> listFun = service.findAll(aa, mm);
+
+		
+		
+		// instanciando uma exce��o, mas n�o lan�ado - validation exc....		
 		ValidationException exception = new ValidationException("Validation exception");
 // set CODIGO c/ utils p/ transf string em int \\ ou null		
 		obj.setCodigoFun(Utils.tryParseToInt(textCodigoFun.getText()));
@@ -367,6 +371,11 @@ public class FuncionarioCadastroFormController implements Initializable {
  		obj.setComissaoFun(0.00);
  		obj.setAdiantamentoFun(0.00);
  		obj.setSalarioFun(comboBoxCargo.getValue().getSalarioCargo());
+ 		if (obj.getCodigoFun() == null) {
+ 			obj.setDataCadastroFun(new Date());
+ 		} else {
+ 			obj.setDataCadastroFun(entity.getDataCadastroFun());
+ 		}
  		if (entity.getMesFun() == null) {
  			obj.setMesFun(mm);
  			obj.setAnoFun(aa);
@@ -417,10 +426,8 @@ public class FuncionarioCadastroFormController implements Initializable {
   	@Override
 	public void initialize(URL url, ResourceBundle rb) {  		
  		Constraints.setTextFieldInteger(textCodigoFun);
-// 		Constraints.setTextFieldInteger(textCepFun);
  		Constraints.setTextFieldInteger(textDddFun);
  		Constraints.setTextFieldInteger(textTelefoneFun);
-// 		Constraints.setTextFieldInteger(textCpfFun);
  		Constraints.setTextFieldMaxLength(textNomeFun, 40);
  		Constraints.setTextFieldMaxLength(textCepFun, 9);
  		Constraints.setTextFieldMaxLength(textUfFun, 2);

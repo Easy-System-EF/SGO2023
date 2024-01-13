@@ -13,12 +13,9 @@ import application.MainSgo;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgomodel.entities.FechamentoAnual;
-import gui.sgomodel.entities.Orcamento;
 import gui.sgomodel.services.AdiantamentoService;
-import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.OrcVirtualService;
-import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
@@ -93,19 +90,16 @@ public class FechamentoAnualConsultaListController implements Initializable, Dat
 	public void montaForm() {
 		updateTableView();
 		service.zeraAll();
-		Optional<ButtonType> result = Alerts.showConfirmation("Processamento", "<<<aguarde>>>");
+		Optional<ButtonType> result = Alerts.showConfirmation("Pode demorar um pouco", "confirma ?");
 		if (result.get() == ButtonType.OK) {
 			FechamentoAnual obj = new FechamentoAnual();
-			Orcamento objOrc = new Orcamento();
 			FechamentoAnualConsultaFormController contF = new FechamentoAnualConsultaFormController();
-			contF.setDadosEntityes(obj, objOrc);
+			contF.setDadosEntityes(obj);
 			contF.setServiceAll(
 		      new FechamentoAnualService(),
 			  new AdiantamentoService(),
 			  new OrdemServicoService(),
-			  new OrcamentoService(),
 			  new OrcVirtualService(),
-			  new BalcaoService(),
 			  new ParcelaService(),
 			  new ReceberService());
 			contF.subscribeDataChangeListener(this);
@@ -164,10 +158,6 @@ public class FechamentoAnualConsultaListController implements Initializable, Dat
 		classe = "Fechamento anual ";
 		list = service.findAll();
 		if (list.size() == 0 && flagStart == 0) {
-//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
-//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
-//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
-//			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
 			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
 			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));
 			list.add(new FechamentoAnual(null, null, null, null, null, null, null, null));

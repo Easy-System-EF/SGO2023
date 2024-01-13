@@ -18,9 +18,19 @@
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
-            <Label prefHeight="18.0" prefWidth="477.0" text="Entrada">
+            <Button fx:id="btFornecedor" mnemonicParsing="false" onAction="#onBtFornecedorAction" text="Fornecedor">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button fx:id="btMaterial" mnemonicParsing="false" onAction="#onBtMaterialAction" text="Material">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+            <Label fx:id="labelTitulo">
                <padding>
-                  <Insets left="200.0" />
+                  <Insets left="120.0" />
                </padding>
                <font>
                   <Font name="System Bold" size="14.0" />
@@ -31,7 +41,7 @@
                   <Font size="12.0" />
                </font>
                <padding>
-                  <Insets left="15.0" />
+                  <Insets left="40.0" />
                </padding>
             </Label>
         </items>

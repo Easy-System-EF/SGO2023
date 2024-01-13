@@ -15,7 +15,9 @@ import db.DbException;
 import gui.sgcpmodel.entities.Fornecedor;
 import gui.sgomodel.dao.EntradaDao;
 import gui.sgomodel.entities.Entrada;
+import gui.sgomodel.entities.Grupo;
 import gui.sgomodel.entities.Material;
+import gui.sgomodel.services.GrupoService;
   
 public class EntradaDaoJDBC implements EntradaDao {
 	
@@ -195,12 +197,12 @@ public class EntradaDaoJDBC implements EntradaDao {
   				{	forn = instantiateFornecedor(rs);
   					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
   				}
-  				Material prod = mapMat.get(rs.getInt("MaterialIdEnt"));
-  				if (prod == null)
-  				{	prod = instantiateMaterial(rs);
-  					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
+  				Material mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
   				}
-  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
   			    list.add(obj);
   			}
 			return list;
@@ -243,12 +245,106 @@ public class EntradaDaoJDBC implements EntradaDao {
   				{	forn = instantiateFornecedor(rs);
   					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
   				}
-  				Material prod = mapMat.get(rs.getInt("MaterialIdEnt"));
-  				if (prod == null)
-  				{	prod = instantiateMaterial(rs);
-  					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
+  				Material mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
   				}
-  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
+  			    list.add(obj);
+  			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException( classe + " " + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Entrada> findByForn(int codFor) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try 
+		{	st = conn.prepareStatement( 
+					 "SELECT *, fornecedor.Codigo, material.CodigoMat "
+						 + "FROM entrada " 
+					 		+ "INNER JOIN fornecedor " 
+					 			+ "on entrada.FornecedorIdEnt = fornecedor.Codigo " 
+					 		+ "INNER JOIN material " 
+					 			+ "on entrada.MaterialIdEnt = Material.CodigoMat "
+					 		+ "Where Fornecedor.Codigo = ? " 
+						+ "ORDER BY - NumeroEnt");
+  
+			st.setInt(1, codFor);
+			rs = st.executeQuery();
+			
+			List<Entrada> list = new ArrayList<>();
+			Map<Integer, Fornecedor> mapForn = new HashMap<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+   			
+			while (rs.next()) {
+  				Fornecedor forn = mapForn.get(rs.getInt("FornecedorIdEnt"));
+  				if (forn == null)
+  				{	forn = instantiateFornecedor(rs);
+  					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
+  				}
+  				Material mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
+  				}
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
+  			    list.add(obj);
+  			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException( classe + " " + e.getMessage());
+		}
+		finally {
+ 			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public List<Entrada> findByMat(int codMat) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try 
+		{	st = conn.prepareStatement( 
+					 "SELECT *, fornecedor.Codigo, material.CodigoMat "
+						 + "FROM entrada " 
+					 		+ "INNER JOIN fornecedor " 
+					 			+ "on entrada.FornecedorIdEnt = fornecedor.Codigo " 
+					 		+ "INNER JOIN material " 
+					 			+ "on entrada.MaterialIdEnt = Material.CodigoMat "
+					 		+ "Where Material.CodigoMat = ? " 
+						+ "ORDER BY - NumeroEnt");
+  
+			st.setInt(1, codMat);
+			rs = st.executeQuery();
+			
+			List<Entrada> list = new ArrayList<>();
+			Map<Integer, Fornecedor> mapForn = new HashMap<>();
+			Map<Integer, Material> mapMat = new HashMap<>();
+   			
+			while (rs.next()) {
+  				Fornecedor forn = mapForn.get(rs.getInt("FornecedorIdEnt"));
+  				if (forn == null)
+  				{	forn = instantiateFornecedor(rs);
+  					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
+  				}
+  				Material mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
+  				}
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
   			    list.add(obj);
   			}
 			return list;
@@ -279,7 +375,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 			rs = st.executeQuery();
 			
 			List<Entrada> list = new ArrayList<>();
-			Material prod = new Material();
+			Material mat = new Material();
 			Map<Integer, Fornecedor> mapForn = new HashMap<>();
 			Map<Integer, Material> mapMat = new HashMap<>();
    			
@@ -289,12 +385,12 @@ public class EntradaDaoJDBC implements EntradaDao {
   				{	forn = instantiateFornecedor(rs);
   					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
   				}
-  				prod = mapMat.get(rs.getInt("MaterialIdEnt"));
-  				if (prod == null)
-  				{	prod = instantiateMaterial(rs);
-  					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
+  				mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
   				}
-  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
   			    list.add(obj);
   			}
 			return list;
@@ -325,7 +421,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 			rs = st.executeQuery();
 			
 			List<Entrada> list = new ArrayList<>();
-			Material prod = new Material();
+			Material mat = new Material();
 			Map<Integer, Fornecedor> mapForn = new HashMap<>();
 			Map<Integer, Material> mapMat = new HashMap<>();
    			
@@ -335,12 +431,12 @@ public class EntradaDaoJDBC implements EntradaDao {
   				{	forn = instantiateFornecedor(rs);
   					mapForn.put(rs.getInt("FornecedorIdEnt"), forn);  				
   				}
-  				prod = mapMat.get(rs.getInt("MaterialIdEnt"));
-  				if (prod == null)
-  				{	prod = instantiateMaterial(rs);
-  					mapMat.put(rs.getInt("MaterialIdEnt"), prod);  				
+  				mat = mapMat.get(rs.getInt("MaterialIdEnt"));
+  				if (mat == null)
+  				{	mat = instantiateMaterial(rs);
+  					mapMat.put(rs.getInt("MaterialIdEnt"), mat);  				
   				}
-  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+  			    Entrada obj = instantiateEntrada(rs, forn, mat);
   			    list.add(obj);
   			}
 			return list;
@@ -374,7 +470,7 @@ public class EntradaDaoJDBC implements EntradaDao {
 		}
 	} 
 	
-	private Entrada instantiateEntrada(ResultSet rs, Fornecedor forn, Material prod) throws SQLException {
+	private Entrada instantiateEntrada(ResultSet rs, Fornecedor forn, Material mat) throws SQLException {
  		Entrada ent = new Entrada();
  		ent.setNumeroEnt(rs.getInt("NumeroEnt"));
  		ent.setNnfEnt(rs.getInt("NnfEnt"));
@@ -384,7 +480,7 @@ public class EntradaDaoJDBC implements EntradaDao {
  		ent.setQuantidadeMatEnt(rs.getDouble("QuantidadeMatEnt"));
  		ent.setValorMatEnt(rs.getDouble("ValorMatEnt"));
  		ent.setForn(forn);
- 		ent.setMat(prod);
+ 		ent.setMat(mat);
         return ent;
 	}
 	
@@ -413,17 +509,27 @@ public class EntradaDaoJDBC implements EntradaDao {
 	}
 	
 	private Material instantiateMaterial(ResultSet rs) throws SQLException {
-		Material material = new Material();
-		material.setCodigoMat(rs.getInt("CodigoMat"));
-		material.setGrupoMat(rs.getInt("GrupoMat"));
-		material.setNomeMat(rs.getString("NomeMat"));
-		material.setSaldoMat(rs.getDouble("SaldoMat"));
-		material.setEstMinMat(rs.getDouble("EstMinMat"));
-		material.setPrecoMat(rs.getDouble("PrecoMat"));
-		material.setVendaMat(rs.getDouble("VendaMat"));
-		material.setCmmMat(rs.getDouble("CmmMat"));
-		material.setDataCadastroMat(new java.util.Date(rs.getTimestamp("DataCadastroMat").getTime()));
-        return material;
+		Grupo grupo = new Grupo();
+		GrupoService gruService = new GrupoService();
+ 		Material material = new Material();
+
+ 		material.setCodigoMat(rs.getInt("CodigoMat"));
+  		material.setGrupoMat(rs.getInt("GrupoMat"));
+  		material.setNomeMat(rs.getString("NomeMat"));
+  		material.setEstMinMat(rs.getDouble("EstMinMat"));
+  		material.setEntradaMat(rs.getDouble("EntradaMat"));
+  		material.setSaidaMat(rs.getDouble("SaidaMat"));
+  		material.setSaldoMat(rs.getDouble("SaldoMat"));
+  		material.setPrecoMat(rs.getDouble("PrecoMat"));
+  		material.setVendaMat(rs.getDouble("VendaMat"));
+  		material.setVidaKmMat(rs.getInt("VidaKmMat"));
+  		material.setVidaMesMat(rs.getInt("VidaMesMat"));
+  		material.setPercentualMat(rs.getDouble("PercentualMat"));
+  		material.setLetraMat(rs.getString("LetraMat").charAt(0));
+  		material.setDataCadastroMat(new java.util.Date(rs.getTimestamp("DataCadastroMat").getTime()));
+  		grupo = gruService.findById(material.getGrupoMat());
+  		material.setGrupo(grupo);
+    	return material;
 	}
 	
 	@Override
@@ -446,8 +552,8 @@ public class EntradaDaoJDBC implements EntradaDao {
 				
 				while (rs.next()) {
 	  				Fornecedor forn = instantiateFornecedor(rs);
-	  				Material prod = instantiateMaterial(rs);
-	  			    Entrada obj = instantiateEntrada(rs, forn, prod);
+	  				Material mat = instantiateMaterial(rs);
+	  			    Entrada obj = instantiateEntrada(rs, forn, mat);
 	  			    return obj;
 	  			}
 				return null;

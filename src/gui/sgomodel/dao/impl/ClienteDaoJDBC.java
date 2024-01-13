@@ -294,7 +294,7 @@ public class ClienteDaoJDBC implements ClienteDao {
 			st = conn.prepareStatement( 
 					"SELECT * FROM cliente " +
 						"WHERE percentualClass > 0 " +
-					"ORDER BY - PercentualClass ");
+					"ORDER BY PercentualClass ");
 			
 			rs = st.executeQuery();
 			

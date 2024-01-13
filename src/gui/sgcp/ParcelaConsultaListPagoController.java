@@ -5,9 +5,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -24,7 +22,7 @@ import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
+import gui.util.DataIDataF;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -170,8 +168,11 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 		nomeTitulo = "Consulta Contas pagas no Periodo";
   		createDialogForms("/gui/sgcp/ParPeriodoForm.fxml", obj1, obj3, obj4, (parentStage), 
   				(ParPeriodoFormController contP) -> {
-		contP.setPeriodo(obj1);
-		contP.setPeriodoService(new ParPeriodoService());
+  					contP.setPeriodo(obj1);
+  					contP.setPeriodoService(new ParPeriodoService());
+  					contP.loadAssociatedObjects();
+  					contP.subscribeDataChangeListener(this);
+  					contP.updateFormData();
    		});
  	}
  
@@ -187,7 +188,6 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 			contF.subscribeDataChangeListener(this);
 			contF.updateFormData();
  		});
-//		updateTableViewPago();
 	}
  	
 	@FXML
@@ -197,9 +197,12 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
  		setOpcao('u');
 		nomeTitulo = "Consulta Contas pagas por Tipo";
   		createDialogForms("/gui/sgcp/ParTipoForm.fxml", obj1, obj3, obj4, (parentStage), 
-  				(ParTipoFormController contP) -> {
-  		contP.setPeriodo(obj1);
-  		contP.setPeriodoService(new ParPeriodoService(), new TipoConsumoService());
+  				(ParTipoFormController contT) -> {
+  					contT.setPeriodo(obj1);
+  					contT.setPeriodoService(new ParPeriodoService(), new TipoConsumoService());
+  					contT.loadAssociatedObjects();
+  					contT.subscribeDataChangeListener(this);
+  					contT.updateFormData();
   		});
   		}
   
@@ -280,7 +283,8 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 			per.setDtiPeriodo(dti);
 			per.setDtfPeriodo(dtf);
 			perService.update(per);
-		} catch (ParseException e) {
+		} 
+		catch (ParseException e) {
 			e.printStackTrace();
 			Alerts.showAlert("ParseException ", "Erro Data ", e.getMessage(), AlertType.ERROR);
 		}
@@ -300,25 +304,8 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 		List<Parcela> list = new ArrayList<>();
  		if (opcao == 'o') {
 			list = parService.findAllPago();
- 			LocalDate ldt = DataStatic.criaLocalAtual();
- 			int aa = DataStatic.anoDaData(ldt);
- 			int mm = DataStatic.mesDaData(ldt);
- 			int df = DataStatic.ultimoDiaMes(ldt);
- 			int dd = 01;
- 			
- 			Date dt = new Date();
- 			Calendar cal = Calendar.getInstance();
- 			cal.setTime(dt);
- 			
- 			cal.set(Calendar.DAY_OF_MONTH, dd);
- 			cal.set(Calendar.MONTH, mm - 1);
- 			cal.set(Calendar.YEAR, aa);
- 			Date dti = cal.getTime();
- 			
- 			cal.set(Calendar.DAY_OF_MONTH, df);
- 			cal.set(Calendar.MONTH, mm - 1);
- 			cal.set(Calendar.YEAR, aa);
- 			Date dtf = cal.getTime();
+ 			Date dti = DataIDataF.datai();
+ 			Date dtf = DataIDataF.dataf();
  			list.removeIf(x -> x.getDataPagamentoPar().before(dti) || x.getDataPagamentoPar().after(dtf));
 		}
  		if (opcao == 'q') {
@@ -352,7 +339,7 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 	}
 
 	private synchronized <T> void createDialogForms(String absoluteName, ParPeriodo obj1, 
-   			Fornecedor obj3, TipoConsumo obj4, Stage parentStag, Consumer<T> initializeAction) {
+   			Fornecedor obj3, TipoConsumo obj4, Stage parentStage, Consumer<T> initializeAction) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
@@ -360,41 +347,19 @@ public class ParcelaConsultaListPagoController implements Initializable, DataCha
 			T cont = loader.getController();
  			initializeAction.accept(cont);
 
- 			if (opcao == 'g')
-			{	ParFornecedorFormController controllerF = loader.getController();
- 				controllerF.loadAssociatedObjects();
-				controllerF.subscribeDataChangeListener(this);
-				controllerF.updateFormData();
-				classe = "Fornecedor Parc List Pago";
-			}
-			if (opcao == 'q')
-			{	ParPeriodoFormController controllerP = loader.getController();;
- 				controllerP.loadAssociatedObjects();
-				controllerP.subscribeDataChangeListener(this);
-				controllerP.updateFormData();
-				classe = "Periodo Parc List Pago ";
-			}	
- 			if (opcao == 'u')
-			{	ParTipoFormController controllerT = loader.getController();
-				controllerT.loadAssociatedObjects();
-				controllerT.subscribeDataChangeListener(this);
-				controllerT.updateFormData();
-				classe = "Tipo Fornecedor Parc List Pago";
-   			}	
-
  			Stage dialogStage = new Stage();
-			if (opcao == 'g')
-			{	dialogStage.setTitle("Selecione Fornecdor                                             ");
+			if (opcao == 'g') {
+				dialogStage.setTitle("Selecione Fornecdor                                             ");
 			}
-			if (opcao == 'u')
-			{	dialogStage.setTitle("Selecione Tipo                                             ");
+			if (opcao == 'u') {
+				dialogStage.setTitle("Selecione Tipo                                             ");
 			}
-			if (opcao == 'q')
-			{	dialogStage.setTitle("Selecione Periodo                                             ");
+			if (opcao == 'q') {
+				dialogStage.setTitle("Selecione Periodo                                             ");
 			}
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
-			dialogStage.initOwner(parentStag);
+			dialogStage.initOwner(parentStage);
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		} catch (IOException e) {

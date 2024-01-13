@@ -15,11 +15,7 @@ import gui.sgcpmodel.services.CompromissoService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgcpmodel.services.TipoConsumoService;
-import gui.sgomodel.entities.Adiantamento;
-import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.FechamentoMes;
-import gui.sgomodel.entities.Orcamento;
-import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.AnosService;
 import gui.sgomodel.services.BalcaoService;
@@ -27,7 +23,6 @@ import gui.sgomodel.services.FechamentoMesService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MesesService;
 import gui.sgomodel.services.OrcVirtualService;
-import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
@@ -123,20 +118,15 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
   		flagStart = 1;
 		Stage parentStage = Utils.currentStage(event);
 		FechamentoMes obj = new FechamentoMes();
-		Adiantamento objAdi = new Adiantamento();
-		Orcamento objOrc = new Orcamento();
-		Balcao objBal = new Balcao();
-		Receber objRec = new Receber();
 		classe = "Meses ";
   		createDialogOpcao("/gui/sgo/MesAnoMForm.fxml", parentStage, 
   				(FechamentoMesConsultaFormController contF) -> {
-			contF.setDadosEntityes(obj, objOrc, objAdi, objBal, objRec);
+			contF.setDadosEntityes(obj);
 			contF.setServices(new FechamentoMesService(),
 						      new AdiantamentoService(),
 							  new MesesService(),
 							  new AnosService(),
 							  new OrdemServicoService(),
-							  new OrcamentoService(),
 							  new OrcVirtualService(),
 							  new FuncionarioService(),
 							  new BalcaoService(),
@@ -227,15 +217,18 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
  		classe = "Dados Folha";
  		list = service.findAll();
  		if (list.size() == 0 && flagStart == 0) {
+ 			
+// 			list.add(new FechamentoMes(num,  os,  bal,   dt,   cli,  fun, vlr, mat, com, res, acu, mes, ano));
+ 			
+// 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
+// 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
  			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
  			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
  			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
  			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
  			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
- 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
- 			list.add(new FechamentoMes(null, null, null, null, null, null, null, null, null, null, null, null, null));
- 			list.add(new FechamentoMes(null, null, null, null, null, "processamento", null, null, null, null, null, null, null));
- 			list.add(new FechamentoMes(null, null, null, null, null, "<<<aguarde>>>", null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, "processamento", null, null, null, null, null, null, null, null));
+ 			list.add(new FechamentoMes(null, null, null, null, "<<<aguarde>>>", null, null, null, null, null, null, null, null));
  		}
  		obsList = FXCollections.observableArrayList(list);
 		tableViewMensal.setItems(obsList);

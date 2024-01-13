@@ -341,8 +341,8 @@ public class ReceberDaoJDBC implements ReceberDao {
 			st = conn.prepareStatement(
 
 					"SELECT SUM(ValorRec) AS 'totMes' FROM receber " +
-					"WHERE (ValorPagoRec = 0) AND (PlacaRec != ('Balcão' OR 'Balcao' )) AND " +
-						"(DataVencimentoRec >= ?) AND (DataPagamentoRec <= ?) ");
+					"WHERE (ValorPagoRec = 0) AND (DataVencimentoRec >= ?) AND (DataPagamentoRec <= ?) " + 
+					 "AND (PlacaRec != 'Balcão' OR 'Balcao' ) "); 
 
 					st.setDate(1, new java.sql.Date(dti.getTime()));
 					st.setDate(2, new java.sql.Date(dtf.getTime()));
@@ -372,8 +372,8 @@ public class ReceberDaoJDBC implements ReceberDao {
 			st = conn.prepareStatement(
 
 					"SELECT SUM(ValorPagoRec) AS 'totMes' FROM receber " +
-					"WHERE (ValorPagoRec > 0) AND (PlacaRec = ('Balcão' OR 'Balcao' )) AND " +
-						"(DataVencimentoRec >= ?) AND (DataPagamentoRec <= ?) ");
+					"WHERE (ValorPagoRec > 0) AND (DataVencimentoRec >= ?) AND (DataPagamentoRec <= ?) " +
+					 "AND (PlacaRec = 'Balcão' OR 'Balcao' )" );
 
 					st.setDate(1, new java.sql.Date(dtiRP.getTime()));
 					st.setDate(2, new java.sql.Date(dtfRP.getTime()));
@@ -403,8 +403,8 @@ public class ReceberDaoJDBC implements ReceberDao {
 			st = conn.prepareStatement(
 
 				"SELECT SUM(ValorRec) AS 'totMes' FROM receber " +
-					"WHERE (ValorPagoRec = 0) AND (PlacaRec = ('Balcão' OR 'Balcao' )) AND " +
-						"(DataVencimentoRec >= ?) AND (DataVencimentoRec <= ?) ");
+					"WHERE (ValorPagoRec = 0) AND (DataVencimentoRec >= ?) AND (DataVencimentoRec <= ?) " +
+					 "AND (PlacaRec = 'Balcão' OR 'Balcao' )" );
 
 					st.setDate(1, new java.sql.Date(dti.getTime()));
 					st.setDate(2, new java.sql.Date(dtf.getTime()));
@@ -460,11 +460,14 @@ public class ReceberDaoJDBC implements ReceberDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement("SELECT * " + "FROM receber " + "INNER JOIN parPeriodo "
-					+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + "WHERE DataOsRec >= DataPagamentoRec AND "
-					+ "receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
-					+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " + "ValorPagoRec = 0.00 "
-					+ "ORDER BY DataVencimentoRec, ParcelaRec ");
+			st = conn.prepareStatement("SELECT * " + "FROM receber " + 
+					"INNER JOIN parPeriodo " +
+					 	"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + 
+					 		"WHERE DataOsRec >= DataPagamentoRec AND " +
+					 			"receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND " +
+					 			"receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " + 
+					 			"ValorPagoRec = 0.00 " +
+						"ORDER BY DataVencimentoRec, ParcelaRec ");
 
 			rs = st.executeQuery();
 
@@ -495,9 +498,8 @@ public class ReceberDaoJDBC implements ReceberDao {
 						"FROM receber " + 
 							"INNER JOIN parPeriodo "
 								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo "
-									+ "WHERE  DataPagamentoRec >= DataOsRec AND "
-										+ "receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
-										+ "receber.DataVencimentoRec <= parPeriodo.DtfPeriodo AND " 
+									+ "WHERE receber.DataVencimentoRec >= parPeriodo.DtiPeriodo AND "
+										+ "receber.DataPagamentoRec <= parPeriodo.DtfPeriodo AND " 
 										+ "ValorPagoRec > 0.00 "
 							+ "ORDER BY DataVencimentoRec, ParcelaRec ");
 

@@ -37,7 +37,6 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 		this.conn = conn;
 	}
 	
-	
 	OrcVirtualService virService = new OrcVirtualService();
 	ReceberService recService = new ReceberService();
 	ReposicaoVeiculoService repService = new ReposicaoVeiculoService();
@@ -57,14 +56,11 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 		MaterialService matService = new MaterialService();
 		AdiantamentoService adiService = new AdiantamentoService();
 
-		Adiantamento adi = new Adiantamento();
 		Material mat = new Material();
 
 		try {
 			conn.setAutoCommit(false);
-	
 			osService.saveOrUpdate(objOs);	
-			
 			objOrc.setOsOrc(objOs.getNumeroOS());
 			orcService.saveOrUpdate(objOrc);
 			
@@ -84,7 +80,7 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 				int nada = 0;
 			} else {
 				objAdi.setOsAdi(objOs.getNumeroOS());
-				adi.setDataAdi(new Date());
+				objAdi.setDataAdi(new Date());
 				adiService.saveOrUpdate(objAdi);
 			}	
 			
@@ -144,9 +140,9 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 						rec.setValorPagoRec(objOs.getValorOS());
 					}	
 				}
-				if (objOs.getPrazoOS() > 1) {
+				if (objOs.getPrazoOS() > 1 ) {
 					rec.setDataVencimentoRec(CalculaParcela
-							.CalculaVencimentoDia(objOs.getDataPrimeiroPagamentoOS(), (i - 1), objOs.getPrazoOS()));
+							.CalculaVencimentoDia(objOs.getDataPrimeiroPagamentoOS(), i, objOs.getPrazoOS()));
 					rec.setValorRec(CalculaParcela.calculaParcelas(objOs.getValorOS(), objOs.getParcelaOS(), i));
 					rec.setDataPagamentoRec(rec.getDataVencimentoRec());
 					rec.setJurosRec(0.00);
@@ -193,9 +189,6 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 							} else {
 								rep.setProximaDataRep(objOs.getDataOS());
 							}
-//							if (rep.getCodigoMaterialRep() == null) {
-//							int nada = 0;
-//						} else {	
 							repService.insert(rep);
 						}	
 					}

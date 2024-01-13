@@ -131,7 +131,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 					
 			"select SUM(ComissaoAdi) AS total from adiantamento " +
-					"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+					"WHERE MesAdi = ? AND AnoAdi = ? AND CodigoFun = ? "); 
 	
 			st.setInt(1, mes);
 			st.setInt(2, ano);
@@ -159,7 +159,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 			
 			"select SUM(ValeAdi) AS total from adiantamento " +
-				"WHERE adiantamento.MesAdi = ? AND adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+				"WHERE MesAdi = ? AND AnoAdi = ? AND CodigoFun = ? "); 
 
 			st.setInt(1, mes);
 			st.setInt(2, ano);
@@ -188,7 +188,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 					
 			"select SUM(ComissaoAdi) AS total from adiantamento " +
-					"WHERE adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+					"WHERE AnoAdi = ? AND CodigoFun = ? "); 
 	
 			st.setInt(1, ano);
 			st.setInt(2, codFun);
@@ -215,7 +215,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 			
 			"select SUM(ValeAdi) AS total from adiantamento " +
-				"WHERE adiantamento.AnoAdi = ? AND adiantamento.CodigoFun = ? "); 
+				"WHERE AnoAdi = ? AND CodigoFun = ? "); 
 
 			st.setInt(1, ano);
 			st.setInt(2, codFun);
@@ -243,7 +243,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 					
 			"select SUM(ComissaoAdi) AS total from adiantamento " +
-					"WHERE adiantamento.OsAdi = ? "); 
+					"WHERE OsAdi = ? "); 
 	
 			st.setInt(1, os);
 			rs = st.executeQuery();
@@ -269,7 +269,7 @@ public class AdiantamentoDaoJDBC implements AdiantamentoDao {
 			st = conn.prepareStatement(
 			
 			"select SUM(ComissaoAdi) AS total from adiantamento " +
-				"WHERE adiantamento.BalcaoAdi = ? "); 
+				"WHERE BalcaoAdi = ? "); 
 
 			st.setInt(1, bal);
 			

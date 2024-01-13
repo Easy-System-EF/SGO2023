@@ -3,7 +3,6 @@ package gui.sgo;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +23,6 @@ import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.VeiculoService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -141,7 +139,7 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
 		tableColumnKmFinalOrc.setCellValueFactory(new PropertyValueFactory<>("kmFinalOrc"));
  		tableColumnTotalOrc.setCellValueFactory(new PropertyValueFactory<>("totalOrc"));
 		Utils.formatTableColumnDouble(tableColumnTotalOrc, 2);
- 		// para tableview preencher o espa�o da tela scroolpane, referencia do stage		
+ // para tableview preencher o espa�o da tela scroolpane, referencia do stage		
 		Stage stage = (Stage) MainSgo.getMainScene().getWindow();
 		 tableViewOrcamento.prefHeightProperty().bind(stage.heightProperty());
  	}
@@ -158,20 +156,7 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
 			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
-//		Calendar cal = Calendar.getInstance(); 
-// 		Date data = new Date();
-// 		int mm = 0;
-// 		int aa = 0;
-// 		
-//		cal.setTime(data);
-//		mm = cal.get(Calendar.MONTH) + 1;
-//		aa = cal.get(Calendar.YEAR) - 1;
-		
-		LocalDate dt1 = DataStatic.criaLocalAtual();
-		int mm = DataStatic.mesDaData(dt1);
-		int aa = DataStatic.anoDaData(dt1) - 1;
-		
-		List<Orcamento> list = service.findByMesAnoList(mm, aa);
+		List<Orcamento> list = service.findByAberto();
  		obsList = FXCollections.observableArrayList(list);
 		tableViewOrcamento.setItems(obsList);
 		notifyDataChangeListerners();
@@ -267,23 +252,23 @@ public class OrcamentoCadastroListController implements Initializable, DataChang
  	  	}
 
 	
-	// lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
+// lista da classe subject (form) - guarda lista de obj p/ receber e emitir o evento
 		private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
-	// *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
+// *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   
 		private void notifyDataChangeListerners() {
 			for (DataChangeListener listener : dataChangeListeners) {
 				listener.onDataChanged();
 			}
 		}
 
-	//  * o controlador tem uma lista de eventos q permite distribui��o via metodo abaixo
+//  * o controlador tem uma lista de eventos q permite distribui��o via metodo abaixo
 			// * recebe o evento e inscreve na lista
 		public void subscribeDataChangeListener(DataChangeListener listener) {
 				dataChangeListeners.add(listener);
 		}
 		
-	//  atualiza minha lista dataChanged com dados novos 	
+//  atualiza minha lista dataChanged com dados novos 	
 	@Override
 	public void onDataChanged() {
 		updateTableView();

@@ -35,8 +35,8 @@
         <columns>
           <TableColumn fx:id="tableColumnCodigoMat" editable="false" prefWidth="69.0" text="Código" />
             <TableColumn fx:id="tableColumnNomeMat" editable="false" prefWidth="221.0" text="Nome" />
-            <TableColumn fx:id="tableColumnPercentualClass" editable="false" prefWidth="107.0" text="Percentual %" />
-            <TableColumn fx:id="tableColumnLetraClass" editable="false" minWidth="0.0" prefWidth="86.0" text="Classificação" />
+            <TableColumn fx:id="tableColumnPercentualMat" editable="false" prefWidth="107.0" text="Percentual %" />
+            <TableColumn fx:id="tableColumnLetraMat" editable="false" minWidth="0.0" prefWidth="86.0" text="Classificação" />
         </columns>
          <effect>
             <Blend />

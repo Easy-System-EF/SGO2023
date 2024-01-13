@@ -360,12 +360,9 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		adiantamento.setValeAdi(0.00);
 		adiantamento.setValorAdi(maoObra);
 		adiantamento.setComissaoAdi(0.00);
-//		cal.setTime(adiantamento.getDataAdi());
 		LocalDate dt1 = DataStatic.dateParaLocal(adiantamento.getDataAdi());
-//		adiantamento.setMesAdi(cal.get(Calendar.MONTH) + 1);
 		adiantamento.setAnoAdi(DataStatic.anoDaData(dt1));
 		adiantamento.setMesAdi(DataStatic.mesDaData(dt1));
-//		adiantamento.setAnoAdi(cal.get(Calendar.YEAR));
 		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
 		adiantamento.setBalcaoAdi(entity.getNumeroBal());
 		adiantamento.setOsAdi(0);
@@ -539,28 +536,21 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	private void confereSaldo(ActionEvent event1) {
 		try {
 			classe = "Material";
-			Material mat1 = new Material();
+			Material mat1;
 			List<OrcVirtual> vir1 = virService.findByBalcao(numBal);
 			for (OrcVirtual ov : vir1) {
 				if (ov.getNumeroBalVir().equals(numBal)) {
 					mat1 = matService.findById(ov.getMaterial().getCodigoMat());
-					if (mat1.getGrupo().getNomeGru().equals("Mão de obra") ||
-							mat1.getGrupo().getNomeGru().equals("Mao de obra")) {
-						if (mat1.getSaldoMat() < ov.getQuantidadeMatVir()) {
-							mat1.setSaldoMat(0.00);
-							mat1.entraSaldo(ov.getQuantidadeMatVir());
-						}	
-						maoObra += mat1.getVendaMat();
+					if (mat1.getGrupo().getNomeGru().contains("Mão de obra") || 
+							mat1.getGrupo().getNomeGru().contains("Mão de obra") ||
+							mat1.getGrupo().getNomeGru().contains("Serviço") ||
+							mat1.getGrupo().getNomeGru().contains("Servico")) { 
+								if (mat1.getSaldoMat() < ov.getQuantidadeMatVir()) {
+									mat1.setEntradaMat(ov.getQuantidadeMatVir());
+								}	
+						maoObra += mat1.getVendaMat() * ov.getQuantidadeMatVir();
 					}	
-					if (mat1.getGrupo().getNomeGru().equals("Serviço") ||
-							mat1.getGrupo().getNomeGru().equals("Servico")) {
-						if (mat1.getSaldoMat() < ov.getQuantidadeMatVir()) {
-							mat1.setSaldoMat(0.00);
-							mat1.entraSaldo(ov.getQuantidadeMatVir());
-						}	
-						maoObra += mat1.getVendaMat();
-					}	
-				    matService.saveOrUpdate(mat1);
+					matService.saveOrUpdate(mat1);
 					if(ov.getQuantidadeMatVir() > mat1.getSaldoMat()) {
 					   flagSave = 1;
 					   somaSaldo(event1, ov.getQuantidadeMatVir(), mat1.getCodigoMat());
@@ -579,7 +569,7 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	}
 
 	private void somaSaldo(ActionEvent event2, double qtd, int cod) {
-		Material mat2 = new Material();
+		Material mat2;
 		mat2 = matService.findById(cod);
 		Optional<ButtonType> result = 
 				Alerts.showConfirmation("Saldo insuficiente ", "Deseja incluir? - "  + mat2.getNomeMat());
@@ -609,39 +599,33 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	
 	private void updateMaterialBal(ActionEvent event3) {
 		try {
-			Material mat3 = new Material();
-			List<OrcVirtual> vir3 = new ArrayList<>();
-			vir3 = virService.findByBalcao(numBal);
-			for (OrcVirtual v3 : vir3) {				
-				if (v3.getNumeroBalVir().equals(numBal)) {
-					mat3 = matService.findById(v3.getMaterial().getCodigoMat());
-					if (flagSave == 2) {
-						mat3.saidaSaldo(v3.getQuantidadeMatVir());
+			Material mat3;
+			if (flagSave == 2) {
+				List<OrcVirtual> vir3 = virService.findByBalcao(numBal);
+				for (OrcVirtual v3 : vir3) {				
+					if (v3.getNumeroBalVir().equals(numBal)) {
+						mat3 = matService.findById(v3.getMaterial().getCodigoMat());
+						mat3.setSaidaMat(v3.getQuantidadeMatVir());
 						mat3.getSaldoMat();
-						mat3.setSaidaCmmMat(v3.getQuantidadeMatVir());
+						mat3.getCmmMat();
 						classe = "Virtual Form Material ";
 						listMatCommit.add(mat3);
-						v3.setMaterial(mat3);
-// saidaCmmProd p/ calculo cmmm
+						@SuppressWarnings("unused")
 						int nada = 0;
-						if (mat3.getGrupo().getNomeGru().equals("Mão de obra") ||
-								mat3.getGrupo().getNomeGru().equals("Mao de obra")) {
+						if (mat3.getGrupo().getNomeGru().contains("Mão de obra") || 
+								mat3.getGrupo().getNomeGru().contains("Mão de obra") ||
+								mat3.getGrupo().getNomeGru().contains("Serviço") ||
+								mat3.getGrupo().getNomeGru().contains("Servico")) { 
 							nada = 1;
-						} 
-						if (mat3.getGrupo().getNomeGru().equals("Serviço") ||
-								mat3.getGrupo().getNomeGru().equals("Servico")) {
-							nada = 1;
-						} 
-						if (nada == 0) {	
+						} else {
 							if (mat3.getSaldoMat() <= mat3.getEstMinMat()) {
-								String nomeMat = mat3.getNomeMat();
 								if (mat3.getSaldoMat() == 0.00) {
-									Alerts.showAlert("Atenção!!! ", "Estoque zerou ", nomeMat, AlertType.WARNING);
+									Alerts.showAlert("Atenção!!! ", "Estoque zerou ", mat3.getNomeMat(), AlertType.WARNING);
 								} else {	
-									Alerts.showAlert("Atenção!!! ", "Recompor estoque ", nomeMat, AlertType.WARNING);
+									Alerts.showAlert("Atenção!!! ", "Recompor estoque ", mat3.getNomeMat(), AlertType.WARNING);
 								}	
 							}
-						}
+						}	  			
 					}	
 				}	
 			}
@@ -958,16 +942,9 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		if (funService == null) {
 			throw new IllegalStateException("Funcionário Serviço esta nulo");
 		}
-		Date date = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int mm = cal.get(Calendar.MONTH) + 1;
-		int aa = cal.get(Calendar.YEAR);
-// buscando (carregando) bco de dados		
-		List<Funcionario> listFun = funService.findByAtivo("Ativo", aa, mm);
-		// transf p/ obslist		
-				obsListFun = FXCollections.observableArrayList(listFun);
-				comboBoxFunBal.setItems(obsListFun);
+		List<Funcionario> listFun = funService.findByAtivo("Ativo", new Date());
+		obsListFun = FXCollections.observableArrayList(listFun);
+		comboBoxFunBal.setItems(obsListFun);
 	}
 
 // mandando a msg de erro para o labelErro correspondente 	

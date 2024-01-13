@@ -233,30 +233,27 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	public void onBtPesquisaAction(ActionEvent event) throws ParseException {
 		classe = "Orçamento";
 		pesquisa = "";
+		@SuppressWarnings("unused")
 		String placa = null;
 		try {
 			ValidationException exception = new ValidationException("Validation exception");
 			pesquisa = textPesquisa.getText().toUpperCase().trim();
 			if (pesquisa != "") {
-				List<Orcamento> listOrc = orcService.findPesquisa(pesquisa);
-				if (listOrc.size() == 0) { 
+				List<Orcamento> listOrcP = orcService.findPesquisa(pesquisa);
+				if (listOrcP.size() == 0) { 
 					exception.addErros("orcto", "orçamento não existe ou fechado ");
-					listOrc = orcService.findAll();
-					exception.addErros("orcto", "");
+					exception.addErros("dataOS", "Não existe Orçamento ");
+					listOrcP = orcService.findByAberto();
 			 	}
-				for (Orcamento o : listOrc) {
+				for (Orcamento o : listOrcP) {
 					placa = o.getPlacaOrc();
 				}	
-				if (placa == null) {
-					exception.addErros("dataOS", "Não existe Orçamento ");
-					exception.addErros("orcto", "aberto para consulta ");
-				} else {
-					pesquisa = "";
-					obsListOrc = FXCollections.observableArrayList(listOrc);
-					comboBoxOrcamento.setItems(obsListOrc);
-					notifyDataChangeListerners();
-					updateFormData();
-				}	
+				pesquisa = "";
+				listOrcP.removeIf(o -> o.getOsOrc() > 0);
+				obsListOrc = FXCollections.observableArrayList(listOrcP);
+				comboBoxOrcamento.setItems(obsListOrc);
+				notifyDataChangeListerners();
+				updateFormData();
 			}
 			if (exception.getErros().size() > 0) {
 				throw exception;
@@ -294,7 +291,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		if (orcService == null) {
 			throw new IllegalStateException("Serviço orçamento nulo");
 		}
-		ValidationException exception = new ValidationException("Validation exception");
 		try {
 			if (entity.getNumeroOS() != null) {
 				entAnt = entity;
@@ -318,10 +314,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				if (maoObra > 0) {
 					gravaComissaoOS();
 				}
-				exception.addErros("nf", "processamento longo - Ok ");
-				if (exception.getErros().size() > 0) {
-					throw exception;
-				}
 				classe = "OS Commit ";
 				OSCommitDao osCommit = DaoFactory.createOSCommitDao();
 				osCommit.gravaOS(entity, orcamento, periodo, nota, veiculo, adiantamento, listMatCommit);
@@ -343,26 +335,19 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	private void confereSaldo(ActionEvent event) {
 		try {
 			classe = "Material";
-			Material mat1 = new Material();
+			Material mat1;
 			List<OrcVirtual> vir = virService.findByOrcto(entity.getOrcamentoOS());
 			for (OrcVirtual v : vir) {
 				if (v.getNumeroOrcVir().equals(entity.getOrcamentoOS())) {
 					mat1 = matService.findById(v.getMaterial().getCodigoMat());
-					if (mat1.getGrupo().getNomeGru().equals("Mão de obra") || 
-							mat1.getGrupo().getNomeGru().equals("Mao de obra")) {
+					if (mat1.getGrupo().getNomeGru().contains("Mão de obra") || 
+							mat1.getGrupo().getNomeGru().contains("Mão de obra") ||
+							mat1.getGrupo().getNomeGru().contains("Serviço") ||
+							mat1.getGrupo().getNomeGru().contains("Servico")) { 
 						if (mat1.getSaldoMat() < v.getQuantidadeMatVir()) {
-							mat1.setSaldoMat(0.00);
-							mat1.entraSaldo(v.getQuantidadeMatVir());
+							mat1.setEntradaMat(v.getQuantidadeMatVir());
+							maoObra += mat1.getVendaMat();
 						}	
-						maoObra += mat1.getVendaMat();
-					}	
-					if (mat1.getGrupo().getNomeGru().equals("Serviço") || 
-						 mat1.getGrupo().getNomeGru().equals("Servico")) {
-						if (mat1.getSaldoMat() < v.getQuantidadeMatVir()) {
-							mat1.setSaldoMat(0.00);
-							mat1.entraSaldo(v.getQuantidadeMatVir());
-						}	
-						maoObra += mat1.getVendaMat();
 					}	
 					matService.saveOrUpdate(mat1);
 					if(v.getQuantidadeMatVir() > mat1.getSaldoMat()) {
@@ -377,6 +362,8 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 							orcService.saveOrUpdate(orc1);
 						}
 // saidaCmmProd p/ calculo cmmm
+					} else {
+						grava = "sim";
 					}
 				}
 			}	
@@ -386,7 +373,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	}
 	
 	private void somaSaldo(ActionEvent event, double qtd, int cod) {
-		Material mat2 = new Material();
+		Material mat2;
 		mat2 = matService.findById(cod);
 		Optional<ButtonType> result = 
 				Alerts.showConfirmation("Saldo insuficiente ", "Deseja incluir? - "  + mat2.getNomeMat());
@@ -417,35 +404,32 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	private void updateMaterialOS() {
 		try {
 			ValidationException exception = new ValidationException("Validation exception");
-			Material mat3 = new Material();
+			Material mat3;
 			classe = "OS Form virtual ";
 			if (grava == "sim") {
 				List<OrcVirtual> listVir = virService.findByOrcto(entity.getOrcamentoOS());
 				for (OrcVirtual ov : listVir) {
 					if (ov.getNumeroOrcVir().equals(entity.getOrcamentoOS())) {
 						mat3 = matService.findById(ov.getMaterial().getCodigoMat());
-						mat3.saidaSaldo(ov.getQuantidadeMatVir());
+						mat3.setSaidaMat(ov.getQuantidadeMatVir());
 						mat3.getSaldoMat();
-						mat3.setSaidaCmmMat(ov.getQuantidadeMatVir());
-						classe = "OS Form Material ";
-						listMatCommit.add(mat3);
-//						matService.saveOrUpdate(mat3);
+						mat3.getCmmMat();
+						matService.saveOrUpdate(mat3);
 						ov.setMaterial(mat3);
-	// saidaCmmProd p/ calculo cmmm
+						listMatCommit.add(mat3);
+						@SuppressWarnings("unused")
 						int nada = 0;
-						if (mat3.getGrupo().getNomeGru().equals("Mão de obra") || mat3.getGrupo().getNomeGru().equals("Serviço")) {
+						if (mat3.getGrupo().getNomeGru().contains("Mão de obra") || 
+								mat3.getGrupo().getNomeGru().contains("Mão de obra") ||
+								mat3.getGrupo().getNomeGru().contains("Serviço") ||
+								mat3.getGrupo().getNomeGru().contains("Servico")) { 
 							nada = 1;
-						} 	
-						if (mat3.getGrupo().getNomeGru().equals("Mao de obra") || mat3.getGrupo().getNomeGru().equals("Servico")) {
-							nada = 1;
-						} 
-						if (nada == 0) {
+						} else {
 							if (mat3.getSaldoMat() <= mat3.getEstMinMat()) {
-								String nomeMat = mat3.getNomeMat();
 								if (mat3.getSaldoMat() == 0.00) {
-									Alerts.showAlert("Atenção!!! ", "Estoque zerou ", nomeMat, AlertType.WARNING);
+									Alerts.showAlert("Atenção!!! ", "Estoque zerou ", mat3.getNomeMat(), AlertType.WARNING);
 								} else {	
-									Alerts.showAlert("Atenção!!! ", "Recompor estoque ", nomeMat, AlertType.WARNING);
+									Alerts.showAlert("Atenção!!! ", "Recompor estoque ", mat3.getNomeMat(), AlertType.WARNING);
 								}	
 							}
 						}	
@@ -538,10 +522,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		adiantamento.setValorAdi(maoObra);
 		adiantamento.setComissaoAdi(0.00);
 		LocalDate dt1 = DataStatic.dateParaLocal(adiantamento.getDataAdi());
-//		cal.setTime(adiantamento.getDataAdi());
-//		adiantamento.setMesAdi(cal.get(Calendar.MONTH) + 1);
 		adiantamento.setMesAdi(DataStatic.mesDaData(dt1));
-//		adiantamento.setAnoAdi(cal.get(Calendar.YEAR));
 		adiantamento.setAnoAdi(DataStatic.anoDaData(dt1));
 		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
 		adiantamento.setBalcaoAdi(0);
@@ -573,7 +554,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	 */
 	private OrdemServico getFormData() throws ParseException {
 		OrdemServico obj = new OrdemServico();
-		// instanciando uma exce��o, mas n�o lan�ado - validation exc....
+// instanciando uma exce��o, mas n�o lan�ado - validation exc....
 		ValidationException exception = new ValidationException("Validation exception");
 // set CODIGO c/ utils p/ transf string em int \\ ou null		
 		obj.setNumeroOS(Utils.tryParseToInt(textNumeroOS.getText()));
@@ -725,14 +706,14 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		obj.setMesOs(cal.get(Calendar.MONTH) + 1);
 		obj.setAnoOs(cal.get(Calendar.YEAR));
 
-		// tst se houve algum (erro com size > 0)
+// tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
 		return obj;		
 	}
 
-	// msm processo save p/ fechar
+// msm processo save p/ fechar
 	@FXML
 	public void onBtCancelOSAction(ActionEvent event) {
 		Utils.currentStage(event).close();
@@ -773,12 +754,7 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		if (orcService == null) {
 			throw new IllegalStateException("Orçamento Serviço esta nulo");
 		}
-// buscando (carregando) bco de dados		
-		LocalDate dt1 = DataStatic.criaLocalAtual();
-		int mm = DataStatic.mesDaData(dt1);
-		int aa = DataStatic.anoDaData(dt1);
-		
-		List<Orcamento> listOrc = orcService.findByMesAnoList(mm, aa);
+		List<Orcamento> listOrc = orcService.findByAberto();
 // transf p/ obslist		
 		obsListOrc = FXCollections.observableArrayList(listOrc);
 		comboBoxOrcamento.setItems(obsListOrc);

@@ -3,6 +3,10 @@ package gui.copia.volta;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 import db.DbException;
@@ -15,7 +19,7 @@ import gui.util.Cryptograf;
 public class RestauraFuncionario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public static Integer restauraFuncionario(Integer count, String unid, String meioSgo, String file, String ext) {
+	public static Integer restauraFuncionario(Integer count, String unid, String meioSgo, String file, String ext) throws ParseException {
 		@SuppressWarnings("unused")
 		String status = "Ok";
 		count = 0;
@@ -24,6 +28,8 @@ public class RestauraFuncionario implements Serializable {
 		FuncionarioService funService = new FuncionarioService();
 		CargoService carService = new CargoService();
 		SituacaoService sitService = new SituacaoService();
+	 	SimpleDateFormat sdfAno = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	 	Calendar cal = Calendar.getInstance();
 
 		FileReader fr;
 		Scanner sc = null;
@@ -60,8 +66,11 @@ public class RestauraFuncionario implements Serializable {
 					fun.setCargoFun(campo[15]);
 					fun.setSituacaoFun(campo[16]);
 					fun.setSalarioFun(Double.parseDouble(campo[17]));
-					fun.setCargo(carService.findById(Integer.parseInt(campo[18])));
-					fun.setSituacao(sitService.findById(Integer.parseInt(campo[19])));
+					Date data = sdfAno.parse(campo[18]);
+					cal.setTime(data); 
+					fun.setDataCadastroFun(cal.getTime());
+					fun.setCargo(carService.findById(Integer.parseInt(campo[19])));
+					fun.setSituacao(sitService.findById(Integer.parseInt(campo[20])));
 					funService.insertBackup(fun);
 					count += 1;
 				}

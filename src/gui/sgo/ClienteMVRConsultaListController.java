@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.MainSgo;
+import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.Cliente;
 import gui.sgomodel.services.ClienteService;
-import gui.sgomodel.services.MaterialService;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -24,12 +24,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
  
-public class ClienteMVRConsultaListController implements Initializable {
+public class ClienteMVRConsultaListController implements Initializable, DataChangeListener {
 
 // inje��o de dependenia sem implementar a classe (instanciat)
 // acoplamento forte - implementa via set
 	private ClienteService service;
-	private MaterialService matService;
 	
 	@FXML
  	private TableView<Cliente> tableViewCliente;
@@ -73,22 +72,16 @@ public class ClienteMVRConsultaListController implements Initializable {
  		this.service = service;
  	}
 
- 	public void setMaterialMVRServices(MaterialService matService) {
- 		this.matService = matService;
- 	}
-
  // inicializar as colunas para iniciar nossa tabela initializeNodes
  	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
  	}
  	
-	public void mrvForm() {
+	public void mvrForm() {
 		Optional<ButtonType> result = Alerts.showConfirmation("Pode demorar um pouco", "Confirma?");
 		if (result.get() == ButtonType.OK) {
-			MVRConsultaForm mvr = new MVRConsultaForm();
-			mvr.setClienteMVRService(service);
-			mvr.setMaterialMVRService(matService);
+			ClienteMVRConsultaForm mvr = new ClienteMVRConsultaForm();
 			mvr.setClienteMVRService(service);
 			mvr.clienteSomaReceber();
 			mvr.clienteMontaBalcao();
@@ -99,12 +92,12 @@ public class ClienteMVRConsultaListController implements Initializable {
 			ok = 1;
 		} else {
 			ok = 2;
-		}
+		}	
 		try {
 			updateTableView();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 	
 // comportamento padr�o para iniciar as colunas 	
@@ -133,15 +126,13 @@ public class ClienteMVRConsultaListController implements Initializable {
  		}
  		List<Cliente> list = new ArrayList<>();
  		labelUser.setText(user);
- 		char nd = ' ';
-			if (ok == 0) {
-				list.add(new Cliente(null, "processando", null, null, null, null, null, null, null, null, null, null, null, null, nd, null, null, null, null, nd, null));
-				list.add(new Cliente(null, "<<<aguarde>>>", null, null, null, null, null, null, null, null, null, null, null, null, nd, null, null, null, null, nd, null));
-			}
-				
+ 		if (ok == 0) {
+ 			list.add(new Cliente(null, "processando", null, null, null, null, null, null, null, null, null, null, null, null, ' ', null, null, null, null, ' ', null));
+ 			list.add(new Cliente(null, "  aguarde  ", null, null, null, null, null, null, null, null, null, null, null, null, ' ', null, null, null, null, ' ', null));
+ 		}
  		if (ok == 1) {
- 			double bal = MVRConsultaForm.clientePercentualBalcao;
- 			double os = MVRConsultaForm.clientePercentualOs;
+ 			double bal = ClienteMVRConsultaForm.clientePercentualBalcao;
+ 			double os = ClienteMVRConsultaForm.clientePercentualOs;
  			char letraBal = ' ';
  			char letraOs = ' ';
  			if (bal > os) {
@@ -151,14 +142,13 @@ public class ClienteMVRConsultaListController implements Initializable {
  				letraBal = 'B';
  				letraOs = 'A';
  			}
- 			
+ 				
  			list = service.findABC();
-
  			list.removeIf(x -> x.getPercentualClass() == null || x.getPercentualClass() < 1.00);		
  			Cliente cli1 = new Cliente(999999, "Balcao", "", 0, "", "", "", "", "", 0, 0, 0, 0, "", ' ', "", "", 0.00, 
- 	 				MVRConsultaForm.clientePercentualBalcao, letraBal, 0);
+ 					ClienteMVRConsultaForm.clientePercentualBalcao, letraBal, 0);
  			Cliente cli2 = new Cliente(999999, "OS", "", 0, "", "", "", "", "", 0, 0, 0, 0, "", ' ', "", "", 0.00, 
- 	 				MVRConsultaForm.clientePercentualOs, letraOs, 0);
+ 					ClienteMVRConsultaForm.clientePercentualOs, letraOs, 0);
  			if (bal > os) {
  				letraBal = 'A';
  				letraOs = 'B';
@@ -170,12 +160,22 @@ public class ClienteMVRConsultaListController implements Initializable {
  				list.add(0, cli2);
  				list.add(1, cli1);
  			}
- 		}
- 		if (ok > 1) {
- 			list = service.findPesquisa("xyzuems");
- 		}
+ 		}	
+		if (ok > 1) {
+			list = service.findPesquisa("xyzowndh");
+		}
  		obsList = FXCollections.observableArrayList(list);
 		tableViewCliente.setItems(obsList);
 		initializeNodes();
+	}
+
+// *  atualiza minha lista dataChanged com dados novos 	
+	@Override
+	public void onDataChanged() {
+		try {
+			updateTableView();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
  }

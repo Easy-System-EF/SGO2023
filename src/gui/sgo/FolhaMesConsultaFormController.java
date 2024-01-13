@@ -3,6 +3,7 @@ package gui.sgo;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -183,7 +184,8 @@ public class FolhaMesConsultaFormController implements Initializable {
 			service.zeraAll();
 			classe = "Funcionario Dados 1 ";
  			Funcionario funcionario = new Funcionario();
- 			List<Funcionario> fun = funService.findAll(ano, mes);
+ 			List<Funcionario> fun = funService.findAll(new Date());
+// 			List<Funcionario> fun = funService.findAll(ano, mes);
  			
 			fun.forEach(f -> {
 				f.setComissaoFun(0.0);
@@ -193,19 +195,17 @@ public class FolhaMesConsultaFormController implements Initializable {
  			
  			classe = "Adiantamento Dados 1";
  			List<Adiantamento> adianto = adService.findMes(mes, ano);
+ 			adianto.removeIf(a -> a.getComissaoAdi().equals(null));
+ 			adianto.removeIf(a -> a.getValeAdi().equals(null));
  			for (Adiantamento a : adianto) {
  				if (a.getCodigoFun() != null) {
  					classe = "Funcionario Dados 2 ";
  					funcionario = funService.findById(a.getCodigoFun());
 					if (a.getTipoAdi().equals("C")) {
-						if (a.getComissaoAdi() != null) {
-							funcionario.setComissaoFun(a.getComissaoAdi());
-						}	
+						funcionario.setComissaoFun(a.getComissaoAdi());
 					}
 					if (a.getTipoAdi().equals("A")) {
-						if (a.getValeAdi() != null) {
-							funcionario.setAdiantamentoFun(a.getValeAdi());
-						}	
+						funcionario.setAdiantamentoFun(a.getValeAdi());
 					}	
  					funService.saveOrUpdate(funcionario);
 				}	
@@ -216,7 +216,8 @@ public class FolhaMesConsultaFormController implements Initializable {
 			classe = "Anos dados ";
 			objAno = anoService.findAno(entity2.getAnos().getAnoAnos());
 			classe = "Funcionario 3";
-			List<Funcionario> listFun = funService.findByAtivo("Ativo", ano, mes);
+			List<Funcionario> listFun = funService.findByAtivo("Ativo", new Date());
+//			List<Funcionario> listFun = funService.findByAtivo("Ativo", ano, mes);
 			classe = "Dados Folha 2 ";
 			for (Funcionario f : listFun) {
 					dados.setNumeroDados(null);

@@ -178,7 +178,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	}
  
 	@Override
-	public Double findSumAll(int ano, int mes) {
+	public Double findSumAllAberto(int ano, int mes) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -207,6 +207,35 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 	}
 	
 	@Override
+	public Double findSumAllPago(int ano, int mes) {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					
+					"SELECT SUM(PagoPar) AS 'total' FROM parcela "
+					+ 	"WHERE (pagoPar > 0.00) AND (year(DataPagamentoPar) <= ?) AND (month(DataPagamentoPar) <= ?) ");
+
+			st.setInt(1, mes);
+			st.setInt(2, ano);
+
+			rs = st.executeQuery();
+			
+			while (rs.next()) {
+				Double vlr = rs.getDouble("total");
+				return vlr;
+			}
+			return null;
+		}
+		catch (SQLException e) {
+			throw new DbException ( "Erro compromisso !!! sem SUM " + classe + " " + e.getMessage()); }
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+	
+	@Override
 	public Double findSumAberto(Date dti, Date dtf) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
@@ -214,7 +243,7 @@ public class ParcelaDaoJDBC implements ParcelaDao {
 			st = conn.prepareStatement( 
 					
 					"SELECT SUM(ValorPar) AS 'total' FROM parcela " +
-					 	"WHERE parcela.pagoPar = 0 AND parcela.DataVencimentoPar >= ? AND parcela.DataVencimentoPar <= ? ");
+					 	"WHERE pagoPar = 0 AND DataVencimentoPar >= ? AND DataVencimentoPar <= ? ");
 
 			st.setDate(1, new java.sql.Date(dti.getTime()));
 			st.setDate(2, new java.sql.Date(dtf.getTime()));

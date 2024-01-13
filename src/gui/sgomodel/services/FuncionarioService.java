@@ -1,5 +1,6 @@
 package gui.sgomodel.services;
 
+import java.util.Date;
 import java.util.List;
 
 import gui.sgomodel.dao.DaoFactory;
@@ -14,20 +15,23 @@ public class FuncionarioService {
 
 //    criar no fornecedorlist , uma dependencia no forn controlador para esse metodo, 
 //	carregando e mostrando na view		
-	public List<Funcionario> findAll(int aa, int mm) {
-   		return dao.findAll(aa, mm);
+	public List<Funcionario> findAll(Date data) {
+//		public List<Funcionario> findAll(int aa, int mm) {
+   		return dao.findAll(data);
 	} 
 	
 	public List<Funcionario> findAllId() {
    		return dao.findAllId();
 	} 
 	
-	public List<Funcionario> findPesquisa(String str, int aa, int mm) {
-   		return dao.findPesquisa(str, aa, mm);
+	public List<Funcionario> findPesquisa(String str, Date data) {
+//		public List<Funcionario> findPesquisa(String str, int aa, int mm) {
+   		return dao.findPesquisa(str, data);
 	} 
 	
-	public List<Funcionario> findByAtivo(String situacao, int aa, int mm) {
-   		return dao.findByAtivo(situacao, aa, mm);
+	public List<Funcionario> findByAtivo(String situacao, Date data) {
+//		public List<Funcionario> findByAtivo(String situacao, int aa, int mm) {
+   		return dao.findByAtivo(situacao, data);
 	} 
 	
 	public Funcionario findById(Integer cod) {

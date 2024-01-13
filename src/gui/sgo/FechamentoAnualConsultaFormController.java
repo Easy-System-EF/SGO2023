@@ -13,16 +13,12 @@ import java.util.ResourceBundle;
 import db.DbException;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.services.ParcelaService;
-import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.FechamentoAnual;
-import gui.sgomodel.entities.Orcamento;
 import gui.sgomodel.entities.OrdemServico;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.AdiantamentoService;
-import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.OrcVirtualService;
-import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.DataStatic;
@@ -44,13 +40,11 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 	private FechamentoAnualService service;
 	private AdiantamentoService adService;
 	private OrdemServicoService osService;
-	private OrcamentoService orcService;
 	private OrcVirtualService virService;
-	private BalcaoService balService;
 	private ParcelaService parService;
 	private ReceberService recService;
-	private Orcamento orc;
-
+	
+	private OrdemServico os;
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 //auxiliar
@@ -67,25 +61,22 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 	Date dataFinalRecAberto = new Date();
 	Date dataInicialRecPago = new Date();
 	Date dataFinalRecPago = new Date();
+	Date dataInicialRec = new Date();
+	Date dataFinalRec = new Date();
 
 	Calendar cal = Calendar.getInstance();
 
-	public void setDadosEntityes(FechamentoAnual entity, Orcamento orc) {
+	public void setDadosEntityes(FechamentoAnual entity) {
 		this.entity = entity;
-		this.orc = orc;
 	}
 
 	// * metodo set /p service
 	public void setServiceAll(FechamentoAnualService service, AdiantamentoService adService, 
-			OrdemServicoService osService, OrcamentoService orcService,
-			OrcVirtualService virService, BalcaoService balService,
-			ParcelaService parService, ReceberService recService) {
+			OrdemServicoService osService, OrcVirtualService virService, ParcelaService parService, ReceberService recService) {
 		this.service = service;
 		this.adService = adService;
 		this.osService = osService;
-		this.orcService = orcService;
 		this.virService = virService;
-		this.balService = balService;
 		this.parService = parService;
 		this.recService = recService;
 	}
@@ -129,9 +120,6 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
  		if (osService == null) {
 			throw new IllegalStateException("Serviço OS está vazio");
  		}
- 		if (orcService == null) {
-			throw new IllegalStateException("Serviço Orçamento está vazio");
- 		}
  		if (virService == null) {
 			throw new IllegalStateException("Serviço Virtual está vazio");
  		} 
@@ -140,12 +128,44 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 		
   		String tabelaMeses = "Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez";
   		String[] tabMes = tabelaMeses.split(",");
+  		
+  		Calendar cal = Calendar.getInstance();
 
 		Double sumOs = 0.00;
 		Double sumCusto = 0.00;
 		Double sumComissao = 0.00;
 		Double sumAcumulado = 0.00;
+		int mesPag = 0;
+		int anoPag = 0;
+		int mesOs = 0;
+		int anoOs = 0;
+		int mesBal = 0;
+		int anoBal = 0;
+		@SuppressWarnings("unused")
+		int numBal = 0;
 
+		LocalDate data = DataStatic.criaAnoMesDia(2001, 01, 01);
+		Date dtiAnt = DataStatic.localParaDateSdfAno(data);
+		int aaAnt = aa -1;
+		data = DataStatic.criaAnoMesDia(aaAnt, 12, 31);
+		Date dtfAnt = DataStatic.localParaDateSdfAno(data);
+		double vlrAntPago = parService.findSumPago(dtiAnt, dtfAnt);		
+		double vlrOsRec = recService.findPagoOsMes(dtiAnt, dtfAnt);
+		double vlrBalRec = recService.findPagoBalMes(dtiAnt, dtfAnt);
+		sumAcumulado = (vlrOsRec + vlrBalRec) - (vlrAntPago);
+		
+		entity.setDoctoAnual(null);
+		entity.setValorAnual(null);
+		entity.setValorCustoAnual(null);
+		entity.setValorComissaoAnual("Resultado ");
+		entity.setValorResultadoAnual("anterior=>");
+		try {
+			entity.setValorAcumuladoAnual(Mascaras.formataValor(sumAcumulado));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		} 
+		service.insert(entity);
+		
 		try { 	
 			while(mm < 13) {
 				LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 20);
@@ -183,24 +203,42 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 				dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
 				dataFinalRecPago = DataStatic.localParaDateSdfAno(dt1);
 			
+				dt1 = DataStatic.criaAnoMesDia(aa, mm, dd);
+				dataInicialRec = DataStatic.localParaDateSdfAno(dt1);
+				
+				dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
+				dataFinalRec = DataStatic.localParaDateSdfAno(dt1);
+			
 				entity = new FechamentoAnual();
 				entity.setMesAnual(tabMes[mm - 1]);
-				List<OrdemServico> listOs = osService.findByMesAno(mm, aa);
+				
+				List<Receber> listRec = recService.findAll();
+				listRec.removeIf(r -> r.getPlacaRec().equals("Balcão"));
+				listRec.removeIf(r -> r.getPlacaRec().equals("Balcao"));
+				
 				Double sumVlrOs = 0.00;
 				double sumCst = 0.00;
 				double sumCom = 0.00;
 				double sumRes = 0.00;
-				for (OrdemServico o : listOs) {		
-					List<Receber> listRec = recService.findByAllOs(o.getNumeroOS());
-					for (Receber r : listRec) {
-						 sumVlrOs += r.getValorPagoRec();
+				
+				for (Receber r : listRec) {
+					cal.setTime(r.getDataOsRec());
+					mesOs = 1 + cal.get(Calendar.MONTH);
+					anoOs = cal.get(Calendar.YEAR);
+					cal.setTime(r.getDataPagamentoRec());
+					mesPag = 1 + cal.get(Calendar.MONTH);
+					anoPag = cal.get(Calendar.YEAR);
+					if (r.getParcelaRec() == 1 && mesOs == mm && anoOs == aa) {
+						os = osService.findById(r.getOsRec());
+						sumCst += virService.findByCustoOrc(os.getOrcamentoOS());
+						sumCom += adService.findByTotalComOS(os.getNumeroOS());
 					}
-					sumCom += adService.findByTotalComOS(o.getNumeroOS());
-					orc = orcService.findById(o.getOrcamentoOS());
-					sumCst += virService.findByCustoOrc(orc.getNumeroOrc());
-				}
+					if (mesPag == mm && anoPag == aa ) {
+						sumVlrOs += r.getValorPagoRec();
+					}	
+				} 
 				sumOs += sumVlrOs;
-				sumCusto += sumCst;
+				sumCusto += sumCst; 
 				sumComissao += sumCom;
 				sumRes = sumVlrOs - (sumCst + sumCom);
 				sumAcumulado += sumRes;
@@ -217,20 +255,36 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 				service.insert(entity);
 	
 // monta dados balc�o		
-				List<Balcao> listBal = balService.findByMesAno(mm, aa);
+				List<Receber> listRecBal = recService.findAll();
+				for (Receber r1 : listRecBal) {
+					if (r1.getPlacaRec().equals("Balcao") || r1.getPlacaRec().equals("Balcão")) {
+						numBal = 1;
+					} else {
+						r1.setPlacaRec("del");
+					}	
+				}
+				
+				listRecBal.removeIf(r -> r.getPlacaRec().equals("del"));
+				
 				Double sumVlrBal = 0.00;
 				sumCst = 0.00;
-				for (Balcao b : listBal) {
-					List<Receber> listRec = recService.findByAllOs(b.getNumeroBal());
-					for (Receber r : listRec) {
-						if (r.getPlacaRec().equals("Balcão") || r.getPlacaRec().endsWith("Balcao")) {
-							sumVlrBal += r.getValorPagoRec();
-						}	
+
+				for (Receber r : listRecBal) {
+					cal.setTime(r.getDataOsRec());
+					mesBal = 1 + cal.get(Calendar.MONTH);
+					anoBal = cal.get(Calendar.YEAR);
+					cal.setTime(r.getDataPagamentoRec());
+					mesPag = 1 + cal.get(Calendar.MONTH);
+					anoPag = cal.get(Calendar.YEAR);					
+					if (mesBal == mm && anoBal == aa) {
+						sumCst += virService.findByCustoBal(r.getOsRec());
+						sumCom += adService.findByTotalComBal(r.getOsRec());
 					}
-					sumCst += virService.findByCustoBal(b.getNumeroBal());
-					sumCom += adService.findByTotalComBal(b.getNumeroBal());
-				}	
-				sumRes = sumVlrBal - sumCst;
+					if (mesPag == mm && anoPag == aa ) {
+						sumVlrBal += r.getValorPagoRec();
+					}
+				} 
+				sumRes = sumVlrBal - (sumCst + sumCom);
 				sumCusto += sumCst;
 				sumAcumulado += sumRes;
 				entity.setMesAnual(null);
@@ -246,7 +300,7 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 				sumCom = 0.00;
 				service.insert(entity);
 					
-				Double sumAberto = parService.findSumAberto(dataInicialRecAberto, dataFinalRecAberto);
+				Double sumAberto = parService.findSumAberto(dataInicialDespAberto, dataFinalDespAberto);
 				if (sumAberto > 0.00) {
 					sumRes = sumAcumulado - sumAberto ;
 				}	
@@ -262,9 +316,9 @@ public class FechamentoAnualConsultaFormController implements Initializable, Ser
 
 				Double sumPago = parService.findSumPago(dataInicialDespPago, dataFinalDespPago);
 				if (sumPago > 0.00) {
-					sumRes = sumAcumulado + sumPago;
+					sumRes = sumAcumulado - sumPago;
 				}
-				sumAcumulado += sumPago;
+				sumAcumulado -= sumPago;
 				entity.setDoctoAnual("Desp Paga");
 				entity.setValorAnual(Mascaras.formataValor(sumPago));
 				entity.setValorCustoAnual(Mascaras.formataValor(0.00));

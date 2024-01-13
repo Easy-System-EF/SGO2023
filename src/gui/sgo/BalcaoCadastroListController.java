@@ -368,14 +368,22 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 		List<OrcVirtual> listVirtual = new ArrayList<>();
 		classe = "Virtual balcao Form ";
 		listVirtual = virService.findByBalcao(codBal);
+		@SuppressWarnings("unused")
+		int nada = 0;
 		for (OrcVirtual cv : listVirtual) {
 			if (cv.getNumeroVir() != null) {
 				if (cv.getNumeroBalVir() == (codBal)) {
 					classe = "Material balcao Form "; 
 					mat1 = matService.findById(cv.getMaterial().getCodigoMat());
-					if (!mat1.getGrupo().getNomeGru().equals("Serviços") || !mat1.getGrupo().getNomeGru().equals("Mão de obra")) {
-						mat1.entraSaldo(cv.getQuantidadeMatVir());
-						mat1.setSaidaCmmMat(-1 *  cv.getQuantidadeMatVir());
+					if (mat1.getGrupo().getNomeGru().contains("Mão de obra") || 
+							mat1.getGrupo().getNomeGru().contains("Mão de obra") ||
+							mat1.getGrupo().getNomeGru().contains("Serviço") ||
+							mat1.getGrupo().getNomeGru().contains("Servico")) { 
+						nada = 1;
+					} else {
+						mat1.setSaidaMat(cv.getQuantidadeMatVir() * -1);
+						mat1.getSaldoMat();
+						mat1.getCmmMat();
 						matService.saveOrUpdate(mat1);
 					}	
 				}
