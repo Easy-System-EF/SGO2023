@@ -73,21 +73,21 @@ public class AdiantamentoImprimeController implements Initializable, Serializabl
 		empresa = empService.findById(numEmp);
 		nomeFirma = empresa.getNomeEmp();
   		grava();
-  		Imprimir.relatorio(pathI);
+  		Imprimir.relatorio(path);
    	}
 
 	public void grava() {
 	 		try
 // 			{	OutputStreamWriter bwP = new OutputStreamWriter(
 // 					new FileOutputStream(path), "UTF-8");
- 			{	BufferedWriter bwP = new BufferedWriter(new FileWriter(pathI));
+ 			{	BufferedWriter bwP = new BufferedWriter(new FileWriter(path));
 						cal.setTime(adianto.getDataAdi());
  						diaHj = cal.get(Calendar.DAY_OF_MONTH);
  						mesHj = cal.get(Calendar.MONTH);
  						anoHj = cal.get(Calendar.YEAR);
  						String[] meses = tabelaMeses.split(",");
  						mes = meses[mesHj];
- 						String dfVlr = df.format(adianto.getValeAdi()); 
+ 						String dfVlr = df.format(adianto.getAdiantamentoAdi()); 
  						tam = nomeFirma.length();
  						Asteriscos(41, tam);
  						linha02 = String.format("%s%s%s%s%s",   margem,
@@ -96,7 +96,7 @@ public class AdiantamentoImprimeController implements Initializable, Serializabl
  								"o valor de R$", dfVlr, ", referente a adiantamento nesta data.");
  						int parou = 0;
  						int i = 0;
- 					    extso =  Extenso.valorPorExtenso(adianto.getValeAdi());
+ 					    extso =  Extenso.valorPorExtenso(adianto.getAdiantamentoAdi());
  						tam = extso.length();
  						if (tam < 63) {
 						    Asteriscos(59, extso.length());
@@ -130,7 +130,7 @@ public class AdiantamentoImprimeController implements Initializable, Serializabl
  	 	 								  String.format("%s%s", ")", ".");
  						}	
  						linha06 = String.format("%s%s%s", margem, 
- 								"                         ", adianto.getNomeFun());
+ 								"                         ", adianto.getNomeFunAdi());
  						linha07 = String.format
  	 							("%s%s%d%s%s%s%d", margem, "          Contagem, ", 
  	 									diaHj, " de ", mes, " de ", anoHj);
@@ -138,30 +138,38 @@ public class AdiantamentoImprimeController implements Initializable, Serializabl
  						bwP.newLine();
  						bwP.write(linhaBranco);
  						bwP.newLine();
- 						bwP.write(linha01);
+						linha01 = acentos(linha01);
+  						bwP.write(linha01);
  						bwP.newLine();
  						bwP.write(linhaBranco);
  						bwP.newLine();
+						linha02 = acentos(linha02);
  						bwP.write(linha02);
  						bwP.newLine();
+						linha03 = acentos(linha03);
  						bwP.write(linha03);
  						bwP.newLine();
+						linha4a = acentos(linha4a);
  						bwP.write(linha4a);
  						bwP.newLine();
+						linha4b = acentos(linha4b);
  						bwP.write(linha4b);
 						bwP.newLine();
  						bwP.write(linhaBranco);
 						bwP.newLine();
  						bwP.write(linhaBranco);
 						bwP.newLine();
+						linha05 = acentos(linha05);
 						bwP.write(linha05);
 						bwP.newLine();
+						linha06 = acentos(linha06);
 						bwP.write(linha06);
 						bwP.newLine();
  						bwP.write(linhaBranco);
 						bwP.newLine();
  						bwP.write(linhaBranco);
 						bwP.newLine();
+						linha07 = acentos(linha07);
 						bwP.write(linha07);
 						bwP.close();
 	 			}	
@@ -181,6 +189,32 @@ public class AdiantamentoImprimeController implements Initializable, Serializabl
 		return comp;
 	}
 	
+ 	public static String acentos(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	}

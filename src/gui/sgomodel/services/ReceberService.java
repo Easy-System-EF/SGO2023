@@ -23,6 +23,10 @@ public class ReceberService {
    		return dao.findByAllOs(os);
 	} 
 	
+	public List<Receber> findByAllBal(Integer bal) {
+   		return dao.findByAllBal(bal);
+	} 
+	
 	public List<Receber> findAllAberto() {
    		return dao.findAllAberto();
 	} 
@@ -69,6 +73,10 @@ public class ReceberService {
 	
 	public List<Receber> findAll() {
    		return dao.findAll();
+	} 
+	
+	public List<Receber> findAllBalcao() {
+   		return dao.findAllBalcao();
 	} 
 	
 // * inserindo ou atualizando via dao

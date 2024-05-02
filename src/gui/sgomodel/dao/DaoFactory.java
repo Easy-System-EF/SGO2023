@@ -7,6 +7,7 @@ import gui.sgomodel.dao.impl.BalcaoCommitDaoJDBC;
 import gui.sgomodel.dao.impl.BalcaoDaoJDBC;
 import gui.sgomodel.dao.impl.CargoDaoJDBC;
 import gui.sgomodel.dao.impl.ClienteDaoJDBC;
+import gui.sgomodel.dao.impl.ComissaoDaoJDBC;
 import gui.sgomodel.dao.impl.EmpresaDaoJDBC;
 import gui.sgomodel.dao.impl.EntradaDaoJDBC;
 import gui.sgomodel.dao.impl.FechamentoAnualDaoJDBC;
@@ -87,6 +88,9 @@ public class DaoFactory {
 	}  	
   	public static AdiantamentoDao createAdiantamentoDao() {
 		return new AdiantamentoDaoJDBC(DB.getConnection());
+	}
+  	public static ComissaoDao createComissaoDao() {
+		return new ComissaoDaoJDBC(DB.getConnection());
 	}
   	public static MesesDao createMesesDao() {
 		return new MesesDaoJDBC(DB.getConnection());

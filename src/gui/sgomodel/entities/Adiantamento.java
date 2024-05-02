@@ -10,42 +10,28 @@ public class Adiantamento extends Funcionario implements Serializable{
  
 	private Integer numeroAdi;
 	private Date dataAdi;
-	private Double valeAdi;
+	private Integer funAdi;
+	private String nomeFunAdi;
+	private String cargoAdi;
+	private String situacaoAdi;
+	private Double adiantamentoAdi;
 	private Integer mesAdi;
 	private Integer anoAdi;
-	private Double valorAdi;
-	private Integer osAdi;
-	private Integer balcaoAdi;
-	private Double comissaoAdi;
-	private String tipoAdi;
-	private Double salarioAdi;
 
-	public static Double percComissao = 0.00; 
-	
 	public Adiantamento() {
-		super();
 	}
 
-	public Adiantamento(Integer codigoFun, String nomeFun, String enderecoFun, String bairroFun, String cidadeFun,
-			String ufFun, String cepFun, Integer dddFun, Integer telefoneFun, String cpfFun, String pixFun,
-			Double comissaoFun, Double adiantamentoFun, Integer mesFun, Integer anoFun, String cargoFun,
-			String situacaoFun, Double salarioFun, Date dataCadastroFun, Cargo cargo, Situacao situacao, Integer numeroAdi, Date dataAdi,
-			Double valeAdi, Integer mesAdi, Integer anoAdi, Double valorAdi, Integer osAdi, Integer balcaoAdi,
-			Double comissaoAdi, String tipoAdi, Double salarioAdi) {
-		super(codigoFun, nomeFun, enderecoFun, bairroFun, cidadeFun, ufFun, cepFun, dddFun, telefoneFun, cpfFun, pixFun,
-				comissaoFun, adiantamentoFun, mesFun, anoFun, cargoFun, situacaoFun, salarioFun, dataCadastroFun, cargo, 
-				situacao);
+	public Adiantamento(Integer numeroAdi, Date dataAdi, Integer funAdi, String nomeFunAdi,  String cargoAdi,
+			Double adiantamentoAdi,  String situacaoAdi, Integer mesAdi, Integer anoAdi) {
 		this.numeroAdi = numeroAdi;
 		this.dataAdi = dataAdi;
-		this.valeAdi = valeAdi;
+		this.funAdi = funAdi;
+		this.nomeFunAdi = nomeFunAdi;
+		this.cargoAdi = cargoAdi;
+		this.situacaoAdi = situacaoAdi;
+		this.adiantamentoAdi = adiantamentoAdi;
 		this.mesAdi = mesAdi;
 		this.anoAdi = anoAdi;
-		this.valorAdi = valorAdi;
-		this.osAdi = osAdi;
-		this.balcaoAdi = balcaoAdi;
-		this.comissaoAdi = comissaoAdi;
-		this.tipoAdi = tipoAdi;
-		this.salarioAdi = salarioAdi;
 	}
 
 	public Integer getNumeroAdi() {
@@ -64,16 +50,44 @@ public class Adiantamento extends Funcionario implements Serializable{
 		this.dataAdi = dataAdi;
 	}
 
-/*
- * o vale, na cartela (venda), recebe o percentual de comissão p/ calculo de comissao
- */
-
-	public Double getValeAdi() {
-		return valeAdi;
+	public Integer getFunAdi() {
+		return funAdi;
 	}
 
-	public void setValeAdi(Double valeAdi) {
-		this.valeAdi = valeAdi;
+	public void setFunAdi(Integer funAdi) {
+		this.funAdi = funAdi;
+	}
+
+	public String getNomeFunAdi() {
+		return nomeFunAdi;
+	}
+
+	public void setNomeFunAdi(String nomeFunAdi) {
+		this.nomeFunAdi = nomeFunAdi;
+	}
+
+	public String getCargoAdi() {
+		return cargoAdi;
+	}
+
+	public void setCargoAdi(String cargoAdi) {
+		this.cargoAdi = cargoAdi;
+	}
+
+	public String getSituacaoAdi() {
+		return situacaoAdi;
+	}
+
+	public void setSituacaoAdi(String situacaoAdi) {
+		this.situacaoAdi = situacaoAdi;
+	}
+
+	public Double getAdiantamentoAdi() {
+		return adiantamentoAdi;
+	}
+
+	public void setAdiantamentoAdi(Double adiantamentoAdi) {
+		this.adiantamentoAdi = adiantamentoAdi;
 	}
 
 	public Integer getMesAdi() {
@@ -92,77 +106,6 @@ public class Adiantamento extends Funcionario implements Serializable{
 		this.anoAdi = anoAdi;
 	}
 
-	public Double getValorAdi() {
-		return valorAdi;
-	}
-
-	public void setValorAdi(Double valorAdi) {
-		this.valorAdi = valorAdi;
-	}
-
-	public Integer getOsAdi() {
-		if (osAdi == null) {
-			osAdi = 0;
-		}
-		return osAdi;
-	}
-
-	public void setOsAdi(Integer osAdi) {
-		if (osAdi == null) {
-			osAdi = 0;
-		}
-		this.osAdi = osAdi;
-	}
-
-	public Integer getBalcaoAdi() {
-		if (balcaoAdi == null) {
-			balcaoAdi = 0;
-		}
-		return balcaoAdi;
-	}
-
-	public void setBalcaoAdi(Integer balcaoAdi) {
-		if (balcaoAdi == null) {
-			balcaoAdi = 0;
-		}
-		this.balcaoAdi = balcaoAdi;
-	}
-
-	public Double getComissaoAdi() {
-		return comissaoAdi;
-	}
-
-	public void calculaComissao() {
-		comissaoAdi = (valorAdi * percComissao) / 100;
-	}
-
-	public void setComissaoAdi(Double comissaoAdi) {
-		if (comissaoAdi == null) {
-			comissaoAdi = 0.00;
-		}
-		this.comissaoAdi = comissaoAdi;
-	}
-
-
-	public String getTipoAdi() {
-		return tipoAdi;
-	}
-
-	public void setTipoAdi(String tipoAdi) {
-		this.tipoAdi = tipoAdi;
-	}
-
-	public Double getSalarioAdi() {
-		return salarioAdi; 
-	}
-
-	public void setSalarioAdi(Double salarioAdi) {
-		if (salarioAdi == null) {
-			salarioAdi = 0.00;
-		}
-		this.salarioAdi = salarioAdi;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -185,10 +128,8 @@ public class Adiantamento extends Funcionario implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Adiantamento [numeroAdi=" + numeroAdi + ", dataAdi=" + dataAdi + ", valeAdi=" + valeAdi + ", mesAdi="
-				+ mesAdi + ", anoAdi=" + anoAdi + ", valorAdi=" + valorAdi + ", osAdi=" + osAdi + ", balcaoAdi="
-				+ balcaoAdi + ", comissaoAdi=" + comissaoAdi + ", tipoAdi=" + tipoAdi + ", salarioAdi=" + salarioAdi
-				+ "]";
+		return "Adiantamento [numeroAdi=" + numeroAdi + ", dataAdi=" + dataAdi + ", funAdi=" + funAdi + ", nomeFunAdi="
+				+ nomeFunAdi + ", cargoAdi=" + cargoAdi + ", situacaoAdi=" + situacaoAdi + ", adiantamentoAdi="
+				+ adiantamentoAdi + ", mesAdi=" + mesAdi + ", anoAdi=" + anoAdi + "]";
 	}
-
 }

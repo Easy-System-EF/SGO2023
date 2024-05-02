@@ -12,6 +12,7 @@ import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.FolhaMes;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.AnosService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.FolhaMesService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MesesService;
@@ -101,6 +102,7 @@ public class FolhaMesConsultaListController implements Initializable, DataChange
 			contM.setFolhaMes(obj);		
 			contM.setServices(new FolhaMesService(),
 						      new AdiantamentoService(),
+						      new ComissaoService(),
 						      new FuncionarioService(),
 							  new MesesService(),
 							  new AnosService());

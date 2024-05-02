@@ -60,4 +60,5 @@ public class OrdemServicoService {
 	public void remove(OrdemServico obj) {
 		dao.deleteById(obj.getNumeroOS());
 	}
+	
 }

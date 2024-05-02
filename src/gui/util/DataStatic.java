@@ -23,7 +23,6 @@ public class DataStatic {
 	static DateTimeFormatter dtfano = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	static DateTimeFormatter dtfTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-
 	public static LocalDate criaLocalAtual() {
 		LocalDate dtN = LocalDate.now();
 		return dtN;
@@ -37,6 +36,11 @@ public class DataStatic {
 	public static LocalDate converteString(String data) {
 		LocalDate dtS = LocalDate.parse(data);
 		return dtS;
+	}
+	
+	public static LocalDateTime converteTimeString(String data) {
+		LocalDateTime dtT = LocalDateTime.parse(data);
+		return dtT;
 	}
 	
 	public static LocalDate converteFormataString(String data) {
@@ -156,34 +160,12 @@ public class DataStatic {
 		try {
 			instantConvertida = sdf.parse(data);
 		} catch (ParseException e) {
-			throw new DbException(e.getMessage());
+			e.printStackTrace();
 		}
 		return instantConvertida;
 
 	}
 	
-	public static Date localParaDateFormatada(LocalDate dataLocal) {
-		String data = dtfano.format(dataLocal);
-		Date localDate = new Date();
-		try {
-			localDate = sdfAnoTraco.parse(data);
-		} catch (ParseException e) {
-			throw new DbException(e.getMessage());
-		}
-		return localDate;
-	}	
-
-	public static Date localYYMMAADate(LocalDate dataLocal) {
-		String data = dtfano.format(dataLocal);
-		Date date1 = new Date();
-		try {
-			date1 = sdfAnoTraco.parse(data);
-		} catch (ParseException e) {
-			throw new DbException(e.getMessage());
-		}
-		return date1;
-	}
-
 	public static Date localParaDateSdfAno(LocalDate dataLocal) {
 		String data = dtfano.format(dataLocal);
 		Date localDate = new Date();
@@ -195,9 +177,16 @@ public class DataStatic {
 		return localDate;
 	}
 
-	public static String localParaFormatada(LocalDate dataLocal) {
+	public static Date localParaDateFormatada(LocalDate dataLocal) {
 		String data = dtf.format(dataLocal);
-		return data;
+		Date localConvertida = new Date();
+		try {
+			localConvertida = sdf.parse(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return localConvertida;
+
 	}
 
 	public static LocalDate dateParaLocal(Date data) {
@@ -206,28 +195,28 @@ public class DataStatic {
 		return dt2;
 	}
 
-	public static Date somaDiasDate(Date data, int dias) {
-		LocalDate dt1 = dateParaLocal(data);
+	public static Date somaDiasDate(String data, int dias) {
+		LocalDate dt1 = converteFormataString(data);
 		LocalDate dt2 = maisDiasLocal(dt1, dias);
 		String dataFor = dtf.format(dt2);
 		Date localConvertida = new Date();
 		try {
 			localConvertida = sdf.parse(dataFor);
 		} catch (ParseException e) {
-			throw new DbException(e.getMessage());
+			e.printStackTrace();
 		}
 		return localConvertida;
 	}
 	
-	public static Date somaMesDate(Date data, int mes) {
-		LocalDate dt1 = dateParaLocal(data);
+	public static Date somaMesDate(String data, int mes) {
+		LocalDate dt1 = converteFormataString(data);
 		LocalDate dt2 = maisMesLocal(dt1, mes);
 		String dataFor = dtf.format(dt2);
 		Date localConvertida = new Date();
 		try {
 			localConvertida = sdf.parse(dataFor);
 		} catch (ParseException e) {
-			throw new DbException(e.getMessage());
+			e.printStackTrace();
 		}
 		return localConvertida;
 	}

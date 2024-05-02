@@ -14,12 +14,14 @@ import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.services.ParcelaService;
 import gui.sgomodel.entities.FechamentoAnual;
 import gui.sgomodel.services.AdiantamentoService;
+import gui.sgomodel.services.BalcaoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -98,10 +100,12 @@ public class FechamentoAnualConsultaListController implements Initializable, Dat
 			contF.setServiceAll(
 		      new FechamentoAnualService(),
 			  new AdiantamentoService(),
+			  new ComissaoService(),
 			  new OrdemServicoService(),
 			  new OrcVirtualService(),
 			  new ParcelaService(),
-			  new ReceberService());
+			  new ReceberService(),
+			  new BalcaoService());	
 			contF.subscribeDataChangeListener(this);
 			try {
 				contF.onBtOk();
@@ -151,8 +155,8 @@ public class FechamentoAnualConsultaListController implements Initializable, Dat
 		List<FechamentoAnual> list = new ArrayList<>();
  	
 		if (numAno == 0) {
-			LocalDate ldt = DataStatic.criaLocalAtual();
-			numAno = DataStatic.anoDaData(ldt);
+			LocalDate ldt = Maria.criaLocalAtual();
+			numAno = Maria.anoDaData(ldt);
 		}	
 		labelTitulo.setText("Fechamento anual : " + numAno);
 		classe = "Fechamento anual ";

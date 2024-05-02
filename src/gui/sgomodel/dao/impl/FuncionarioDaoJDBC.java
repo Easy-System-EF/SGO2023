@@ -27,7 +27,7 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 		this.conn = conn;
 	}
 
-	String classe = "Funcionario JDBC ";
+	String classe = "Funcionario JDBC";
 		
 	@Override
 	public void insert(Funcionario obj) {
@@ -36,11 +36,12 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO funcionario " +
-				      "(NomeFun, EnderecoFun, BairroFun, CidadeFun, UfFun, CepFun, DddFun, TelefoneFun, " +
-				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, " +
-				       		"SalarioFun, dataCadastroFun, CargoId, SituacaoId )" + 
+				      "(NomeFun, EnderecoFun, BairroFun, CidadeFun, " +
+				       "UfFun, CepFun, DddFun, TelefoneFun, " +
+				       "CpfFun, PixFun, comissaoFun, adiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, "
+				       + "SalarioFun, DataCadastroFun, CargoId, SituacaoId )" + 
   				    "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
  					 Statement.RETURN_GENERATED_KEYS); 
  
   			st.setString(1, obj.getNomeFun());
@@ -60,7 +61,7 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(15, obj.getCargoFun());
    			st.setString(16, obj.getSituacaoFun());
    			st.setDouble(17, obj.getSalarioFun());
-			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
    			st.setInt(19, obj.getCargo().getCodigoCargo());
    			st.setInt(20,  obj.getSituacao().getNumeroSit());
    			
@@ -82,24 +83,26 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			throw new DbException (e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+			DB.closeStatement(st);
 		}
 	}
  
 	@Override
-	public void insertBackup(Funcionario obj) {
+	public void insertBackUp(Funcionario obj) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
   		try {
 			st = conn.prepareStatement(
 					"INSERT INTO funcionario " +
-				      "(CodigoFun, NomeFun, EnderecoFun, BairroFun, CidadeFun, UfFun, CepFun, DddFun, TelefoneFun, " +
-				       "CpfFun, PixFun, ComissaoFun, AdiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, " + 
-				       		"SalarioFun, DataCadastroFun, CargoId, SituacaoId )" + 
+				      "(CodigoFun, NomeFun, EnderecoFun, BairroFun, CidadeFun, " +
+				       "UfFun, CepFun, DddFun, TelefoneFun, " +
+				       "CpfFun, PixFun, comissaoFun, adiantamentoFun, MesFun, AnoFun, CargoFun, SituacaoFun, SalarioFun, "
+				       + "DataCadastroFun, CargoId, SituacaoId )" + 
   				    "VALUES " +
-				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"); 
- 
+				      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+ 					 Statement.RETURN_GENERATED_KEYS); 
+
   			st.setInt(1, obj.getCodigoFun());
   			st.setString(2, obj.getNomeFun());
  			st.setString(3, obj.getEnderecoFun());
@@ -118,7 +121,7 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(16, obj.getCargoFun());
    			st.setString(17, obj.getSituacaoFun());
    			st.setDouble(18, obj.getSalarioFun());
-			st.setDate(19, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setDate(19, new java.sql.Date(obj.getDataCadastroFun().getTime()));
    			st.setInt(20, obj.getCargo().getCodigoCargo());
    			st.setInt(21,  obj.getSituacao().getNumeroSit());
    			
@@ -126,11 +129,11 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			
   		}
  		catch (SQLException e) {
-			throw new DbException("Erro!!! " + classe + " sem inclusão" + e.getMessage());
+			throw new DbException (e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+			DB.closeStatement(st);
 		}
 	}
  
@@ -140,10 +143,10 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		try {
 			st = conn.prepareStatement(
 					"UPDATE funcionario " +
-						    "SET NomeFun = ?, EnderecoFun = ?, BairroFun = ?, CidadeFun = ?, UfFun = ?, CepFun = ?, " + 
-								"DddFun = ?, TelefoneFun = ?, CpfFun = ?, PixFun = ?, ComissaoFun = ?, AdiantamentoFun = ?, " +
-								"mesFun = ?, anoFun = ?, CargoFun = ?, SituacaoFun = ?, SalarioFun = ?, DataCadastroFun = ?, " + 
-								"CargoId = ?, SituacaoId = ? " + 
+						    "SET NomeFun = ?, EnderecoFun = ?, BairroFun = ?, CidadeFun = ?, " +
+						       "UfFun = ?, CepFun = ?, DddFun = ?, TelefoneFun = ?, " +
+						       "CpfFun = ?, PixFun = ?, comissaoFun = ?, adiantamentoFun = ?, mesFun = ?, anoFun = ?, " +
+						       "CargoFun = ?, SituacaoFun = ?, SalarioFun = ?, DataCadastroFun = ?, CargoId = ?, SituacaoId = ? " + 
 							"WHERE (CodigoFun = ?) ",
 								Statement.RETURN_GENERATED_KEYS);
   			st.setString(1, obj.getNomeFun());
@@ -163,7 +166,7 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
    			st.setString(15, obj.getCargoFun());
    			st.setString(16, obj.getSituacaoFun());
    			st.setDouble(17, obj.getSalarioFun());
-			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
+   			st.setDate(18, new java.sql.Date(obj.getDataCadastroFun().getTime()));
    			st.setInt(19, obj.getCargo().getCodigoCargo());
    			st.setInt(20,  obj.getSituacao().getNumeroSit());
    			st.setInt(21, obj.getCodigoFun());
@@ -212,8 +215,8 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			st.setInt(1, codigo);
 			rs = st.executeQuery();
 			
-			if (rs.next())
-			{	Cargo cargo = instantiateCargo(rs);
+			if (rs.next()) {
+				Cargo cargo = instantiateCargo(rs);
 				Situacao sit = instantiateSit(rs);
 				Funcionario obj = instantiateFuncionario(rs, cargo, sit);
 				return obj;
@@ -224,14 +227,13 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
+			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
  	}
 
 	@Override
 	public List<Funcionario> findAll(Date data) {
-//		public List<Funcionario> findAll(int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -242,14 +244,10 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 								+ "ON funcionario.CargoId = cargo.CodigoCargo "
 							+ "INNER JOIN situacao "
 								+ " ON funcionario.SituacaoId = situacao.NumeroSit "
-//								+ "WHERE AnoFun <= ? AND MesFun <= ? "
 								+ "WHERE DataCadastroFun <= ? "
 						+ "ORDER BY NomeFun ");
 			
 			st.setDate(1, new java.sql.Date(data.getTime()));
-			
-//			st.setInt(1, aa);
-//			st.setInt(2, mm);
 			rs = st.executeQuery();
 			
 			List<Funcionario> list = new ArrayList<>();
@@ -276,59 +274,13 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	} 
-	
-	@Override
-	public List<Funcionario> findAllId() {
-		PreparedStatement st = null; 
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement( 
-					"SELECT *, cargo.*, situacao.* " 
-						+ "FROM funcionario " 
-							+ "INNER JOIN cargo " 
-								+ "ON funcionario.CargoId = cargo.CodigoCargo "
-							+ "INNER JOIN situacao "
-								+ " ON funcionario.SituacaoId = situacao.NumeroSit "
-						+ "ORDER BY CodigoFun ");
-			
-			rs = st.executeQuery();
-			
-			List<Funcionario> list = new ArrayList<>();
-			Map<Integer, Cargo> mapCargo = new HashMap<>();
-			Map<Integer, Situacao> mapSit = new HashMap<>();
-			
-			while (rs.next())
-			{	Cargo objCargo = mapCargo.get(rs.getInt("CargoId"));
-				if (objCargo == null) {
-					objCargo = instantiateCargo(rs);
-					mapCargo.put(rs.getInt("CargoId"), objCargo);
-				}
-				Situacao objSit = mapSit.get(rs.getInt("NumeroSit"));
-				if (objSit == null) {
-					objSit = instantiateSit(rs);
-					mapSit.put(rs.getInt("NumeroSit"), objSit);
-				}
-				Funcionario obj = instantiateFuncionario(rs, objCargo, objSit);
- 				list.add(obj);
- 			}
-			return list;
-		}
-		catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		}
-		finally {
- 			DB.closeStatement(st);
+			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
 	
 	@Override
 	public List<Funcionario> findPesquisa(String str, Date data) {
-//		public List<Funcionario> findPesquisa(String str, int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -340,12 +292,9 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 							+ "INNER JOIN situacao "
 								+ " ON funcionario.SituacaoId = situacao.NumeroSit "
 								+ "WHERE NomeFun like ? AND DataCadastroFun <= ?   "
-//								+ "WHERE NomeFun like ? AND AnoFun <= ? AND MesFun <= ?  "
 						+ "ORDER BY NomeFun ");
 			st.setString(1, str + "%");
-			st.setDate(2, new java.sql.Date(data.getTime()));
-//			st.setInt(2, aa);
-//			st.setInt(3, mm);
+			st.setDate(2, new java.sql.Date(data.getTime()));			
 			rs = st.executeQuery();
 			
 			List<Funcionario> list = new ArrayList<>();
@@ -372,14 +321,13 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
+			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
 	
 	@Override
 	public List<Funcionario> findByAtivo(String situacao, Date data) {
-//		public List<Funcionario> findByAtivo(String situacao, int aa, int mm) {
 		PreparedStatement st = null; 
 		ResultSet rs = null;
 		try {
@@ -391,12 +339,9 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 							  "INNER JOIN situacao " +
 								 " ON funcionario.SituacaoId = situacao.NumeroSit " +
 									"WHERE SituacaoFun = ? AND DataCadastroFun <= ? " +
-//									"WHERE SituacaoFun = ? AND AnoFun <= ? AND MesFun <= ? " +
 						 "ORDER BY NomeFun ");
 			st.setString(1, situacao);
 			st.setDate(2, new java.sql.Date(data.getTime()));
-//			st.setInt(2, aa);
-//			st.setInt(3, mm);
 			rs = st.executeQuery();
 			
 			List<Funcionario> fun = new ArrayList<>();
@@ -423,7 +368,27 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
 			throw new DbException(e.getMessage());
 		}
 		finally {
- 			DB.closeStatement(st);
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	} 
+	
+	@Override
+	public void zeraAll() {
+		PreparedStatement st = null; 
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement( 
+					"TRUNCATE TABLE sgb.Funcionario " );
+
+			st.executeUpdate();
+
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	} 
@@ -443,8 +408,8 @@ public class FuncionarioDaoJDBC implements FuncionarioDao {
   		fun.setTelefoneFun(rs.getInt("TelefoneFun"));
    		fun.setCpfFun(rs.getString("CpfFun"));
    		fun.setPixFun(rs.getString("PixFun"));
-   		fun.setComissaoFun(rs.getDouble("ComissaoFun"));
-   		fun.setAdiantamentoFun(rs.getDouble("AdiantamentoFun"));
+   		fun.totalComissao(rs.getDouble("ComissaoFun"));
+   		fun.totalAdiantamentoFun(rs.getDouble("AdiantamentoFun"));
    		fun.setMesFun(rs.getInt("MesFun"));
    		fun.setAnoFun(rs.getInt("AnoFun"));
    		fun.setCargoFun(rs.getString("CargoFun"));

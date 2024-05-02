@@ -2,23 +2,27 @@ package gui.sgomodel.dao.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import db.DbException;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
 import gui.sgomodel.dao.BalcaoCommitDao;
-import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
+import gui.sgomodel.entities.Comissao;
+import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.NotaFiscal;
 import gui.sgomodel.entities.Receber;
-import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
+import gui.sgomodel.services.ComissaoService;
+import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.ReceberService;
+import gui.util.Maria;
 
 public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 
@@ -28,19 +32,25 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 		this.conn = conn;
 	}
 	
+	FuncionarioService funService = new FuncionarioService();
+	Funcionario fun = new Funcionario();
+	OrcVirtualService virService = new OrcVirtualService();
+	ComissaoService comService = new ComissaoService();
 	ReceberService recService = new ReceberService();
 	Receber rec = new Receber();
 
+	LocalDate ldt = Maria.criaLocalAtual();
+	int mm = Maria.mesDaData(ldt);
+	int aa = Maria.anoDaData(ldt);
+
 	@SuppressWarnings("unused")
-	public void gravaBalcao(Balcao objBal, ParPeriodo objPer, NotaFiscal objNf, Adiantamento objAdi, List<Material> listMat) {
+	public void gravaBalcao(Balcao objBal, ParPeriodo objPer, NotaFiscal objNf, double maoObra, List<Material> listMat) {
 
 		String classe = "OS Commit ";
 
 		BalcaoService balService = new BalcaoService(); 
 		NotaFiscalService nfService = new NotaFiscalService();
 		MaterialService matService = new MaterialService();
-		OrcVirtualService virService = new OrcVirtualService();
-		AdiantamentoService adiService = new AdiantamentoService();
 
 		Material mat = new Material();
 
@@ -57,12 +67,10 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 				}
 			}
 			
-			if (objAdi.getCodigoFun() == null) {
-				int nada = 0;
-			} else {	
-				objAdi.setDataAdi(new Date());
-				adiService.saveOrUpdate(objAdi);
-			}			
+			if (maoObra > 0) {
+				comissao(objBal, maoObra);
+			}	
+			
 			receber(objBal, objPer);
 			
 			
@@ -85,6 +93,29 @@ public class BalcaoCommitDaoJDBC implements BalcaoCommitDao {
 		}		
 	}
 
+	private void comissao(Balcao objBal, double maoObra) {
+		Comissao com = new Comissao();
+		fun = funService.findById(objBal.getFuncionario().getCodigoFun());
+		try {			
+			com.setNumeroCom(null);
+			com.setDataCom(new Date());
+			com.setFunCom(fun.getCodigoFun());
+			com.setNomeFunCom(fun.getNomeFun());
+			com.setCargoCom(fun.getCargoFun());
+			com.setSituacaoCom(fun.getSituacaoFun());
+			com.setOSCom(0);
+			com.setBalcaoCom(objBal.getNumeroBal());
+			com.setMesCom(mm);
+			com.setAnoCom(aa);
+			com.setPercentualCom(fun.getCargo().getComissaoCargo());
+			com.setProdutoCom(virService.findByCustoBal(objBal.getNumeroBal()));
+			com.calculoComissao();
+			comService.saveOrUpdate(com);			
+		} catch (DbException e1) {
+			throw new DbException("Erro!!! rollback comissão, CAUSA: " + e1.getMessage());
+		}
+	}
+	
 	private void receber(Balcao objBal, ParPeriodo objPer) {
 		rec.setFuncionarioRec(objBal.getFuncionario().getCodigoFun());
 		rec.setClienteRec(0);

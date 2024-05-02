@@ -2,13 +2,16 @@ package gui.sgomodel.dao.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import db.DbException;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
 import gui.sgomodel.dao.OSCommitDao;
-import gui.sgomodel.entities.Adiantamento;
+import gui.sgomodel.entities.Comissao;
+import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.NotaFiscal;
 import gui.sgomodel.entities.OrcVirtual;
@@ -17,7 +20,8 @@ import gui.sgomodel.entities.OrdemServico;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.entities.ReposicaoVeiculo;
 import gui.sgomodel.entities.Veiculo;
-import gui.sgomodel.services.AdiantamentoService;
+import gui.sgomodel.services.ComissaoService;
+import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
@@ -38,23 +42,30 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 	}
 	
 	OrcVirtualService virService = new OrcVirtualService();
+	OrcamentoService orcService = new OrcamentoService(); 
+	ComissaoService comService = new ComissaoService();
 	ReceberService recService = new ReceberService();
 	ReposicaoVeiculoService repService = new ReposicaoVeiculoService();
 	Receber rec = new Receber();
 	ReposicaoVeiculo rep = new ReposicaoVeiculo();
+	FuncionarioService funService = new FuncionarioService();
+	
+	static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	LocalDate ldt = DataStatic.criaLocalAtual();
+	int mm = DataStatic.mesDaData(ldt);
+	int aa = DataStatic.anoDaData(ldt);
 
 	@SuppressWarnings("unused")
 	public void gravaOS(OrdemServico objOs, Orcamento objOrc, ParPeriodo objPer, NotaFiscal objNf, Veiculo objVei, 
-			Adiantamento objAdi, List<Material> listMat) {
+			double maoObra, List<Material> listMat) {
 
 		String classe = "OS Commit ";
 
 		OrdemServicoService osService = new OrdemServicoService(); 
-		OrcamentoService orcService = new OrcamentoService(); 
 		NotaFiscalService nfService = new NotaFiscalService();
 		VeiculoService veiService = new VeiculoService();
 		MaterialService matService = new MaterialService();
-		AdiantamentoService adiService = new AdiantamentoService();
+		ComissaoService comService = new ComissaoService();
 
 		Material mat = new Material();
 
@@ -76,12 +87,8 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 				}
 			}
 			
-			if (objAdi.getCodigoFun() == null) {
-				int nada = 0;
-			} else {
-				objAdi.setOsAdi(objOs.getNumeroOS());
-				objAdi.setDataAdi(new Date());
-				adiService.saveOrUpdate(objAdi);
+			if (maoObra > 0) {
+				comissao(objOs, maoObra);
 			}	
 			
 			receber(objOrc, objOs, objPer);
@@ -102,6 +109,30 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 		}		
 	}
 
+	private void comissao(OrdemServico objOs, double maoObra) {
+		Comissao com = new Comissao();
+		Orcamento orc = orcService.findByOS(objOs.getNumeroOS());
+		Funcionario fun = funService.findById(orc.getFuncionario().getCodigoFun());
+		try {			
+			com.setNumeroCom(null);
+			com.setDataCom(new Date());
+			com.setFunCom(fun.getCodigoFun());
+			com.setNomeFunCom(fun.getNomeFun());
+			com.setCargoCom(fun.getCargoFun());
+			com.setSituacaoCom(fun.getSituacaoFun());
+			com.setOSCom(objOs.getNumeroOS());
+			com.setBalcaoCom(0);
+			com.setMesCom(mm);
+			com.setAnoCom(aa);
+			com.setPercentualCom(fun.getCargo().getComissaoCargo());
+			com.setProdutoCom(virService.findByCustoOrc(orc.getNumeroOrc()));
+			com.calculoComissao();
+			comService.saveOrUpdate(com);			
+		} catch (DbException e1) {
+			throw new DbException("Erro!!! rollback comissão, CAUSA: " + e1.getMessage());
+		}
+	}
+	
 	private void receber(Orcamento objOrc, OrdemServico objOs, ParPeriodo objPer) {
 		try {
 			rec.setFuncionarioRec(objOrc.getFuncionario().getCodigoFun());
@@ -183,9 +214,10 @@ public class OSCommitDaoJDBC implements OSCommitDao {
 							} else {
 								rep.setProximaKmRep(0);
 							}
+							String dataOs = sdf.format(objOs.getDataOS());
 							if (listVir.get(i).getMaterial().getVidaMesMat() > 0) {
 								rep.setProximaDataRep(DataStatic.somaMesDate(
-									objOs.getDataOS(), listVir.get(i).getMaterial().getVidaMesMat()));
+									dataOs, listVir.get(i).getMaterial().getVidaMesMat()));
 							} else {
 								rep.setProximaDataRep(objOs.getDataOS());
 							}

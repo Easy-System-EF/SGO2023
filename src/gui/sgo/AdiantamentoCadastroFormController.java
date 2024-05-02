@@ -97,7 +97,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 	private DatePicker dpDataAdi;
 
 	@FXML
-	private TextField textValeAdi;
+	private TextField textAdiantamentoAdi;
 
 	@FXML
 	private Button btSaveAdi;
@@ -119,7 +119,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 
 	@FXML
 	private Label labelErrorValeAdi;
-
+	
 	@FXML
 	private Label labelUser;
 
@@ -272,7 +272,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 		entCom.setNnfCom(entity.getNumeroAdi());
 		entCom.setDataCom(entity.getDataAdi());
 		entCom.setDataVencimentoCom(entity.getDataAdi());
-		entCom.setValorCom(entity.getValeAdi());
+		entCom.setValorCom(entity.getAdiantamentoAdi());
 		entCom.setParcelaCom(entFor.getParcela());
 		entCom.setPrazoCom(entFor.getPrazo());
 		entCom.setFornecedor(entFor);
@@ -313,18 +313,6 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 // tst name (trim elimina branco no principio ou final
 // lan�a Erros - nome do cpo e msg de erro
 
-		obj.setCodigoFun(comboBoxFun.getValue().getCodigoFun());
-		obj.setNomeFun(comboBoxFun.getValue().getNomeFun());
-		obj.setComissaoFun(0.00);
-		obj.setMesFun(comboBoxFun.getValue().getMesFun());
-		obj.setAnoFun(comboBoxFun.getValue().getAnoFun());
-		obj.setCargoFun(comboBoxFun.getValue().getCargo().getNomeCargo());
-		obj.setSituacaoFun(comboBoxFun.getValue().getSituacao().getNomeSit());
-		obj.setCargo(comboBoxFun.getValue().getCargo());
-		obj.setSituacao(comboBoxFun.getValue().getSituacao());
-		obj.setSalarioFun(comboBoxFun.getValue().getCargo().getSalarioCargo());
-		obj.setDataCadastroFun(comboBoxFun.getValue().getDataCadastroFun());
-
 		if (dpDataAdi.getValue() != null) {
 			Instant instant = Instant.from(dpDataAdi.getValue().atStartOfDay(ZoneId.systemDefault()));
 			obj.setDataAdi(Date.from(instant));
@@ -333,12 +321,20 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 			exception.addErros("data", "Data é obrigatória");
 		}
 		
-		textValeAdi.getText().replace(".", "");
-		obj.setValeAdi(Utils.formatDecimalIn(textValeAdi.getText().replace(".", "")));
-		if (obj.getValeAdi() == null || obj.getValeAdi() == 0.0) {
+		obj.setFunAdi(comboBoxFun.getValue().getCodigoFun());
+
+		obj.setNomeFunAdi(comboBoxFun.getValue().getNomeFun());
+		
+		obj.setCargoAdi(comboBoxFun.getValue().getCargoFun());
+		
+		obj.setSituacaoAdi(comboBoxFun.getValue().getSituacaoFun());
+		
+		textAdiantamentoAdi.getText().replace(".", "");
+		obj.setAdiantamentoAdi(Utils.formatDecimalIn(textAdiantamentoAdi.getText().replace(".", "")));
+		if (obj.getAdiantamentoAdi() == null || obj.getAdiantamentoAdi() == 0.0) {
 			exception.addErros("valor", "Valor é obrigatório");
 		} else {
-			if (obj.getValeAdi() > (40 * comboBoxFun.getValue().getCargo().getSalarioCargo()) / 100) {
+			if (obj.getAdiantamentoAdi() > (40 * comboBoxFun.getValue().getCargo().getSalarioCargo()) / 100) {
 				exception.addErros("valor", "Estouro do limite de adiantamento");
 			}
 		}
@@ -355,31 +351,21 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 			exception.addErros("data", "mes ou ano inválido!!!");
 		}
 		
-		obj.setValorAdi(0.00);
-		obj.setOsAdi(0);
-		obj.setBalcaoAdi(0);
-		obj.setComissaoAdi(0.00);
-		obj.setTipoAdi("A");
-		obj.setSalarioAdi(comboBoxFun.getValue().getCargo().getSalarioCargo());
-		
-		List<Adiantamento> listAd = new ArrayList<>();
-		listAd = service.findMesTipo(mm, aa, "A");
-		double soma = obj.getValeAdi();
-		if (listAd.size() > 0) {
-			for (Adiantamento a : listAd) {
-				if (a.getCodigoFun() == obj.getCodigoFun()) {
-					soma += a.getValeAdi();
-				}	
-				if (soma > (40 * obj.getSalarioAdi()) / 100) {
-						exception.addErros("valor", "Estouro do limite de adiantamento");
-				}
-				if (a.getDataAdi().equals(obj.getDataAdi())) {
-					if (a.getCodigoFun() == obj.getCodigoFun()) {
-						exception.addErros("data", "Já existe adiantamento nesta data");
-					}	
-				}
-			}
+		double soma = service.findByTotalAdi(mm, aa, obj.getFunAdi());
+		soma += obj.getAdiantamentoAdi();
+		if (soma > (40 * comboBoxFun.getValue().getSalarioFun()) / 100) {
+			exception.addErros("valor", "Estouro do limite de adiantamento");
 		}
+		List<Adiantamento> list = service.findMes(mm, aa);
+		list.forEach(a -> {
+			if (a.getNumeroAdi() != obj.getNumeroAdi()) {
+				if (a.getDataAdi() == obj.getDataAdi()) {
+					exception.addErros("data", "Já existe adiantamento nesta data");
+				}	
+			}
+		});
+		
+		// tst se houve algum (erro com size > 0)
 // tst se houve algum (erro com size > 0)
 		if (exception.getErros().size() > 0) {
 			throw exception;
@@ -439,7 +425,7 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		Constraints.setTextFieldInteger(textNumeroAdi);
- 		Constraints.setTextFieldDouble(textValeAdi);
+ 		Constraints.setTextFieldDouble(textAdiantamentoAdi);
 		Constraints.setTextFieldMaxLength(textIniciais, 7);
 		Utils.formatDatePicker(dpDataAdi, "dd/MM/yyyy");
 		initializeComboBoxFuncionario();
@@ -483,14 +469,14 @@ public class AdiantamentoCadastroFormController implements Initializable, Serial
 			dpDataAdi.setValue(LocalDate.ofInstant(entity.getDataAdi().toInstant(), ZoneId.systemDefault()));
 		}
 
-		if (entity.getValeAdi() == null || entity.getValeAdi() == 0) {
-			entity.setValeAdi(0.00);
+		if (entity.getAdiantamentoAdi() == null || entity.getAdiantamentoAdi() == 0) {
+			entity.setAdiantamentoAdi(0.00);
 		} else {
-			vale = entity.getValeAdi();
+			vale = entity.getAdiantamentoAdi();
 		}
 		
-		String vlr = Mascaras.formataValor(entity.getValeAdi());
-		textValeAdi.setText(vlr);
+		String vlr = Mascaras.formataValor(entity.getAdiantamentoAdi());
+		textAdiantamentoAdi.setText(vlr);
 		
 	}
 

@@ -16,6 +16,7 @@ import gui.copia.volta.RestauraAdiantamento;
 import gui.copia.volta.RestauraBalcao;
 import gui.copia.volta.RestauraCargo;
 import gui.copia.volta.RestauraCliente;
+import gui.copia.volta.RestauraComissao;
 import gui.copia.volta.RestauraCompromisso;
 import gui.copia.volta.RestauraEntrada;
 import gui.copia.volta.RestauraFornecedor;
@@ -151,6 +152,7 @@ public class RestauraSgoController implements Initializable, DataChangeListener 
 			if (result.get() == ButtonType.OK) {
 	 			funcionario();
 	 			adiantamento();
+	 			comissao();
 				orcamento();
 				virtual();
 				os();
@@ -173,6 +175,15 @@ public class RestauraSgoController implements Initializable, DataChangeListener 
 		countAk = 0;
 		path = unid + meioSgo + file + ext;
 		countAk = RestauraAdiantamento.restauraAdiantamento(countAk, unid, meioSgo, file, ext);
+		gravaRestaura();
+	}
+	
+	public void comissao() throws ParseException {
+		status = "Ok";
+		file = "Comissao";
+		countAk = 0;
+		path = unid + meioSgo + file + ext;
+		countAk = RestauraComissao.restauraComissao(countAk, unid, meioSgo, file, ext);
 		gravaRestaura();
 	}
 	

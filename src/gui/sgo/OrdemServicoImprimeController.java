@@ -113,7 +113,7 @@ public class OrdemServicoImprimeController implements Initializable, Serializabl
 	public void onBtImprimeOSAction(ActionEvent event) throws ParseException, IOException {
 		montaEmpresa();
    		grava();
-  		Imprimir.relatorio(pathI);
+  		Imprimir.relatorio(path);
      	Utils.currentStage(event).close();
    	}
 
@@ -130,7 +130,7 @@ public class OrdemServicoImprimeController implements Initializable, Serializabl
 		
  	public void grava() {
 			try {	
-				BufferedWriter bwO = new BufferedWriter(new FileWriter(pathI));
+				BufferedWriter bwO = new BufferedWriter(new FileWriter(path));
  					{	ordemServico = osService.findById(codOs);
  						orcamento = orcService.findById(ordemServico.getOrcamentoOS());
 					 	if (ordemServico.getPagamentoOS() == 1) {
@@ -180,6 +180,10 @@ public class OrdemServicoImprimeController implements Initializable, Serializabl
  							}	
  						}
 					 	String lh = toLinha();
+System.out.println("lh 1 " + lh);					 	
+					 	lh = acerta(lh);
+System.out.println("lh 2 " + lh);					 	
+						bwO.newLine();
 					 	bwO.write(lh);
 					 	bwO.newLine();
 					}
@@ -295,6 +299,31 @@ public class OrdemServicoImprimeController implements Initializable, Serializabl
 				return sb.toString();
 			}	
 	
+ 	public String acerta(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
+ 	
  	private String tamNome(String nomeVai) {
  		tamS = nomeVai.length();
  		if (tamS > 40) {

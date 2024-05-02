@@ -54,6 +54,7 @@ import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.CargoService;
 import gui.sgomodel.services.ClienteService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.FechamentoAnualService;
 import gui.sgomodel.services.FechamentoMesService;
@@ -427,7 +428,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 					controller.nivel = nivel;
 					controller.setServices(new OrdemServicoService(), new ReceberService(), new ReposicaoVeiculoService(),
 							new OrcamentoService(), new OrcVirtualService(), new MaterialService(), new VeiculoService(),
-							new AdiantamentoService());
+							new ComissaoService());
 					controller.updateTableView();
 		});
 			} else {
@@ -452,7 +453,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 									   new MaterialService(),
 									   new OrcVirtualService(),
 									   new ReceberService(),
-									   new AdiantamentoService());
+									   new ComissaoService());
 				controller.updateTableView();
 			});
 		}	
@@ -651,7 +652,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
   
 	@FXML
 	public void onMenuItemConsultaComissaoAction() {
-		classe = "Consulta Adiantamento ";
+		classe = "Consulta Comissão ";
 		if (senha != "Ok") {
 			temLogar();
 		} 
@@ -659,7 +660,7 @@ public class MainViewSgoController implements Initializable, DataChangeListener 
 			if (nivel == 1 || nivel == 9) {
 				loadView("/gui/sgo/ComissaoConsultaList.fxml", (ComissaoConsultaListController controller) -> {
 					controller.user = user;
-					controller.setServices(new AdiantamentoService());
+					controller.setServices(new ComissaoService());
 					controller.updateTableView();
 		});
 			} else {

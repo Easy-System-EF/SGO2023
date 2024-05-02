@@ -12,6 +12,7 @@ public interface ReceberDao {
 	void update(Receber obj);
  	void removeOS(int numOs);
    	List<Receber> findByAllOs(Integer os);
+   	List<Receber> findByAllBal(Integer bal);
   	List<Receber> findAllAberto();
   	List<Receber> findAllPago(Date dti, Date dtf);
   	Double sumPagoCli(int cod);
@@ -24,5 +25,6 @@ public interface ReceberDao {
    	List<Receber> findByIdClienteAberto(Integer cod);
    	List<Receber> findByIdClientePago(Integer cod);
    	List<Receber> findAll();
+   	List<Receber> findAllBalcao();
    	List<Receber> findAllId();
  }

@@ -16,15 +16,17 @@ public class CalculaParcela {
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static Date CalculaVencimentoDia(Date data, int parcela, int dia) {
-		Date dataVen = data;
+		Date dataVen = data; 
+		String dataIn = sdf.format(data);
 		if (dia > 1 ) {
-			dataVen = DataStatic.somaDiasDate(data, (parcela * dia));
+			dataVen = DataStatic.somaDiasDate(dataIn, (parcela * dia));
 		}	
 		return dataVen;
 	}
 	
 	public static Date CalculaVencimentoMes(Date data, int mes) {
-		Date dataVen = DataStatic.somaMesDate(data, mes);
+		String dataIn = sdf.format(data);
+		Date dataVen = DataStatic.somaMesDate(dataIn, mes);
 		return dataVen;
 	}
 	

@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 import application.MainSgo;
 import db.DbIntegrityException;
 import gui.listerneres.DataChangeListener;
-import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
+import gui.sgomodel.entities.Comissao;
 import gui.sgomodel.entities.Empresa;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.OrcVirtual;
 import gui.sgomodel.entities.Receber;
-import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.EmpresaService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
@@ -57,7 +57,7 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 	private MaterialService matService;
 	private OrcVirtualService virService;
 	private ReceberService recService;
-	private AdiantamentoService adiService;
+	private ComissaoService comService;
 
 	@FXML
  	private TableView<Balcao> tableViewBalcao;
@@ -121,12 +121,12 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
  							MaterialService matService,
  							OrcVirtualService virService,
  							ReceberService recService,
- 							AdiantamentoService adiService) {
+ 							ComissaoService comService) {
  		this.service = service;
  		this.matService = matService;
  		this.virService = virService;
  		this.recService = recService;
- 		this.adiService = adiService;
+ 		this.comService = comService;
  	}
 
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -329,7 +329,7 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 						if (obj.getTotalBal() > 0) {
 							updateEstoqueMaterial(obj.getNumeroBal());
 						}	
-						updateAdiantamento(obj.getNumeroBal());						
+						updateComissao(obj.getNumeroBal());						
 						classe = "Receber";
 						recService.removeOS(obj.getNumeroBal());
 						classe = "Balcão List ";
@@ -391,11 +391,11 @@ public class BalcaoCadastroListController implements Initializable, DataChangeLi
 		}
 	}
 	
-	private void updateAdiantamento(int codBal) {
-		List<Adiantamento> adianto = adiService.findByBalcao(codBal);
-		for (Adiantamento a : adianto) {
-			if (a.getBalcaoAdi().equals(codBal)) {
-				adiService.remove(a.getNumeroAdi());				
+	private void updateComissao(int codBal) {
+		List<Comissao> com = comService.findByBalcao(codBal);
+		for (Comissao c : com) {
+			if (c.getBalcaoCom().equals(codBal)) {
+				comService.remove(c.getNumeroCom());				
 			}
 					
 		}

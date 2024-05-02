@@ -32,7 +32,13 @@ public class Imprimir {
 		try {
 			desktop.print(file);
 		} catch (IOException e) {
-			e.printStackTrace();
+			@SuppressWarnings("unused")
+			int nada = 0;
+//			e.printStackTrace();
+		}
+		catch (IllegalArgumentException f) {
+			@SuppressWarnings("unused")
+			int nada = 0;
 		}
 	}
 	

@@ -11,7 +11,7 @@ import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.Cliente;
 import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.ReceberService;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import javafx.fxml.Initializable;
 
 public class ClienteMVRConsultaForm implements Initializable, DataChangeListener {
@@ -49,10 +49,10 @@ public class ClienteMVRConsultaForm implements Initializable, DataChangeListener
 	public void clienteSomaReceber() {
 		
 		ReceberService service = new ReceberService();
-		LocalDate dt1 = DataStatic.criaAnoMesDia(2000, 01, 01);
-		Date dti = DataStatic.localParaDateFormatada(dt1);
-		LocalDate dt2 = DataStatic.criaLocalAtual();
-		Date dtf = DataStatic.localParaDateFormatada(dt2);
+		LocalDate dt1 = Maria.criaAnoMesDia(2000, 01, 01);
+		Date dti = Maria.localParaDateFormatada(dt1);
+		LocalDate dt2 = Maria.criaLocalAtual();
+		Date dtf = Maria.localParaDateFormatada(dt2);
 		clienteTotalReceberBal = service.findPagoBalMes(dti, dtf);
 		clienteTotalReceberOs = service.findPagoOsMes(dti, dtf);
 		clienteTotalReceber = clienteTotalReceberOs + clienteTotalReceberBal;

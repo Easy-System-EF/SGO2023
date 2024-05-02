@@ -9,7 +9,7 @@ public class Balcao implements Serializable {
 
 	private Integer numeroBal;
 	private Date dataBal;
-	private String FuncionarioBal;
+	private String funcionarioBal;
 	private Double descontoBal;
 	private Double totalBal;
 	private Integer pagamentoBal;
@@ -30,7 +30,7 @@ public class Balcao implements Serializable {
 			Integer anoBal, Funcionario funcionario) {
 		this.numeroBal = numeroBal;
 		this.dataBal = dataBal;
-		this.FuncionarioBal = funcionarioBal;
+		this.funcionarioBal = funcionarioBal;
 		this.descontoBal = descontoBal;
 		this.totalBal = totalBal;
 		this.pagamentoBal = pagamentoBal;
@@ -59,11 +59,11 @@ public class Balcao implements Serializable {
 	}
 
 	public String getFuncionarioBal() {
-		return FuncionarioBal;
+		return funcionarioBal;
 	}
 
 	public void setFuncionarioBal(String funcionarioBal) {
-		FuncionarioBal = funcionarioBal;
+		this.funcionarioBal = funcionarioBal;
 	}
 
 	public Double getDescontoBal() {
@@ -134,8 +134,8 @@ public class Balcao implements Serializable {
 		return funcionario;
 	}
 
-	public void setFuncionario(Funcionario funcionario) {
-		this.funcionario = funcionario;
+	public void setFuncionario(Funcionario func) {
+		this.funcionario = func;
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class Balcao implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Balcao [numeroBal = " + numeroBal + ", dataBal = " + dataBal + ", FuncionarioBal = " + FuncionarioBal
+		return "Balcao [numeroBal = " + numeroBal + ", dataBal = " + dataBal + ", FuncionarioBal = " + funcionarioBal
 				+ ", descontoBal = " + descontoBal + ", totalBal = " + totalBal + ", pagamentoBal = " + pagamentoBal
 				+ ", dataPrimeiroPagamentoBal = " + dataPrimeiroPagamentoBal + ", nnfBal = " + nnfBal + ", observacaoBal = "
 				+ observacaoBal + ", mesBal = " + mesBal + ", anoBal = " + anoBal 

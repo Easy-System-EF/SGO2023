@@ -29,7 +29,6 @@ import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgomodel.dao.BalcaoCommitDao;
 import gui.sgomodel.dao.DaoFactory;
-import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Funcionario;
@@ -44,7 +43,6 @@ import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
 import gui.util.Alerts;
 import gui.util.Constraints;
-import gui.util.DataStatic;
 import gui.util.Mascaras;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -89,7 +87,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 	private NotaFiscal nota = new NotaFiscal();
 	Calendar cal = Calendar.getInstance();
 	
-	Adiantamento adiantamento = new Adiantamento();
 	List<Balcao> listBalCommit = new ArrayList<>();
 	List<Material> listMatCommit = new ArrayList<>();
 
@@ -314,11 +311,8 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 					nota.setOsNF(0);
 					setBalcaoServices(new ParPeriodoService());
 					porPeriodo();
-					if (maoObra > 0) {
-						gravaComissaoBal();
-					}		
 					BalcaoCommitDao balCommit = DaoFactory.createBalcaoCommitDao();
-					balCommit.gravaBalcao(entity, periodo, nota, adiantamento, listMatCommit);
+					balCommit.gravaBalcao(entity, periodo, nota, maoObra, listMatCommit);
 					notifyDataChangeListerners();
 					Utils.currentStage(event).close();
 				}	
@@ -336,40 +330,6 @@ public class BalcaoCadastroFormController implements Initializable, DataChangeLi
 		catch (ParseException p) {
 			p.printStackTrace();
 		}
-	}
-
-	@SuppressWarnings("static-access")
-	private void gravaComissaoBal() {
-		classe = "Balcão Adianto From ";
-		classe = "Adiantamento balcão From ";
-		Funcionario fun = funService.findById(entity.getFuncionario().getCodigoFun());
-		adiantamento.setCodigoFun(fun.getCodigoFun());
-		adiantamento.setNomeFun(fun.getNomeFun());
-		adiantamento.setCargo(fun.getCargo());
-		adiantamento.setSituacao(fun.getSituacao());
-		adiantamento.setMesFun(fun.getMesFun());
-		adiantamento.setAnoFun(fun.getAnoFun());
-		adiantamento.setCargoFun(fun.getCargo().getNomeCargo());
-		adiantamento.setSituacaoFun(fun.getSituacao().getNomeSit());
-		adiantamento.setSalarioFun(fun.getCargo().getSalarioCargo());
-		adiantamento.setComissaoFun(0.00);
-				
-		adiantamento.setNumeroAdi(null);
-		adiantamento.setDataAdi(new Date());
-		adiantamento.percComissao = fun.getCargo().getComissaoCargo();
-		adiantamento.setValeAdi(0.00);
-		adiantamento.setValorAdi(maoObra);
-		adiantamento.setComissaoAdi(0.00);
-		LocalDate dt1 = DataStatic.dateParaLocal(adiantamento.getDataAdi());
-		adiantamento.setAnoAdi(DataStatic.anoDaData(dt1));
-		adiantamento.setMesAdi(DataStatic.mesDaData(dt1));
-		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
-		adiantamento.setBalcaoAdi(entity.getNumeroBal());
-		adiantamento.setOsAdi(0);
-		adiantamento.setTipoAdi("C");
-		adiantamento.setCargo(fun.getCargo());
-		adiantamento.setSituacao(fun.getSituacao());
-		adiantamento.calculaComissao();
 	}
 
 	public ParPeriodo porPeriodo() {

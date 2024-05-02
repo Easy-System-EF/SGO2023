@@ -12,11 +12,13 @@ import java.util.Set;
 import gui.listerneres.DataChangeListener;
 import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Anos;
+import gui.sgomodel.entities.Comissao;
 import gui.sgomodel.entities.FolhaMes;
 import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Meses;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.AnosService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.FolhaMesService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MesesService;
@@ -43,6 +45,7 @@ public class FolhaMesConsultaFormController implements Initializable {
  */
 	private FolhaMesService service;
 	private AdiantamentoService adService;
+	private ComissaoService comService;
 	private FuncionarioService funService;
 	private MesesService mesService;
 	private AnosService anoService;
@@ -84,11 +87,13 @@ public class FolhaMesConsultaFormController implements Initializable {
  // 	 * metodo set /p service
  	public void setServices(FolhaMesService service, 
  							AdiantamentoService adService,
+ 							ComissaoService comService,
  							FuncionarioService funService,
  							MesesService mesService,
  							AnosService anoService) {
  		this.service = service;
  		this.adService = adService;
+ 		this.comService = comService;
  		this.funService = funService;
  		this.mesService = mesService;
  		this.anoService = anoService;
@@ -166,6 +171,9 @@ public class FolhaMesConsultaFormController implements Initializable {
  		if (adService == null) {
 			throw new IllegalStateException("Serviço Adiantamento está vazio");
  		}
+ 		if (comService == null) {
+			throw new IllegalStateException("Serviço Comissão está vazio");
+ 		}
  		if (funService == null) {
 			throw new IllegalStateException("Serviço Funcionarios está vazio");
  		}
@@ -184,32 +192,29 @@ public class FolhaMesConsultaFormController implements Initializable {
 			service.zeraAll();
 			classe = "Funcionario Dados 1 ";
  			Funcionario funcionario = new Funcionario();
- 			List<Funcionario> fun = funService.findAll(new Date());
-// 			List<Funcionario> fun = funService.findAll(ano, mes);
- 			
-			fun.forEach(f -> {
-				f.setComissaoFun(0.0);
-				f.setAdiantamentoFun(0.0);
-				funService.saveOrUpdate(f);
-			}); 			
  			
  			classe = "Adiantamento Dados 1";
  			List<Adiantamento> adianto = adService.findMes(mes, ano);
- 			adianto.removeIf(a -> a.getComissaoAdi().equals(null));
- 			adianto.removeIf(a -> a.getValeAdi().equals(null));
  			for (Adiantamento a : adianto) {
- 				if (a.getCodigoFun() != null) {
+ 				if (a.getFunAdi() != null) {
  					classe = "Funcionario Dados 2 ";
- 					funcionario = funService.findById(a.getCodigoFun());
-					if (a.getTipoAdi().equals("C")) {
-						funcionario.setComissaoFun(a.getComissaoAdi());
-					}
-					if (a.getTipoAdi().equals("A")) {
-						funcionario.setAdiantamentoFun(a.getValeAdi());
-					}	
+ 					funcionario = funService.findById(a.getFunAdi());
+					funcionario.totalAdiantamentoFun(0.0);
+					funcionario.totalAdiantamentoFun(adService.findByTotalAdi(mes, ano, funcionario.getCodigoFun()));
  					funService.saveOrUpdate(funcionario);
 				}	
  			}
+ 			
+ 			classe = "Comissão ";
+ 			List<Comissao> listCom = comService.findMesAno(mes, ano);
+			classe = "Funcionario Dados 2 ";
+ 			for (Comissao c : listCom) {
+				funcionario = funService.findById(c.getFunCom());
+				funcionario.totalComissao(0.0);
+				funcionario.totalComissao(comService.comSumTotalFun(mes, ano, funcionario.getCodigoFun()));
+				funService.saveOrUpdate(funcionario); 				
+ 			}
+ 			
  			Double tot = 0.0;			
 			classe = "Meses dados ";
 			objMes = mesService.findId(entity2.getMeses().getNumeroMes());
@@ -217,7 +222,6 @@ public class FolhaMesConsultaFormController implements Initializable {
 			objAno = anoService.findAno(entity2.getAnos().getAnoAnos());
 			classe = "Funcionario 3";
 			List<Funcionario> listFun = funService.findByAtivo("Ativo", new Date());
-//			List<Funcionario> listFun = funService.findByAtivo("Ativo", ano, mes);
 			classe = "Dados Folha 2 ";
 			for (Funcionario f : listFun) {
 					dados.setNumeroDados(null);

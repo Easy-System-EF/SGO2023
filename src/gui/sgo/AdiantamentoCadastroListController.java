@@ -28,7 +28,7 @@ import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -88,7 +88,7 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
    	private TableColumn<Adiantamento, String> tableColumnSituacaoAdi;
    	
    	@FXML
-   	private TableColumn<Adiantamento, Double> tableColumnValeAdi;
+   	private TableColumn<Adiantamento, Double> tableColumnAdiantamentoAdi;
 
  	@FXML
  	private TableColumn<Adiantamento, Adiantamento> tableColumnREMOVE;
@@ -147,13 +147,13 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
  	private void initializeNodes() {
 		labelTitulo.setText("Adiantamento");
 		tableColumnNumeroAdi.setCellValueFactory(new PropertyValueFactory<>("NumeroAdi"));
-		tableColumnNomeFunAdi.setCellValueFactory(new PropertyValueFactory<>("nomeFun"));
+		tableColumnNomeFunAdi.setCellValueFactory(new PropertyValueFactory<>("nomeFunAdi"));
 		tableColumnDataAdi.setCellValueFactory(new PropertyValueFactory<>("dataAdi"));
 		Utils.formatTableColumnDate(tableColumnDataAdi, "dd/MM/yyyy");
-		tableColumnCargoAdi.setCellValueFactory(new PropertyValueFactory<>("cargoFun"));
-		tableColumnSituacaoAdi.setCellValueFactory(new PropertyValueFactory<>("situacaoFun"));
-		tableColumnValeAdi.setCellValueFactory(new PropertyValueFactory<>("ValeAdi"));
-		Utils.formatTableColumnDouble(tableColumnValeAdi, 2);
+		tableColumnCargoAdi.setCellValueFactory(new PropertyValueFactory<>("cargoAdi"));
+		tableColumnSituacaoAdi.setCellValueFactory(new PropertyValueFactory<>("situacaoAdi"));
+		tableColumnAdiantamentoAdi.setCellValueFactory(new PropertyValueFactory<>("AdiantamentoAdi"));
+		Utils.formatTableColumnDouble(tableColumnAdiantamentoAdi, 2);
 // para tableview preencher o espa�o da tela scroolpane, referencia do stage		
  		Stage stage = (Stage) MainSgo.getMainScene().getWindow();
  		tableViewAdiantamento.prefHeightProperty().bind(stage.heightProperty());
@@ -171,11 +171,12 @@ public class AdiantamentoCadastroListController implements Initializable, DataCh
 			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
- 		LocalDate dth = DataStatic.criaLocalAtual();
- 		int mm = DataStatic.mesDaData(dth);
- 		int aa = DataStatic.anoDaData(dth);
+ 		LocalDate dth = Maria.criaLocalAtual();
+ 		int mm = Maria.mesDaData(dth);
+ 		int aa = Maria.anoDaData(dth);
  		List<Adiantamento> list = new ArrayList<>();
-		list = service.findMesTipo(mm, aa, tipo);
+		list = service.findMes(mm, aa);
+//list.forEach(System.out::println);		
   		obsList = FXCollections.observableArrayList(list);
   		tableViewAdiantamento.setItems(obsList);
 		initRemoveButtons();

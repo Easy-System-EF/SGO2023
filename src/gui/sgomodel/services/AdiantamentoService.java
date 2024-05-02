@@ -18,56 +18,20 @@ public class AdiantamentoService {
 		return dao.findMes(mes, ano);
 	}
 
-	public List<Adiantamento> findMesTipo(Integer mes, Integer ano, String tipo) {
-		return dao.findMesTipo(mes, ano, tipo);
-	}
-
-	public Adiantamento findMesIdFun(Integer cod, Integer mes, Integer ano, String tipo) {
-		return dao.findMesIdFun(cod, mes, ano, tipo);
-	}
-
-	public Double findByTotalCom(Integer mes, Integer ano, Integer codFun) {
-   		return dao.findByTotalCom(mes, ano, codFun);
-	} 
-	
 	public Double findByTotalAdi(Integer mes, Integer ano, Integer codFun) {
    		return dao.findByTotalAdi(mes, ano, codFun);
-	} 
-	
-	public Double findByTotalComAnual(Integer ano, Integer codFun) {
-   		return dao.findByTotalComAnual(ano, codFun);
 	} 
 	
 	public Double findByTotalAdiAnual(Integer ano, Integer codFun) {
    		return dao.findByTotalAdiAnual(ano, codFun);
 	} 
 	
-	public Double findByTotalComOS(Integer os) {
-   		return dao.findByTotalComOS(os);
-	} 
-	
-	public Double findByTotalComBal(Integer bal) {
-   		return dao.findByTotalComBal(bal);
-	} 
-	
 	public List<Adiantamento> findPesquisaFun(String str) {
 		return dao.findPesquisaFun(str);
 	}
 
-	public List<Adiantamento> findByOs(Integer idOs) {
-		return dao.findByOs(idOs);
-	}
-
-	public List<Adiantamento> findByBalcao(Integer idBalcao) {
-		return dao.findByBalcao(idBalcao);
-	}
-
 	public List<Adiantamento> findAll() {
 		return dao.findAll();
-	}
-
-	public List<Adiantamento> findAllId() {
-		return dao.findAllId();
 	}
 
 // * inserindo ou atualizando via dao
@@ -89,6 +53,5 @@ public class AdiantamentoService {
 
 	public void zeraAll() {
    		dao.zeraAll();
-	} 
-	
+	} 	
 }

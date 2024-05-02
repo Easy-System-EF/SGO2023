@@ -20,10 +20,6 @@ public class FuncionarioService {
    		return dao.findAll(data);
 	} 
 	
-	public List<Funcionario> findAllId() {
-   		return dao.findAllId();
-	} 
-	
 	public List<Funcionario> findPesquisa(String str, Date data) {
 //		public List<Funcionario> findPesquisa(String str, int aa, int mm) {
    		return dao.findPesquisa(str, data);
@@ -49,7 +45,7 @@ public class FuncionarioService {
 	}
 	
 	public void insertBackup(Funcionario obj) {
-		dao.insertBackup(obj);
+		dao.insertBackUp(obj);
 	}
 
 // removendo

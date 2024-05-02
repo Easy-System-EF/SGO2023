@@ -59,8 +59,8 @@ public class RestauraFuncionario implements Serializable {
 					fun.setTelefoneFun(Integer.parseInt(campo[8]));
 					fun.setCpfFun(campo[9]);
 					fun.setPixFun(campo[10]);
-					fun.setComissaoFun(Double.parseDouble(campo[11]));
-					fun.setAdiantamentoFun(Double.parseDouble(campo[12]));
+					fun.totalComissao(Double.parseDouble(campo[11]));
+					fun.totalAdiantamentoFun(Double.parseDouble(campo[12]));
 					fun.setMesFun(Integer.parseInt(campo[13]));
 					fun.setAnoFun(Integer.parseInt(campo[14]));
 					fun.setCargoFun(campo[15]);
@@ -71,6 +71,8 @@ public class RestauraFuncionario implements Serializable {
 					fun.setDataCadastroFun(cal.getTime());
 					fun.setCargo(carService.findById(Integer.parseInt(campo[19])));
 					fun.setSituacao(sitService.findById(Integer.parseInt(campo[20])));
+					fun.totalAdiantamentoFun(fun.getAdiantamentoFun());
+					fun.totalComissao(fun.getComissaoFun());
 					funService.insertBackup(fun);
 					count += 1;
 				}

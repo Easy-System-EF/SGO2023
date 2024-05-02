@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
-import gui.util.DataStatic;
+import gui.util.Maria;
 
 public class MatAnterior implements Serializable{
 
@@ -250,12 +250,12 @@ public class MatAnterior implements Serializable{
 
 	public Double calculaCmm() {
 		if (saidaCmmMatAnt != null) {
-			LocalDate dt1 = DataStatic.criaLocalAtual();
+			LocalDate dt1 = Maria.criaLocalAtual();
 			if (dataCadastroMatAnt == null) {
 				setDataCadastroMatAnt(new Date());
 			}
-			LocalDate dt2 = DataStatic.dateParaLocal(dataCadastroMatAnt);
-			long dias = DataStatic.durationPositivo(dt2, dt1).toDays();
+			LocalDate dt2 = Maria.dateParaLocal(dataCadastroMatAnt);
+			long dias = Maria.durationPositivo(dt2, dt1).toDays();
 			int meses = 0;
 //			if (getDataCadastroMatAnt() != null) {
 //				long dif = dataHoje.getTime() - dataCadastroMatAnt.getTime();

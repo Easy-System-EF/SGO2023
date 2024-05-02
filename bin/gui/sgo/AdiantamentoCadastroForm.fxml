@@ -57,7 +57,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <TextField fx:id="textValeAdi" layoutX="127.0" layoutY="121.0" prefHeight="22.0" prefWidth="64.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="150.0" />
+      <TextField fx:id="textAdiantamentoAdi" layoutX="127.0" layoutY="121.0" prefHeight="22.0" prefWidth="64.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="150.0" />
       <Button fx:id="btSaveAdi" layoutX="119.0" layoutY="411.0" mnemonicParsing="false" onAction="#onBtSaveAdiAction" prefHeight="22.0" prefWidth="82.0" text="Ok" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="185.0">
          <padding>
             <Insets bottom="2.0" left="5.0" top="2.0" />
@@ -74,7 +74,7 @@
             <Insets bottom="2.0" top="2.0" />
          </padding>
       </Button>
-      <Label fx:id="labelErrorNomeAdi" layoutX="496.0" layoutY="58.0" prefHeight="19.0" prefWidth="221.0" textFill="#ee0909" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="80.0">
+      <Label fx:id="labelErrorNomeFun" layoutX="496.0" layoutY="58.0" prefHeight="19.0" prefWidth="221.0" textFill="#ee0909" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="80.0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

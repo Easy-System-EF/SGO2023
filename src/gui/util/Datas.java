@@ -40,13 +40,13 @@ public class Datas {
 		LocalDate dt2 = DataStatic.converteString("2001-01-01");
 		LocalDate dt3 = DataStatic.criaAnoMesDia(2023, 10, 17);
 		LocalDate dt4 = DataStatic.converteFormataString("15/09/2020");
-		Date dataInicialDespAberto = DataStatic.localYYMMAADate(dt3);
+//		Date dataInicialDespAberto = DataStatic.localYYMMAADate(dt3);
 //		Date dt = sdfAnoTr.parse("2000" + "/" + "02" + "/" + "02");
 //		Date dt = new Date("2000/02/02");
 		
 		Date dt = sdfAnoTr.parse("2001/01/01");
 		
-		System.out.println("dti " + dataInicialDespAberto);
+//		System.out.println("dti " + dataInicialDespAberto);
 		System.out.println("dt " + dt2 + " " + dt3 + " " + dt4 + " " + dt);
 //		System.out.println("dataIn " + dataInicialDespAberto);
 		

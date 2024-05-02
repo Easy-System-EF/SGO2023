@@ -215,10 +215,42 @@ public class ReceberDaoJDBC implements ReceberDao {
 						+ "FROM receber " 
 							+ "INNER JOIN parPeriodo "
 								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " 
-					+ "Where OsRec = ? "
+					+ "Where (PlacaRec != 'Balcao') AND (PlacaRec != 'Balcão') AND OsRec = ? "
 						+ "ORDER BY DataVencimentoRec, ParcelaRec ");
 
 			st.setInt(1, os);
+			rs = st.executeQuery();
+
+			List<Receber> list = new ArrayList<>();
+
+			while (rs.next()) {
+				ParPeriodo per = instantiateParPeriodo(rs);
+				Receber obj = instantiateReceber(rs, per);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+
+	@Override
+	public List<Receber> findByAllBal(Integer bal) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"SELECT *, parPeriodo.* "  
+						+ "FROM receber " 
+							+ "INNER JOIN parPeriodo "
+								+ "ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " 
+					+ "Where (PlacaRec = 'Balcao' OR 'Balcão') AND OsRec = ? "
+						+ "ORDER BY DataVencimentoRec, ParcelaRec ");
+
+			st.setInt(1, bal);
 			rs = st.executeQuery();
 
 			List<Receber> list = new ArrayList<>();
@@ -278,7 +310,7 @@ public class ReceberDaoJDBC implements ReceberDao {
 						"FROM receber " + 
 							"INNER JOIN parPeriodo " +
 								"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " + 
-							"WHERE (ValorPagoREc > 0.00 ) AND (DataVencimentoRec >= ? ) AND (DataVencimentoRec <= ? ) " +
+							"WHERE (ValorPagoRec > 0.00 ) AND (DataVencimentoRec >= ? ) AND (DataVencimentoRec <= ? ) " +
 					 	"ORDER BY - DataVencimentoRec, ParcelaRec ");
 
 			st.setDate(1, new java.sql.Date(dti.getTime()));
@@ -593,6 +625,38 @@ public class ReceberDaoJDBC implements ReceberDao {
 							"FROM receber " + 
 								"INNER JOIN parPeriodo " +
 									"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " +
+								"ORDER BY DataVencimentoRec, ParcelaRec");
+
+			rs = st.executeQuery();
+
+			List<Receber> list = new ArrayList<>();
+
+			while (rs.next()) {
+				ParPeriodo per = instantiateParPeriodo(rs);
+				Receber obj = instantiateReceber(rs, per);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+
+	@Override
+	public List<Receber> findAllBalcao() {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+
+					"SELECT *, parPeriodo.* " + 
+							"FROM receber " + 
+								"INNER JOIN parPeriodo " +
+									"ON receber.PeriodoIdRec = parPeriodo.IdPeriodo " +
+							"WHERE PlacaRec = 'Balcao' OR 'Balcão' " +	
 								"ORDER BY DataVencimentoRec, ParcelaRec");
 
 			rs = st.executeQuery();

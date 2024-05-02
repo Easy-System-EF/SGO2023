@@ -1,8 +1,8 @@
 package gui.sgcp; 
 
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -38,6 +38,7 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
 	String dtv;
  	String nomeCab = null;
  
+	String path = "c:\\Dataprol\\WINPRINT\\_aPagar.prn";
 	String pathI = "C:\\Arqs\\impr\\aPagar.txt";
 
 	int contf = 0;
@@ -97,13 +98,14 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
 		empresa = empService.findById(numEmp);
 		nomeEmp = empresa.getNomeEmp();
   		grava();
-  		Imprimir.relatorio(pathI);
+  		Imprimir.relatorio(path);
    	}
 
 	public void grava() {
-	 		try
- 			{	OutputStreamWriter bwP = new OutputStreamWriter(
- 					new FileOutputStream(pathI), "UTF-8");
+	 		try {
+// 			{	OutputStreamWriter bwP = new OutputStreamWriter(
+// 					new FileOutputStream(path), "UTF-8");
+				BufferedWriter bwP = new BufferedWriter(new FileWriter(path));
  					if (flag == 0) {
  						list = titulo(parcela, codFor, codTipo, opcao);	
  	 					for (Parcela p : list) { 
@@ -119,18 +121,42 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
  								}
  								linha02 = String.format("%s", nomeCab);
 							}	
- 							if (contl > 49) {
- 								contf += 01;
- 								cabecalho();
- 								bwP.write(linha01 +"\n");
- 								bwP.write(linha02 +"\n");
- 								bwP.write("\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write(linha04 +"\n");
- 								bwP.write(linha41 +"\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write("\n");
- 								contl = 8;
+ 	 	 					if (contl > 63) {
+ 	 	 						if (contl == 77 && flag == 0) {
+									cabecalho();
+ 	 	 						} 
+ 	 	 						if (contl > 63 && flag == 0) {
+									bwP.newLine();
+									bwP.write(".");
+									bwP.newLine();
+									bwP.write(".");
+ 	 	 							cabecalho();
+ 	 	 						}
+ 								
+ 							 	bwP.newLine();
+ 								bwP.write(linha01);
+ 							 	bwP.newLine();
+ 								bwP.write(linha02);
+ 							 	bwP.newLine();
+ 							 	bwP.write(linhaNada);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+ 							 	bwP.newLine();
+ 								bwP.write(linha04);
+ 							 	bwP.newLine();
+ 								bwP.write(linha41);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+
+// 								bwP.write(linha01 +"\n");
+// 								bwP.write(linha02 +"\n");
+// 								bwP.write("\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write(linha04 +"\n");
+// 								bwP.write(linha41 +"\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write("\n");
+// 								contl = 8;
  							}	
 								
  	 						totVlr = totVlr + p.getValorPar();
@@ -139,7 +165,9 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
  	 						totTot = totTot + p.getTotalPar();
  	 						dtv = sdf.format(p.getDataVencimentoPar());
 
- 	 						linha05 = String.format("%-41s", p.getFornecedor().getRazaoSocial()) +
+
+							String nomeFor = acentos(p.getFornecedor().getRazaoSocial());
+ 	 						linha05 = String.format("%-41s", nomeFor) +
  	 								  String.format("%6d", p.getNnfPar()) +
   									  String.format("%8d", p.getNumeroPar()) +
   									  String.format("%11s",  dtv);
@@ -150,59 +178,129 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
  	 								  String.format("%s%12s", complementa(6), df.format(p.getTotalPar()));
  							linha52 = 
 	 	 	 					"------------------------------------------------------------------";
- 							if (contl > 49) {
- 								contf += 01;
- 								cabecalho();
- 								bwP.write(linha01 +"\n");
- 								bwP.write(linha02 +"\n");
- 								bwP.write("\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write(linha04 +"\n");
- 								bwP.write(linha41 +"\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write("\n");
- 								contl = 8;
+
+ 							if (contl > 63 && flag == 0) {
+								bwP.newLine();
+								bwP.write(".");
+								bwP.newLine();
+								bwP.write(".");
+ 	 							cabecalho();
+
+ 							 	bwP.newLine();
+ 								bwP.write(linha01);
+ 							 	bwP.newLine();
+ 								bwP.write(linha02);
+ 							 	bwP.newLine();
+ 							 	bwP.write(linhaNada);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+ 							 	bwP.newLine();
+ 								bwP.write(linha04);
+ 							 	bwP.newLine();
+ 								bwP.write(linha41);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+
+// 								bwP.write(linha01 +"\n");
+// 								bwP.write(linha02 +"\n");
+// 								bwP.write("\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write(linha04 +"\n");
+// 								bwP.write(linha41 +"\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write("\n");
+// 								contl = 8;
  							}	
 
- 							bwP.write(linha05 +"\n");
- 	 						bwP.write(linha51 +"\n");
-	 	 	 				bwP.write(linha52 +"\n");
+							linha05 = acerta(linha05);
+							linha51 = acerta(linha51);
+							linha52 = acerta(linha52);
+
+							bwP.newLine();
+							bwP.write(linha05);
+							bwP.newLine();
+							bwP.write(linha51);
+							bwP.newLine();
+							bwP.write(linha52);
+							bwP.newLine();
+// 							bwP.write(linha05 +"\n");
+// 	 						bwP.write(linha51 +"\n");
+//	 	 	 				bwP.write(linha52 +"\n");
 
  				 			contl += 3;
- 							if (contl > 49) {
- 								contf += 01;
- 								bwP.write(linhaNada +"\n");
- 								bwP.write(linhaNada +"\n");
- 								cabecalho();
- 								bwP.write(linha01 +"\n");
- 								bwP.write(linha02 +"\n");
- 								bwP.write("\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write(linha04 +"\n");
- 								bwP.write(linha41 +"\n");
- 								bwP.write(linha03 +"\n");
- 								bwP.write("\n");
- 								contl = 8;
+ 							if (contl > 63 && flag == 0) {
+								bwP.newLine();
+								bwP.write(".");
+								bwP.newLine();
+								bwP.write(".");
+ 	 							cabecalho();
+
+ 							 	bwP.newLine();
+ 								bwP.write(linha01);
+ 							 	bwP.newLine();
+ 								bwP.write(linha02);
+ 							 	bwP.newLine();
+ 							 	bwP.write(linhaNada);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+ 							 	bwP.newLine();
+ 								bwP.write(linha04);
+ 							 	bwP.newLine();
+ 								bwP.write(linha41);
+ 							 	bwP.newLine();
+ 								bwP.write(linha03);
+
+// 								bwP.write(linha01 +"\n");
+// 								bwP.write(linha02 +"\n");
+// 								bwP.write("\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write(linha04 +"\n");
+// 								bwP.write(linha41 +"\n");
+// 								bwP.write(linha03 +"\n");
+// 								bwP.write("\n");
+// 								contl = 8;
  							}	
  				 			if (i == list.size()) {
  								String linha06 = String.format("%s%12s", "  ", df.format(totVlr)) +
  	 	 								  String.format("%s%12s", complementa(5), df.format(totDes)) +
  	 	 								  String.format("%s%12s", complementa(5), df.format(totJur)) +
  	 	 								  String.format("%s%12s", complementa(6), df.format(totTot));
- 	 							if (contl > 49) {
- 	 								contf += 01;
- 	 								cabecalho();
- 	 								bwP.write(linha01 +"\n");
- 	 								bwP.write(linha02 +"\n");
- 	 								bwP.write("\n");
- 	 								bwP.write(linha03 +"\n");
- 	 								bwP.write(linha04 +"\n");
- 	 								bwP.write(linha41 +"\n");
- 	 								bwP.write(linha03 +"\n");
- 	 								bwP.write("\n");
- 	 								contl = 8;
+ 	 							if (contl > 63 && flag == 0) {
+ 									bwP.newLine();
+ 									bwP.write(".");
+ 									bwP.newLine();
+ 									bwP.write(".");
+ 	 	 							cabecalho();
+
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha01);
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha02);
+ 	 							 	bwP.newLine();
+ 	 							 	bwP.write(linhaNada);
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha03);
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha04);
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha41);
+ 	 							 	bwP.newLine();
+ 	 								bwP.write(linha03);
+
+// 	 								bwP.write(linha01 +"\n");
+// 	 								bwP.write(linha02 +"\n");
+// 	 								bwP.write("\n");
+// 	 								bwP.write(linha03 +"\n");
+// 	 								bwP.write(linha04 +"\n");
+// 	 								bwP.write(linha41 +"\n");
+// 	 								bwP.write(linha03 +"\n");
+// 	 								bwP.write("\n");
+// 	 								contl = 8;
  								} 
- 	 							bwP.write(linha06 + "\n");
+ 	 							linha06 = acerta(linha06);
+ 	 							bwP.newLine();
+ 	 							bwP.write(linha06);
+ 	 							contl += 1;
 	 	 					}	
  	 					}
  					}
@@ -236,11 +334,19 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
 	}	
 	
 	private void cabecalho(){
+		contl = 7;
+		contf += 1;
 		linha01 = String.format("%-30s", nomeEmp) +
 				  String.format("%s", "Data: ") + 
 				  String.format("%-24s", dtHj) +
 				  String.format("%s", "Fl- ") +
 				  String.format("%2s", contf);
+
+		linha01 = acerta(linha01);
+		linha02 = acerta(linha02);
+		linha03 = acerta(linha03);
+		linha04 = acerta(linha04);
+		linha41 = acerta(linha41);
 	}
 
  	private String complementa(int tam) {
@@ -251,6 +357,58 @@ public class ParcelaImprimeAbertoController implements Initializable, Serializab
  		return compl;
  	}
  	
+ 	public String acerta(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
+ 	
+ 	public static String acentos(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	}

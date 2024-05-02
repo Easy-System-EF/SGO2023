@@ -10,9 +10,9 @@ import java.util.function.Consumer;
 
 import application.MainSgo;
 import gui.listerneres.DataChangeListener;
-import gui.sgomodel.entities.Adiantamento;
+import gui.sgomodel.entities.Comissao;
 import gui.sgomodel.entities.MesAno;
-import gui.sgomodel.services.AdiantamentoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.AnosService;
 import gui.sgomodel.services.MesesService;
 import gui.util.Alerts;
@@ -38,35 +38,35 @@ public class ComissaoConsultaListController implements Initializable, DataChange
 
 // inje��o de dependenia sem implementar a classe (instanciat)
 // acoplamento forte - implementa via set
-	private AdiantamentoService service;
+	private ComissaoService service;
 	
 	@FXML
- 	private TableView<Adiantamento> tableViewComissao;
+ 	private TableView<Comissao> tableViewComissao;
 
 	@FXML
 	private Label labelTitulo;
 	
 // c/ entidade e coluna	
  	@FXML
- 	private TableColumn<Adiantamento, String> tableColumnFuncionarioAdi;
+ 	private TableColumn<Comissao, String> tableColumnFuncionarioCom;
 
  	@FXML
- 	private TableColumn<Adiantamento, String> tableColumnBalAdi;
+ 	private TableColumn<Comissao, String> tableColumnBalCom;
 
  	@FXML
- 	private TableColumn<Adiantamento, String> tableColumnOSAdi;
+ 	private TableColumn<Comissao, String> tableColumnOSCom;
 
  	@FXML
- 	private TableColumn<Adiantamento, Date> tableColumnDataAdi;
+ 	private TableColumn<Comissao, Date> tableColumnDataCom;
 
    	@FXML
- 	private TableColumn<Adiantamento, String> tableColumnCargoAdi;
+ 	private TableColumn<Comissao, String> tableColumnCargoCom;
  	
    	@FXML
-   	private TableColumn<Adiantamento, String> tableColumnSituacaoAdi;
+   	private TableColumn<Comissao, String> tableColumnSituacaoCom;
    	
    	@FXML
-   	private TableColumn<Adiantamento, Double> tableColumnValorAdi;
+   	private TableColumn<Comissao, Double> tableColumnValorCom;
    	
    	@FXML
    	private Button btMesesCom;
@@ -77,15 +77,15 @@ public class ComissaoConsultaListController implements Initializable, DataChange
 	public String user = "";
  	 		
 // carrega aqui os dados Updatetableview (metodo)
- 	private ObservableList<Adiantamento> obsList;
+ 	private ObservableList<Comissao> obsList;
  
 // auxiliar
- 	String classe = "Adiantamento Comissão List";
+ 	String classe = "Comissao Comissão List";
  	static Integer mesConsulta = null;
  	static Integer anoConsulta = null; 	
  	
 // injeta a dependencia com set (invers�o de controle de inje�ao)	
- 	public void setServices(AdiantamentoService service) {
+ 	public void setServices(ComissaoService service) {
  		this.service = service;
  	}
  	
@@ -134,15 +134,15 @@ public class ComissaoConsultaListController implements Initializable, DataChange
 // comportamento padr�o para iniciar as colunas 	
  	private void initializeNodes() {
 		labelTitulo.setText("Comissão");
-		tableColumnFuncionarioAdi.setCellValueFactory(new PropertyValueFactory<>("NomeFun"));
-		tableColumnBalAdi.setCellValueFactory(new PropertyValueFactory<>("BalcaoAdi"));
-		tableColumnOSAdi.setCellValueFactory(new PropertyValueFactory<>("OsAdi"));
-		tableColumnDataAdi.setCellValueFactory(new PropertyValueFactory<>("dataAdi"));
-		Utils.formatTableColumnDate(tableColumnDataAdi, "dd/MM/yyyy");
-		tableColumnCargoAdi.setCellValueFactory(new PropertyValueFactory<>("CargoFun"));
-		tableColumnSituacaoAdi.setCellValueFactory(new PropertyValueFactory<>("SituacaoFun"));
-		tableColumnValorAdi.setCellValueFactory(new PropertyValueFactory<>("comissaoAdi"));
-		Utils.formatTableColumnDouble(tableColumnValorAdi, 2);
+		tableColumnFuncionarioCom.setCellValueFactory(new PropertyValueFactory<>("NomeFunCom"));
+		tableColumnBalCom.setCellValueFactory(new PropertyValueFactory<>("BalcaoCom"));
+		tableColumnOSCom.setCellValueFactory(new PropertyValueFactory<>("OSCom"));
+		tableColumnDataCom.setCellValueFactory(new PropertyValueFactory<>("dataCom"));
+		Utils.formatTableColumnDate(tableColumnDataCom, "dd/MM/yyyy");
+		tableColumnCargoCom.setCellValueFactory(new PropertyValueFactory<>("CargoCom"));
+		tableColumnSituacaoCom.setCellValueFactory(new PropertyValueFactory<>("SituacaoCom"));
+		tableColumnValorCom.setCellValueFactory(new PropertyValueFactory<>("comissaoCom"));
+		Utils.formatTableColumnDouble(tableColumnValorCom, 2);
   		// para tableview preencher o espa�o da tela scroolpane, referencia do stage		
  		Stage stage = (Stage) MainSgo.getMainScene().getWindow();
  		tableViewComissao.prefHeightProperty().bind(stage.heightProperty());
@@ -160,11 +160,11 @@ public class ComissaoConsultaListController implements Initializable, DataChange
 			throw new IllegalStateException("Serviço está vazio");
  		}
  		labelUser.setText(user);
- 		List<Adiantamento> list = new ArrayList<>();
+ 		List<Comissao> list = new ArrayList<>();
  		if (mesConsulta != null) {
- 			list = service.findMesTipo(mesConsulta, anoConsulta, "C");
+ 			list = service.findMesAno(mesConsulta, anoConsulta);
  			if (list.size() > 0) {
- 				list.removeIf(x -> x.getComissaoAdi() == 0.00);
+ 				list.removeIf(x -> x.getComissaoCom() == 0.00);
  			}	
  		} 				
   		obsList = FXCollections.observableArrayList(list);

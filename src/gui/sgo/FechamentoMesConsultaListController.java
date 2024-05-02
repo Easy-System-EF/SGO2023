@@ -19,6 +19,7 @@ import gui.sgomodel.entities.FechamentoMes;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.AnosService;
 import gui.sgomodel.services.BalcaoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.FechamentoMesService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MesesService;
@@ -26,7 +27,7 @@ import gui.sgomodel.services.OrcVirtualService;
 import gui.sgomodel.services.OrdemServicoService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -134,7 +135,8 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
 							  new CompromissoService(),
 	 						  new ParcelaService(),
 	 						  new ParPeriodoService(),
-	 						  new ReceberService());
+	 						  new ReceberService(),
+							  new ComissaoService());
 			contF.loadAssociatedObjects();
  			contF.subscribeDataChangeListener(this);
 			contF.updateFormData();
@@ -204,8 +206,8 @@ public class FechamentoMesConsultaListController implements Initializable, DataC
  		int ano = 0;
  		List<FechamentoMes> list = new ArrayList<>();
  		if (ano == 0) {
- 			LocalDate ldt = DataStatic.criaLocalAtual();
- 			ano = DataStatic.anoDaData(ldt);
+ 			LocalDate ldt = Maria.criaLocalAtual();
+ 			ano = Maria.anoDaData(ldt);
  			labelTitulo.setText("Fechamento mes ");
  		} 
  		if (nomeMes != null) {		

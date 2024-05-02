@@ -1,7 +1,10 @@
 package gui.sgomodel.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class Funcionario implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,14 +28,13 @@ public class Funcionario implements Serializable {
 	private String situacaoFun;
 	private Double salarioFun;
 	private Date dataCadastroFun;
+
+	private List<Adiantamento> listAdi = new ArrayList<>();
+	private List<Comissao> listCom = new ArrayList<>();
+	
 	
 /*
- * atenção!!! VALE, ADIANTAMENTO e SALARIO só são utitlizados nos fechamentos com os dados apurados e veindos
- * de adiantamentos 	
- */
-	
-/*
- *  associando or�to (varios valores) para calculo da comiss�o
+ *  associando  (varios valores) para calculo da comiss�o
  *  n�o entra no construtor e n�o posso setar uma nova lista
  *  eu vou adicionar
  */
@@ -159,22 +161,19 @@ public class Funcionario implements Serializable {
 	}
 
 	public Double getComissaoFun() {
-		return comissaoFun;
+		return comissaoFun ;
 	}
 
-	public void setComissaoFun(Double comissaoFun) {
-		if (this.comissaoFun == null) {
-			this.comissaoFun = 0.00;
-		}
-		this.comissaoFun = comissaoFun;
+	public Double totalComissao(double totalCom) {
+		return comissaoFun = totalCom;
 	}
 
 	public Double getAdiantamentoFun() {
 		return adiantamentoFun;
 	}
 
-	public void setAdiantamentoFun(Double adiantamentoFun) {
-		this.adiantamentoFun = adiantamentoFun;
+	public Double totalAdiantamentoFun(Double totalAdi) {
+		return adiantamentoFun = totalAdi;
 	}
 
 	public Integer getMesFun() {
@@ -233,7 +232,6 @@ public class Funcionario implements Serializable {
 		this.salarioFun = salarioFun;
 	}
 
-	
 	public Date getDataCadastroFun() {
 		return dataCadastroFun;
 	}
@@ -242,29 +240,29 @@ public class Funcionario implements Serializable {
 		this.dataCadastroFun = dataCadastroFun;
 	}
 
-	public void somaAdiantamento(Double vlrAdi) {
-		if (vlrAdi == null) {
-			vlrAdi = 0.00;
-		}
-		this.adiantamentoFun += vlrAdi;
-	}
-
-	public void somaComissao(Double vlrCom) {
-		if (vlrCom == null) {
-			vlrCom = 0.00;
-		}
-		this.comissaoFun += vlrCom;
-	}
 	public Double TotalMesFun() {
 		return (salarioFun + comissaoFun) - adiantamentoFun;
 	}
 	
+	public void addAdiantamento(Adiantamento adi) {
+		listAdi.add(adi);
+	}
+
+	public void removeAdiantamento(Adiantamento adi) {
+		listAdi.remove(adi);
+	}
+
+	public void addComissao(Comissao Com) {
+		listCom.add(Com);
+	}
+
+	public void removeComissao(Comissao Com) {
+		listCom.remove(Com);
+	}
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((codigoFun == null) ? 0 : codigoFun.hashCode());
-		return result;
+		return Objects.hash(codigoFun);
 	}
 
 	@Override
@@ -276,12 +274,7 @@ public class Funcionario implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Funcionario other = (Funcionario) obj;
-		if (codigoFun == null) {
-			if (other.codigoFun != null)
-				return false;
-		} else if (!codigoFun.equals(other.codigoFun))
-			return false;
-		return true;
+		return Objects.equals(codigoFun, other.codigoFun);
 	}
 
 	@Override
@@ -291,7 +284,7 @@ public class Funcionario implements Serializable {
 				+ ", dddFun=" + dddFun + ", telefoneFun=" + telefoneFun + ", cpfFun=" + cpfFun + ", pixFun=" + pixFun
 				+ ", comissaoFun=" + comissaoFun + ", adiantamentoFun=" + adiantamentoFun + ", mesFun=" + mesFun
 				+ ", anoFun=" + anoFun + ", cargoFun=" + cargoFun + ", situacaoFun=" + situacaoFun + ", salarioFun="
-				+ salarioFun + ", dataCadastroFun=" + dataCadastroFun + ", cargo=" + cargo + ", situacao=" + situacao
-				+ "]";
+				+ salarioFun + ", dataCadastroFun=" + dataCadastroFun + ", listAdi=" + listAdi + ", listCom=" + listCom
+				+ ", cargo=" + cargo + ", situacao=" + situacao + "]";
 	}
 }

@@ -368,8 +368,8 @@ public class FuncionarioCadastroFormController implements Initializable {
  		
  		obj.setSituacao(comboBoxSituacao.getValue());
  		obj.setSituacaoFun(comboBoxSituacao.getValue().getNomeSit());
- 		obj.setComissaoFun(0.00);
- 		obj.setAdiantamentoFun(0.00);
+//aq 		obj.setComissaoFun(0.00);
+// 		obj.setAdiantamentoFun(0.00);
  		obj.setSalarioFun(comboBoxCargo.getValue().getSalarioCargo());
  		if (obj.getCodigoFun() == null) {
  			obj.setDataCadastroFun(new Date());

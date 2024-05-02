@@ -42,13 +42,13 @@
       </ToolBar>
       <TableView fx:id="tableViewComissao" blendMode="DARKEN" prefHeight="244.0" prefWidth="593.0">
         <columns>
-            <TableColumn fx:id="tableColumnFuncionarioAdi" editable="false" prefWidth="191.0" text="Funcionário" />
-            <TableColumn fx:id="tableColumnBalAdi" editable="false" prefWidth="76.0" text="Balcão" />
-            <TableColumn fx:id="tableColumnOSAdi" editable="false" prefWidth="70.0" text="OS" />
-            <TableColumn fx:id="tableColumnDataAdi" editable="false" prefWidth="81.0" text="Data" />
-            <TableColumn fx:id="tableColumnCargoAdi" editable="false" minWidth="0.0" prefWidth="109.0" text="Cargo" />
-            <TableColumn fx:id="tableColumnSituacaoAdi" editable="false" minWidth="0.0" prefWidth="69.0" text="Situação" />
-            <TableColumn fx:id="tableColumnValorAdi" editable="false" prefWidth="58.0" text="Valor" />
+            <TableColumn fx:id="tableColumnFuncionarioCom" editable="false" prefWidth="191.0" text="Funcionário" />
+            <TableColumn fx:id="tableColumnBalCom" editable="false" prefWidth="76.0" text="Balcão" />
+            <TableColumn fx:id="tableColumnOSCom" editable="false" prefWidth="70.0" text="OS" />
+            <TableColumn fx:id="tableColumnDataCom" editable="false" prefWidth="81.0" text="Data" />
+            <TableColumn fx:id="tableColumnCargoCom" editable="false" minWidth="0.0" prefWidth="109.0" text="Cargo" />
+            <TableColumn fx:id="tableColumnSituacaoCom" editable="false" minWidth="0.0" prefWidth="69.0" text="Situação" />
+            <TableColumn fx:id="tableColumnValorCom" editable="false" prefWidth="58.0" text="Valor" />
         </columns>
          <effect>
             <Blend />

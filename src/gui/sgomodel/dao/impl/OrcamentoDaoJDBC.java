@@ -583,7 +583,8 @@ public class OrcamentoDaoJDBC implements OrcamentoDao {
    		fun.setPixFun(rs.getString("PixFun"));
    		fun.setCargoFun(rs.getString("CargoFun"));
    		fun.setSituacaoFun(rs.getString("SituacaoFun"));
-   		fun.setComissaoFun(rs.getDouble("ComissaoFun"));
+		fun.setMesFun(rs.getInt("MesFun"));
+		fun.setAnoFun(rs.getInt("AnoFun"));
         return fun;
 	}
 }

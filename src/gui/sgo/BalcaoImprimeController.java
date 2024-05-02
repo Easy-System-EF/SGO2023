@@ -73,6 +73,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 	String linha07 = "";
 	String linha08 = "";
 	String linha09 = "";
+	String nada = " ";
 	
 	private Balcao balcao;
 	private Empresa emp;
@@ -109,7 +110,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 		Stage parentStage = Utils.currentStage(event) ;
 		montaEmpresa();
    		grava();
-		Imprimir.relatorio(pathI);
+		Imprimir.relatorio(path);
 //		File file = new File(pathI);
      	Utils.currentStage(event).close();
 //		Utils.deleteArq(file);
@@ -125,32 +126,33 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 	
 	List<OrcVirtual> listVir = new ArrayList<>();
 
-/*	aqui gera uma stream p/ UTF-8 => windows/preferences/workSpace/UTF-8
- * 	 		try	{	BufferedWriter bwO = new BufferedWriter(new OutputStreamWriter(
- * 					new FileOutputStream(path), "UTF-8"));
- */
-	
  	public void grava() {
-//		 	try	{	OutputStreamWriter bwO = new OutputStreamWriter(
-// 				 		new FileOutputStream(path), "UTF-8");
 			try {	
-				BufferedWriter bwO = new BufferedWriter(new FileWriter(pathI));
+				BufferedWriter bwO = new BufferedWriter(new FileWriter(path));
  					{	balcao = balService.findById(numBal);
  					
- 						linha01 = "                             Balcão";
+ 						linha01 = String.format("                             Balcão");
 						linha02 = String.format("Número...: %6d", balcao.getNumeroBal()) +
 						          String.format("%18s%s", "Data: ", sdf.format(balcao.getDataBal()));
  					 	linha03 = String.format("                             Material"); 
 					 	linha04 = "*****************************************************************"; 
 					 	linha05 = "Nome                                 Qtd        Preço       Valor";					 			
 
+					 	linha01 = acerta(linha01);
+					 	linhaNome = acerta(linhaNome);
+					 	linha02 = acerta(linha02);
+					 	linha03 = acerta(linha03);
+					 	linha04 = acerta(linha04);
+					 	linha05 = acerta(linha05);
+					 	
+					 	bwO.newLine();
 					 	bwO.write(linha01);
 					 	bwO.newLine();
 					 	bwO.write(linhaNome);
 					 	bwO.newLine();
-					 	bwO.newLine();
 						bwO.write(linha02);
 					 	bwO.newLine();
+					 	bwO.write(nada);
 					 	bwO.newLine();
 						bwO.write(linha03);
 					 	bwO.newLine();
@@ -175,6 +177,7 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 												 String.format("%s%s", qtdFd, v.getQuantidadeMatVir()) +
 												 String.format("%13s", df.format(v.getPrecoMatVir())) +
 												 String.format("%12s", df.format(v.getTotalMatVir()));
+								linha06 = acerta(linha06);
 								bwO.write(linha06); 
 							 	bwO.newLine();
 							}
@@ -186,6 +189,11 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 							linha08 = String.format("%s%57s", "Desconto", df.format(descontoBal));
 							totalBal -= descontoBal;
 							linha09 = String.format("%s%60s", "Total", df.format(totalBal));
+
+							linha07 = acerta(linha07);
+						 	linha08 = acerta(linha08);
+						 	linha09 = acerta(linha09);
+						 	
 							bwO.write(linha07);
 							bwO.newLine();
 							bwO.write(linha08);
@@ -199,11 +207,12 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 						}
  					}
 				 	bwO.newLine();
+				 	bwO.write(nada);
 				 	bwO.newLine();
-				 	bwO.newLine();
-				 	bwO.newLine();
+				 	linhaEndereco = acerta(linhaEndereco);
 				 	bwO.write(linhaEndereco);
 				 	bwO.newLine();
+				 	linhaTelMailPix = acerta(linhaTelMailPix);
 				 	bwO.write(linhaTelMailPix);
 				 	bwO.newLine();
  					bwO.close();
@@ -215,6 +224,32 @@ public class BalcaoImprimeController implements Initializable, Serializable {
 					
 			}
 	 	}
+ 	
+ 	public String acerta(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
  	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

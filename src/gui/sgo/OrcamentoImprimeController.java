@@ -76,6 +76,7 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 	String linha10 = "";
 	String linha11 = "";
 	String linha12 = "";
+	String nada = " ";
 	
 	private Orcamento orcamento;
 	private Empresa emp;
@@ -112,7 +113,7 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 		Stage parentStage = Utils.currentStage(event) ;
 		montaEmpresa();
    		grava();
-		Imprimir.relatorio(pathI);
+		Imprimir.relatorio(path);
 //		File file = new File(pathI);
      	Utils.currentStage(event).close();
 //		Utils.deleteArq(file);
@@ -134,13 +135,11 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
  */
 	
  	public void grava() {
-//		 	try	{	OutputStreamWriter bwO = new OutputStreamWriter(
-// 				 		new FileOutputStream(path), "UTF-8");
 			try {	
-				BufferedWriter bwO = new BufferedWriter(new FileWriter(pathI));
+				BufferedWriter bwO = new BufferedWriter(new FileWriter(path));
  					{	orcamento = orcService.findById(codOrc);
  					
- 						linha01 = "                             Orçamento";
+ 						linha01 = String.format("                             Orçamento");
 						linha02 = String.format("Número...: %6d", orcamento.getNumeroOrc()) +
 						          String.format("%18s%s", "Data: ", sdf.format(orcamento.getDataOrc()));
 						linha03 = String.format("Placa....: %s", orcamento.getPlacaOrc()) +
@@ -151,10 +150,20 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 					 	linha07 = "*****************************************************************"; 
 					 	linha08 = "Nome                                 Qtd        Preço       Valor";					 			
 
+					 	linha01 = acerta(linha01);
+					 	linhaNome = acerta(linhaNome);
+					 	linha02 = acerta(linha02);
+					 	linha03 = acerta(linha03);
+					 	linha04 = acerta(linha04);
+					 	linha05 = acerta(linha05);
+					 	linha06 = acerta(linha06);
+					 	linha07 = acerta(linha07);
+					 	linha08 = acerta(linha08);
+					 	
+					 	bwO.newLine();
 					 	bwO.write(linha01);
 					 	bwO.newLine();
 					 	bwO.write(linhaNome);
-					 	bwO.newLine();
 					 	bwO.newLine();
 						bwO.write(linha02);
 					 	bwO.newLine();
@@ -164,6 +173,7 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 					 	bwO.newLine();
 						bwO.write(linha05);
 					 	bwO.newLine();
+					 	bwO.write(nada);
 					 	bwO.newLine();
 						bwO.write(linha06);
 					 	bwO.newLine();
@@ -172,7 +182,6 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 						bwO.write(linha08);
 					 	bwO.newLine();
 						bwO.write(linha07);
-					 	bwO.newLine();
 					 	bwO.newLine();
 							
 						listVir = virService.findByOrcto(codOrc);
@@ -188,6 +197,7 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 											 String.format("%s%s", qtdFd, v.getQuantidadeMatVir()) +
 											 String.format("%13s", df.format(v.getPrecoMatVir())) +
 											 String.format("%12s", df.format(v.getTotalMatVir()));
+						 	linha09 = acerta(linha09);
 							bwO.write(linha09); 
 						 	bwO.newLine();
  						}
@@ -199,6 +209,11 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 							linha11 = String.format("%s%57s", "Desconto", df.format(descontoOrc)); 
 							totalOrc -= descontoOrc;							
 							linha12 = String.format("%s%60s", "Total", df.format(totalOrc));
+
+							linha10 = acerta(linha10);
+						 	linha11 = acerta(linha11);
+						 	linha12 = acerta(linha12);
+						 	
 							bwO.write(linha10);
 							bwO.newLine();
 							bwO.write(linha11);
@@ -212,11 +227,12 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 						}
  					}
 				 	bwO.newLine();
+				 	bwO.write(nada);
 				 	bwO.newLine();
-				 	bwO.newLine();
-				 	bwO.newLine();
+				 	linhaEndereco = acerta(linhaEndereco);
 				 	bwO.write(linhaEndereco);
 				 	bwO.newLine();
+				 	linhaTelMailPix = acerta(linhaTelMailPix);
 				 	bwO.write(linhaTelMailPix);
 				 	bwO.newLine();
  					bwO.close();
@@ -228,6 +244,32 @@ public class OrcamentoImprimeController implements Initializable, Serializable {
 					
 			}
 	 	}
+ 	
+ 	public String acerta(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
  	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

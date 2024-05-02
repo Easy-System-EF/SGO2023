@@ -46,7 +46,7 @@
             <TableColumn fx:id="tableColumnDataAdi" editable="false" prefWidth="74.0" text="Data" />
             <TableColumn fx:id="tableColumnCargoAdi" editable="false" prefWidth="99.0" text="Cargo" />
             <TableColumn fx:id="tableColumnSituacaoAdi" editable="false" minWidth="0.0" prefWidth="91.0" text="Situação" />
-            <TableColumn fx:id="tableColumnValeAdi" editable="false" prefWidth="68.0" text="Valor" />
+            <TableColumn fx:id="tableColumnAdiantamentoAdi" editable="false" prefWidth="68.0" text="Valor" />
             <TableColumn fx:id="tableColumnREMOVE" editable="false" minWidth="0.0" prefWidth="50.0" text=" " />
         </columns>
          <effect>

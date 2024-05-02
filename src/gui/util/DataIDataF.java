@@ -6,10 +6,10 @@ import java.util.Date;
 
 public class DataIDataF {
 
-	public static LocalDate ldt = DataStatic.criaLocalAtual();
-	public static int aa = DataStatic.anoDaData(ldt);
-	public static int mm = DataStatic.mesDaData(ldt);
-	public static int df = DataStatic.ultimoDiaMes(ldt);
+	public static LocalDate ldt = Maria.criaLocalAtual();
+	public static int aa = Maria.anoDaData(ldt);
+	public static int mm = Maria.mesDaData(ldt);
+	public static int df = Maria.ultimoDiaMes(ldt);
 	public static int dd = 01;
 	public static Calendar cal = Calendar.getInstance();
 	public static Date dt = new Date();

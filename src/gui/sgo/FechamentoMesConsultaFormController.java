@@ -28,6 +28,7 @@ import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.AnosService;
 import gui.sgomodel.services.BalcaoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.FechamentoMesService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MesesService;
@@ -70,6 +71,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	private BalcaoService balService;
 	private ParcelaService parService;
 	private ReceberService recService;
+	private ComissaoService comissaoService;
 	private Meses objMes;
 	private Anos objAno;
 	private Funcionario fun;
@@ -110,7 +112,6 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	private final int ddInicial = 01;
 	private final int mmInicial = 01;
 	private final int aaInicial = 2000;
-	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	Date dataInicialDespAberto = new Date();
 	Date dataFinalDespAberto = new Date();
 	Date dataInicialDespPago = new Date();
@@ -134,7 +135,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 	public void setServices(FechamentoMesService service, AdiantamentoService adService, MesesService mesService,
 			AnosService anoService, OrdemServicoService osService, OrcVirtualService virService, FuncionarioService funService, 
 			BalcaoService balService, TipoConsumoService tipoService, CompromissoService comService, ParcelaService parService,
-			ParPeriodoService perService, ReceberService recService) {
+			ParPeriodoService perService, ReceberService recService, ComissaoService comissaoService) {
 		this.service = service;
 		this.adService = adService;
 		this.mesService = mesService;
@@ -145,6 +146,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 		this.balService = balService;
 		this.parService = parService;
 		this.recService = recService;
+		this.comissaoService = comissaoService;
 	}
 
 //  * o controlador tem uma lista de eventos q permite distribui��o via metodo abaixo
@@ -283,12 +285,14 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 
  		int mesPag = 0;
 		int anoPag = 0;
+ 		int mesVen = 0;
+		int anoVen = 0;
+		Double sumAcumulado = 0.00;
 
 		try {
  			classe = "Dados Fechamento 1 ";
  			Double sumMaterial = 0.00;
  			Double sumResultado = 0.00;
- 			Double sumAcumulado = 0.00;
  			@SuppressWarnings("unused")
 			int nada = 0;
 			dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
@@ -299,12 +303,33 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			objMes = mesService.findId(mm);
  			classe = "Anos dados ";
  			objAno = anoService.findAno(aa);
+ 			
+			int anoAnt = aa;
+			int mesAnt = mm - 1;
+			int diaAnt = 0;
+			if (mesAnt == 0) {
+				mesAnt = 12;
+				anoAnt = aa - 1;
+			}
+			if (mesAnt == 01 || mesAnt == 03 || mesAnt == 05 || mesAnt == 07 || mesAnt == 8 || mesAnt == 10 || mesAnt == 12 ) {
+				diaAnt = 31;
+			}
+			if (mesAnt == 04 || mesAnt == 06 || mesAnt == 9 || mesAnt == 11) {
+				diaAnt = 30;
+			}
+			if (mesAnt == 02) {
+				int resto = anoAnt % 4;
+				if (resto > 0) {
+					diaAnt = 28;
+				} else {
+					diaAnt = 29;
+				}	
+			}
+			LocalDate data = DataStatic.criaAnoMesDia(2001, 01, 01);
+			Date dtiAnt = DataStatic.localParaDateSdfAno(data); 			
+			data = DataStatic.criaAnoMesDia(anoAnt, mesAnt, diaAnt);
+			Date dtfAnt = DataStatic.localParaDateSdfAno(data);
 
- 			LocalDate data = DataStatic.criaAnoMesDia(2001, 01, 01);
- 			Date dtiAnt = DataStatic.localParaDateSdfAno(data);
- 			int aaAnt = aa -1;
- 			data = DataStatic.criaAnoMesDia(aaAnt, 12, 31);
- 			Date dtfAnt = DataStatic.localParaDateSdfAno(data);
  			double vlrAntPago = parService.findSumPago(dtiAnt, dtfAnt);		
  			double vlrOsRec = recService.findPagoOsMes(dtiAnt, dtfAnt);
  			double vlrBalRec = recService.findPagoBalMes(dtiAnt, dtfAnt);
@@ -318,7 +343,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			entity.setFuncionarioMensal(null);
  			entity.setValorOsMensal(null);
  			entity.setValorMaterialMensal(null);
- 			entity.setValorComissaoMensal("Resultado");
+ 			entity.setValorComissaoMensal("     Saldo");
  			entity.setValorResultadoMensal("anterior=>");
  			try {
  				entity.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
@@ -337,43 +362,68 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
  			List<Funcionario> list = funService.findAll(new Date());
  			list.removeIf(f -> ! f.getSituacao().getNomeSit().equals("Ativo"));
  			list.forEach(f -> {
- 				sumFolha += f.getCargo().getSalarioCargo();
+ 				f.totalComissao(comissaoService.comSumTotalFun(mm, aa, f.getCodigoFun()));
+ 				f.totalAdiantamentoFun(adService.findByTotalAdi(mm, aa, f.getCodigoFun()));
+ 				sumFolha += ((f.getSalarioFun() + f.getComissaoFun()) - f.getAdiantamentoFun());
+ 				funService.saveOrUpdate(f);			
  			});	
 		
+ 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+ 			
 // monta dados OS		
 			int  sumOs = 0;
 			Double sumVlrOs = 0.00;
 				
 			classe = "Receber ";
-			List<Receber> listRec = recService.findAll();
-			listRec.removeIf(r -> r.getDataPagamentoRec().before(dataInicialRec));
-			listRec.removeIf(r -> r.getDataPagamentoRec().after(dataFinalRec));
-			listRec.removeIf(r -> r.getPlacaRec().equals("Balcao"));
-			listRec.removeIf(r -> r.getPlacaRec().equals("Balcão"));
+			List<Receber> listOs = recService.findAll();
+			listOs.removeIf(r -> r.getDataPagamentoRec().before(dataInicialRec));
+			listOs.removeIf(r -> r.getDataPagamentoRec().after(dataFinalRec));
+			listOs.removeIf(r -> r.getPlacaRec().equals("Balcao"));
+			listOs.removeIf(r -> r.getPlacaRec().equals("Balcão"));
 			if (list.size() > 0) {	
-				for (Receber r : listRec) {
+				for (Receber recOs : listOs) {
 					double sumVlr = 0.00;
 					double sumMatOs = 0.00;
 					double sumComOs = 0.00;
-					fun = funService.findById(r.getFuncionarioRec());
-					cal.setTime(r.getDataPagamentoRec());
+					sumResultado = 0.00;
+					cal.setTime(recOs.getDataPagamentoRec());
 					mesPag = 1 + cal.get(Calendar.MONTH);
 					anoPag = cal.get(Calendar.YEAR);
-					if (mesPag == mm && anoPag == aa) {
-						sumVlr += r.getValorPagoRec();
-					}
+					cal.setTime(recOs.getDataVencimentoRec());
+					mesVen= 1 + cal.get(Calendar.MONTH);
+					anoVen = cal.get(Calendar.YEAR);
+					os = null;
 
-					classe = "Ordem Serviço ";
-					os = osService.findById(r.getOsRec());
-					if (r.getParcelaRec() == 1 && os.getMesOs() == mm && os.getAnoOs() == aa) {
-						os = osService.findById(r.getOsRec());
-						sumMatOs += virService.findByCustoOrc(os.getOrcamentoOS());
-						sumComOs += adService.findByTotalComOS(os.getNumeroOS());
-					}	else {
-						sumMatOs += 0.00;
-						sumComOs = 0.00;
+					if (anoPag == aa || anoVen == aa) {
+						if (os == null) {
+							fun = funService.findById(recOs.getFuncionarioRec());
+							os = osService.findById(recOs.getOsRec());
+							sumMatOs = virService.findByCustoOrc(os.getOrcamentoOS());
+							sumComOs = comissaoService.oSSumComissao(mm, aa, os.getNumeroOS());	
+							if (mesPag == mm && recOs.getValorPagoRec() > 0) {
+								sumVlr = recOs.getValorPagoRec();
+								if (recOs.getParcelaRec() == 1) {
+									sumResultado = sumVlrOs - (sumMatOs + sumComOs);
+									sumAcumulado += recOs.getValorPagoRec(); 
+								} 
+								if (recOs.getValorPagoRec() > 0 && recOs.getParcelaRec() > 1) {
+									sumAcumulado += recOs.getValorPagoRec(); 
+									sumResultado = recOs.getValorPagoRec();
+									sumMatOs = 0.0;
+									sumComOs = 0.0;
+								}
+							}	
+							if (anoVen == aa && recOs.getValorPagoRec() == 0.0) {
+								if (mesVen == mm) {
+									if (recOs.getParcelaRec() > 1) {
+										sumMatOs = 0.0;
+										sumComOs = 0.0;
+										sumResultado = 0.0;
+									}										
+								}
+							}
+						}
 					}
-					
 					sumOs += 1;
 					dados.setBalMensal("   ---");
 					dados.setOsMensal(String.valueOf(os.getNumeroOS()));
@@ -382,9 +432,9 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 					sumVlrOs += sumVlr;
 					dados.setClienteMensal(os.getClienteOS());
 					dados.setFuncionarioMensal(fun.getNomeFun().substring(0, 20));
-	
+		
 					sumMaterial += sumMatOs;
-	
+		
 					if (dados.getValorResultadoMensal() == null ) {
 						dados.setValorResultadoMensal(Mascaras.formataValor(0.00));
 						dados.setValorAcumuladoMensal(Mascaras.formataValor(0.00));
@@ -392,9 +442,7 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 					dados.setValorMaterialMensal(Mascaras.formataValor(sumMatOs));
 					dados.setValorComissaoMensal(Mascaras.formataValor(sumComOs));
 					sumFolha += sumComOs;
-					sumResultado = sumVlr - (sumMatOs + sumComOs);
 					dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
-					sumAcumulado += sumResultado; 
 					dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
 					dados.setMes(objMes);
 					dados.setAno(objAno);	
@@ -408,30 +456,61 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 			int numBal = 0;
 
 			classe = "Receber ";
-			List<Receber> listRecB = recService.findAll();
-			listRecB.removeIf(rb -> rb.getDataPagamentoRec().before(dataInicialRec));
-			listRecB.removeIf(rb -> rb.getDataPagamentoRec().after(dataFinalRec));
-			for (Receber r1 : listRecB) {
-				if (r1.getPlacaRec().equals("Balcao") || r1.getPlacaRec().equals("Balcão")) {
-					numBal = 1;
+			List<Receber> listBalcao = recService.findAll();
+			listBalcao.removeIf(rb -> rb.getDataPagamentoRec().before(dataInicialRec));
+			listBalcao.removeIf(rb -> rb.getDataPagamentoRec().after(dataFinalRec));
+			for (Receber recBalcao : listBalcao) {
+				if (recBalcao.getPlacaRec().equals("Balcao") || recBalcao.getPlacaRec().equals("Balcão")) {
+					nada = 1;
 				} else {
-					r1.setPlacaRec("del");
+					recBalcao.setPlacaRec("del");
 				}	
-			}
-			for (Receber r2 : listRecB) {
-				bal = balService.findById(r2.getOsRec());
-				if (bal != null) {
+				if (!recBalcao.getPlacaRec().contains("del")) { 
+					bal = balService.findById(recBalcao.getOsRec());
 					double sumMatBal = 0.0;
 					double sumVlrBal = 0.0;
 					double sumComBal = 0.0;
-					cal.setTime(r2.getDataPagamentoRec());
+					sumResultado = 0.00;
+					cal.setTime(recBalcao.getDataPagamentoRec());
 					mesPag = 1 + cal.get(Calendar.MONTH);
 					anoPag = cal.get(Calendar.YEAR);
-					if (mesPag == mm && anoPag == aa) {
-						sumVlrBal += r2.getValorPagoRec();
-						sumComBal = adService.findByTotalComBal(bal.getNumeroBal());
-						sumMatBal += virService.findByCustoBal(bal.getNumeroBal());	
-					}			
+					cal.setTime(recBalcao.getDataVencimentoRec());
+					mesVen = 1 + cal.get(Calendar.MONTH);
+					anoVen = cal.get(Calendar.YEAR);
+					bal = null;
+
+					if (anoPag == aa || anoVen == aa) {
+						if (bal == null) {
+							bal = balService.findById(recBalcao.getOsRec());
+							sumMatBal = virService.findByCustoOrc(bal.getNumeroBal());
+							sumComBal = comissaoService.balcaoSumComissao(mm, aa, bal.getNumeroBal());
+							if (mesPag == mm && recBalcao.getValorPagoRec() > 0) {
+								sumVlrBal = recBalcao.getValorPagoRec();
+								if (recBalcao.getParcelaRec() == 1) {
+									sumResultado = sumVlrBal - (sumMatBal + sumComBal);
+									sumAcumulado += recBalcao.getValorPagoRec(); 
+								} 
+								if (recBalcao.getValorPagoRec() > 0 && recBalcao.getParcelaRec() > 1) {
+									sumAcumulado += recBalcao.getValorPagoRec(); 
+									sumVlrBal = recBalcao.getValorPagoRec();
+									sumResultado = recBalcao.getValorPagoRec();
+									sumMatBal = 0.0;
+									sumComBal = 0.0;
+								}
+							}	
+							if (anoPag == 0 && anoVen == aa) {
+								if (mesVen == mm) {
+									if (recBalcao.getParcelaRec() == 1) {
+										sumResultado -= sumMatBal;
+									} else {
+										sumMatBal = 0.0;
+										sumComBal = 0.0;
+										sumResultado = 0.0;
+									}										
+								}
+							}	
+						}
+					}
 					sumBal += 1;
 					dados.setOsMensal("   ----");
 					dados.setBalMensal(String.valueOf(bal.getNumeroBal()));
@@ -447,277 +526,288 @@ public class FechamentoMesConsultaFormController implements Initializable, Seria
 					dados.setValorComissaoMensal(Mascaras.formataValor(sumComBal));
 					dados.setValorMaterialMensal(Mascaras.formataValor(sumMatBal));
 					sumFolha += sumComBal;
-					sumResultado = sumVlrBal - (sumMatBal + sumComBal);
 					dados.setValorResultadoMensal(Mascaras.formataValor(sumResultado));
-					sumAcumulado += sumResultado; 
 					dados.setValorAcumuladoMensal(Mascaras.formataValor(sumAcumulado));
 					dados.setMes(objMes);
 					dados.setAno(objAno);	
 					service.insert(dados);
-				}	
-// monta tributos
-				classe = "Fechamento Mensal ";
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("                ===");
-				dados.setFuncionarioMensal("Receita");
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("===");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("Qtd Os: ");
-				dados.setFuncionarioMensal(Mascaras.formataMillhar(sumOs));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				Double recOs = 0.00; 
-				Double recOsAberto = 0.00;
-				Double recOsRecebido = 0.00;
-				recOsAberto = recService.findAbertoOsMes(dataInicialRecAberto, dataFinalRecAberto);		
-			
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(#) A Receber");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recOsAberto));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-				recOsRecebido = recService.findPagoOsMes(dataInicialRecPago, dataFinalRecPago);		
-	
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(+) Recebido");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recOsRecebido));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				recOs = recOsRecebido; 
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("===");
-				dados.setClienteMensal("(=) Valor Os");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recOs));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-				
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("Qtd Balcão: ");
-				dados.setFuncionarioMensal(Mascaras.formataMillhar(sumBal));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-			
-				Double recBalRecebido = 0.00;
-				Double recBalAberto = 0.00; 
-				Double recBal = 0.00; 
-				
-				recBalRecebido = recService.findPagoBalMes(dataInicialRecPago, dataFinalRecPago);
-				
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(+) Recebido");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recBalRecebido));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				recBalAberto = recService.findAbertoBalMes(dataInicialRecAberto, dataFinalRecAberto);
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(#) Em Aberto");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recBalAberto));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				recBal = recBalRecebido + recBalAberto;
-				
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("===");
-				dados.setClienteMensal("(=) Valor Balcao ");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recBal));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				Double recReceita = recOs + recBal;
-				
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("===");
-				dados.setClienteMensal("(=) Total Receita ");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recReceita));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("                ===");
-				dados.setFuncionarioMensal("Despesa");
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("===");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-	
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(#) Valor Folha");
-				dados.setFuncionarioMensal(Mascaras.formataValor(sumFolha));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-			
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(+) Despesa Paga   ");
-				dados.setFuncionarioMensal(Mascaras.formataValor(sumPago));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-			
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("");
-				dados.setClienteMensal("(+) Despesa Aberto ");
-				dados.setFuncionarioMensal(Mascaras.formataValor(sumAberto));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-				
-				Double recDespesa = sumPago + sumAberto;
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("===");
-				dados.setClienteMensal("(=) Total Despesa");
-				dados.setFuncionarioMensal(Mascaras.formataValor(recDespesa));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
-		
-				Double total = recReceita - recDespesa;
-
-				dados.setNumeroMensal(null);
-				dados.setOsMensal("");
-				dados.setBalMensal("");
-				dados.setDataMensal("===");
-				dados.setClienteMensal("(=) Receita - Desp");
-				dados.setFuncionarioMensal(Mascaras.formataValor(total));
-				dados.setValorComissaoMensal("");
-				dados.setValorResultadoMensal("");
-				dados.setValorAcumuladoMensal(""); 
-				dados.setValorOsMensal("");
-				dados.setValorMaterialMensal("");
-				dados.setMes(objMes);
-				dados.setAno(objAno);	
-				service.insert(dados);
+				}
 			}
+// monta tributos
+			classe = "Fechamento Mensal ";
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("                ===");
+			dados.setFuncionarioMensal("Receita");
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("===");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("Qtd Os: ");
+			dados.setFuncionarioMensal(Mascaras.formataMillhar(sumOs));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			Double recOs = 0.00; 
+			Double recOsAberto = 0.00;
+			Double recOsRecebido = 0.00;
+			recOsAberto = recService.findAbertoOsMes(dataInicialRecAberto, dataFinalRecAberto);		
+		
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(#) A Receber");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recOsAberto));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+			recOsRecebido = recService.findPagoOsMes(dataInicialRecPago, dataFinalRecPago);		
+
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(+) Recebido");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recOsRecebido));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			recOs = recOsRecebido; 
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("===");
+			dados.setClienteMensal("(=) Valor Os");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recOs));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+			
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("Qtd Balcão: ");
+			dados.setFuncionarioMensal(Mascaras.formataMillhar(sumBal));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+		
+			Double recBalRecebido = 0.00;
+			Double recBalAberto = 0.00; 
+			Double recBal = 0.00; 
+			
+			recBalRecebido = recService.findPagoBalMes(dataInicialRecPago, dataFinalRecPago);
+			
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(+) Recebido");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recBalRecebido));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			recBalAberto = recService.findAbertoBalMes(dataInicialRecAberto, dataFinalRecAberto);
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(#) Em Aberto");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recBalAberto));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			recBal = recBalRecebido + recBalAberto;
+			
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("===");
+			dados.setClienteMensal("(=) Valor Balcao ");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recBal));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			Double recReceita = recOs + recBal;
+			
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("===");
+			dados.setClienteMensal("(=) Total Receita ");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recReceita));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("                ===");
+			dados.setFuncionarioMensal("Despesa");
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("===");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(#) Valor Folha");
+			dados.setFuncionarioMensal(Mascaras.formataValor(sumFolha));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+		
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(+) Despesa Paga   ");
+			dados.setFuncionarioMensal(Mascaras.formataValor(sumPago));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+		
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("(+) Despesa Aberto ");
+			dados.setFuncionarioMensal(Mascaras.formataValor(sumAberto));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+			
+			Double recDespesa = sumPago + sumAberto;
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("===");
+			dados.setClienteMensal("(=) Total Despesa");
+			dados.setFuncionarioMensal(Mascaras.formataValor(recDespesa));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+					
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("");
+			dados.setClienteMensal("");
+			dados.setFuncionarioMensal("");
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
+			
+			dados.setNumeroMensal(null);
+			dados.setOsMensal("");
+			dados.setBalMensal("");
+			dados.setDataMensal("===");
+			dados.setClienteMensal("(=) Total ------->");
+			dados.setFuncionarioMensal(Mascaras.formataValor(sumAcumulado));
+			dados.setValorComissaoMensal("");
+			dados.setValorResultadoMensal("");
+			dados.setValorAcumuladoMensal(""); 
+			dados.setValorOsMensal("");
+			dados.setValorMaterialMensal("");
+			dados.setMes(objMes);
+			dados.setAno(objAno);	
+			service.insert(dados);
 		} 	
 		catch (NullPointerException n) {
 			n.printStackTrace();

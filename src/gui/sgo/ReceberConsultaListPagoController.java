@@ -19,7 +19,7 @@ import gui.sgomodel.entities.Receber;
 import gui.sgomodel.services.ClienteService;
 import gui.sgomodel.services.ReceberService;
 import gui.util.Alerts;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import gui.util.Mascaras;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -186,15 +186,15 @@ public class ReceberConsultaListPagoController implements Initializable, DataCha
  		labelUser.setText(user);
  		List<Receber> list = new ArrayList<>();
  		if (opcao == "t") {
- 			LocalDate ldt = DataStatic.criaLocalAtual();
- 			int mm = DataStatic.mesDaData(ldt);
- 			int aa = DataStatic.anoDaData(ldt);
- 			int df = DataStatic.ultimoDiaMes(ldt);
- 			LocalDate dt1 = DataStatic.criaAnoMesDia(aa, mm, 01);
- 			df = DataStatic.ultimoDiaMes(dt1);
- 			Date dti = DataStatic.localParaDateSdfAno(dt1);
- 			dt1 = DataStatic.criaAnoMesDia(aa, mm, df);
- 			Date dtf = DataStatic.localParaDateSdfAno(dt1);
+ 			LocalDate ldt = Maria.criaLocalAtual();
+ 			int mm = Maria.mesDaData(ldt);
+ 			int aa = Maria.anoDaData(ldt);
+ 			int df = Maria.ultimoDiaMes(ldt);
+ 			LocalDate dt1 = Maria.criaAnoMesDia(aa, mm, 01);
+ 			df = Maria.ultimoDiaMes(dt1);
+ 			Date dti = Maria.localParaDateSdfAno(dt1);
+ 			dt1 = Maria.criaAnoMesDia(aa, mm, df);
+ 			Date dtf = Maria.localParaDateSdfAno(dt1);
  			list = service.findAllPago(dti, dtf);
  		}
  		if (codCli != null) {

@@ -10,19 +10,10 @@ public interface AdiantamentoDao {
 	void insertBackUp(Adiantamento obj);
 	void deleteById(Integer codigo);
 	void zeraAll();
- 	Adiantamento findMesIdFun(Integer cod, Integer mes, Integer Ano, String tipo);
- 	List<Adiantamento> findMesTipo(Integer mes, Integer Ano, String tipo);
  	List<Adiantamento> findMes(Integer mes, Integer Ano);
  	List<Adiantamento> findPesquisaFun(String str);
- 	List<Adiantamento> findByOs(Integer idOs);
- 	List<Adiantamento> findByBalcao(Integer idBalcao);
  	List<Adiantamento> findAll();
- 	List<Adiantamento> findAllId();
-	Double findByTotalCom(Integer mes, Integer ano, Integer codFun);
 	Double findByTotalAdi(Integer mes, Integer ano, Integer codFun);
-	Double findByTotalComAnual(Integer ano, Integer codFun);
 	Double findByTotalAdiAnual(Integer ano, Integer codFun);
-	Double findByTotalComOS(Integer os);
-	Double findByTotalComBal(Integer bal);
 }
   

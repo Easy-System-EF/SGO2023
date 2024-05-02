@@ -27,6 +27,7 @@ import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Balcao;
 import gui.sgomodel.entities.Cargo;
 import gui.sgomodel.entities.Cliente;
+import gui.sgomodel.entities.Comissao;
 import gui.sgomodel.entities.Entrada;
 import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Grupo;
@@ -44,6 +45,7 @@ import gui.sgomodel.services.AdiantamentoService;
 import gui.sgomodel.services.BalcaoService;
 import gui.sgomodel.services.CargoService;
 import gui.sgomodel.services.ClienteService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.EntradaService;
 import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.GrupoService;
@@ -59,7 +61,7 @@ import gui.sgomodel.services.SituacaoService;
 import gui.sgomodel.services.VeiculoService;
 import gui.util.Alerts;
 import gui.util.Cryptograf;
-import gui.util.DataStatic;
+import gui.util.Maria;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -159,6 +161,7 @@ public class CopiaSgoController implements Initializable {
  		if (unid != null) {
  			count = 0;
  			adiantamento();
+ 			comissao();
  			balcao();
  			cargo();
  			cliente();
@@ -193,42 +196,21 @@ public class CopiaSgoController implements Initializable {
 		file = "Adiantamento";
 		path = unid + meioSgo + file + ext;
 		AdiantamentoService adiService = new AdiantamentoService();
-		CargoService carService = new CargoService();
-		Cargo cargo = new Cargo();
-		SituacaoService sitService = new SituacaoService();
-		Situacao sit = new Situacao();
-		List<Cargo> listC = carService.findAllId();
-		List<Situacao> listS = sitService.findAllId();
 		arq = "";
 		crip = "";
-		List<Adiantamento> listA = adiService.findAllId();
-		try {BufferedWriter bwAdi = new BufferedWriter(new FileWriter(path));
+		
+		List<Adiantamento> listA = adiService.findAll();
+		try {FileWriter fwA = new FileWriter(path);
 			for(Adiantamento a: listA) {
 				count += 1;
-				for (Cargo c : listC) {
-					if (c.getNomeCargo().equals(a.getCargoFun())) {
-						cargo = c;
-						a.setCargo(cargo);
-					}
-				}
-				for (Situacao s : listS) {
-					if (s.getNomeSit().equals(a.getSituacaoFun())) {
-						sit = s;
-						a.setSituacao(sit);
-					}
-				}
 				String data = sdfAno.format(a.getDataAdi());
-				arq = (" ADIANTAMENTO " + a.getNumeroAdi() + " , " + data + " , " + a.getValeAdi() + " , " +  
-						a.getMesAdi() + " , " + a.getAnoAdi() + " , " + a.getValorAdi() + " , " + a.getOsAdi() + " , " + 
-						a.getBalcaoAdi() + " , " +  a.getComissaoAdi() + " , " + a.getTipoAdi() + " , " + a.getSalarioAdi()
-						+ " , " + a.getCodigoFun() + " , " + a.getNomeFun() + " , " + a.getMesFun() + " , " + a.getAnoFun() + " , " + 
-						a.getDataCadastroFun() + " , " + a.getCargoFun() + " , " + a.getSituacaoFun() + " , " + a.getSalarioFun() 
-						+ " , " + a.getCargo().getCodigoCargo() + " , " + a.getSituacao().getNumeroSit());
+				arq = (" ADI " + a.getNumeroAdi() + " , " + data + " , " + a.getFunAdi() + " , " + a.getNomeFunAdi()
+				 + " , " + a.getCargoAdi() + " , " + a.getSituacaoAdi() + " , " + a.getAdiantamentoAdi() + " , " + 
+						a.getMesAdi() + " , " + a.getAnoAdi());
 				crip = Cryptograf.criptografa(arq);
-				bwAdi.write(crip);
-				bwAdi.newLine();				
+				fwA.write(crip);
 			}
-			bwAdi.close();
+			fwA.close();
 		}
 		catch(	IOException e2) {
 			e2.getMessage();	 			
@@ -236,6 +218,35 @@ public class CopiaSgoController implements Initializable {
 		finally {					
 			labelCount.setText(String.valueOf(count));
 			labelCount.viewOrderProperty();
+		}
+	}
+	
+	public void comissao() {
+		file = "Comissao";
+		path = unid + meioSgo + file + ext;
+		ComissaoService comService = new ComissaoService();
+		String arqCom = "";
+		crip = "";
+
+		List<Comissao> listC = comService.findAll();
+		listC.removeIf(c -> c.getComissaoCom() == 0 && c.getPercentualCom() == 0);
+		try {FileWriter fwA = new FileWriter(path);
+			for(Comissao c: listC) {
+				count += 1;
+				String data = sdfAno.format(c.getDataCom());
+				arqCom = (" COMISSAO " + c.getNumeroCom() + " , " + data + " , " + c.getFunCom() + " , " + c.getNomeFunCom()
+				 + " , " + c.getCargoCom() + " , " + c.getSituacaoCom() + " , " + c.getOSCom() + " , " + c.getBalcaoCom() + " , " + 
+				  c.getMesCom() + " , " + c.getAnoCom() + " , " + c.getPercentualCom() + " , " + c.getProdutoCom() + " , " + 
+				    c.getComissaoCom());
+				crip = Cryptograf.criptografa(arqCom);
+				fwA.write(crip);
+			}
+			fwA.close();
+		}
+		catch(	IOException e2) {
+			e2.getMessage();	 			
+		}
+		finally {					
 		}
 	}
 	
@@ -362,21 +373,22 @@ public class CopiaSgoController implements Initializable {
 		FuncionarioService funService = new FuncionarioService();
 		arq = "";
 		crip = "";
-		List<Funcionario> listF = funService.findAllId();
-		try {BufferedWriter bwC = new BufferedWriter(new FileWriter(path));
+		List<Funcionario> listF = funService.findAll(new Date());
+		try {BufferedWriter bwF = new BufferedWriter(new FileWriter(path));
 			for(Funcionario f : listF) {
 				count += 1;
-				arq = (" FUNCIONARIO " + f.getCodigoFun() + " , " + f.getNomeFun() + " , " + f.getEnderecoFun() + " , " + f.getBairroFun()
-				 	+ " , " + f.getCidadeFun() + " , " + f.getUfFun() + " , " + f.getCepFun() + " , " + f.getDddFun()
-				 	 + " , " + f.getTelefoneFun() + " , " + f.getCpfFun() + " , " + f.getPixFun() + " , "  + 
-				 	 f.getComissaoFun() + " , " + f.getAdiantamentoFun() + " , " + f.getMesFun() + " , " + f.getAnoFun() 
+				String data = sdfAno.format(f.getDataCadastroFun());
+				arq = (" FUNCIONARIO " + f.getCodigoFun() + " , " + f.getNomeFun() + " , " + f.getEnderecoFun() 
+					+ " , " + f.getBairroFun() + " , " + f.getCidadeFun() + " , " + f.getUfFun() + " , " + f.getCepFun()
+					+ " , " + f.getDddFun() + " , " + f.getTelefoneFun() + " , " + f.getCpfFun() + " , " + f.getPixFun() 
+					+ " , " + f.getComissaoFun() + " , " + f.getAdiantamentoFun() + " , " + f.getMesFun() + " , " + f.getAnoFun() 
 				 	 + " , " + f.getCargoFun() + " , " + f.getSituacaoFun() + " , " + f.getSalarioFun() + " , " +  
-				 	 f.getDataCadastroFun() + " , " + f.getCargo().getCodigoCargo() + " , " + f.getSituacao().getNumeroSit());
+				 	 data + " , " + f.getCargo().getCodigoCargo() + " , " + f.getSituacao().getNumeroSit());
 				crip = Cryptograf.criptografa(arq);
-				bwC.write(crip);
-				bwC.newLine();
+				bwF.write(crip);
+				bwF.newLine();
 			}
-			bwC.close();
+			bwF.close();
 		}
 		catch(	IOException e2) {
 			e2.getMessage();	 			
@@ -898,20 +910,20 @@ public class CopiaSgoController implements Initializable {
 	}
 
 	public void limpaBackUp() {
-		LocalDate dt1 = DataStatic.dateParaLocal(dataI);
-		int ano1 = DataStatic.anoDaData(dt1);
-		int mes1 = DataStatic.mesDaData(dt1);
-		int dia1 = DataStatic.diaDaData(dt1);
+		LocalDate dt1 = Maria.dateParaLocal(dataI);
+		int ano1 = Maria.anoDaData(dt1);
+		int mes1 = Maria.mesDaData(dt1);
+		int dia1 = Maria.diaDaData(dt1);
 		int countM = 0;
 		int countY = 0;
 		
 		List<Copia> listLimpa = service.findAll();
 
 		for (Copia b : listLimpa) {
-			LocalDate dtB = DataStatic.converteTimeFormataString(b.getDataIBackUp());
-			int anoB = DataStatic.anoDaData(dtB);
-			int mesB = DataStatic.mesDaData(dtB);
-			int diaB = DataStatic.diaDaData(dtB);
+			LocalDate dtB = Maria.converteTimeFormataString(b.getDataIBackUp());
+			int anoB = Maria.anoDaData(dtB);
+			int mesB = Maria.mesDaData(dtB);
+			int diaB = Maria.diaDaData(dtB);
 
 			if(ano1 == anoB && mes1 == mesB && dia1 == diaB && b.getUnidadeBackUp().equals(unid)) {
 				service.remove(b.getIdBackUp());

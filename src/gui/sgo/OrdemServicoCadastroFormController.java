@@ -28,9 +28,7 @@ import gui.sgcpmodel.services.FornecedorService;
 import gui.sgcpmodel.services.ParPeriodoService;
 import gui.sgomodel.dao.DaoFactory;
 import gui.sgomodel.dao.OSCommitDao;
-import gui.sgomodel.entities.Adiantamento;
 import gui.sgomodel.entities.Entrada;
-import gui.sgomodel.entities.Funcionario;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.NotaFiscal;
 import gui.sgomodel.entities.OrcVirtual;
@@ -40,7 +38,6 @@ import gui.sgomodel.entities.Receber;
 import gui.sgomodel.entities.ReposicaoVeiculo;
 import gui.sgomodel.entities.Veiculo;
 import gui.sgomodel.services.EntradaService;
-import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
@@ -48,7 +45,6 @@ import gui.sgomodel.services.OrcamentoService;
 import gui.sgomodel.services.VeiculoService;
 import gui.util.Alerts;
 import gui.util.Constraints;
-import gui.util.DataStatic;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -84,7 +80,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	private ParPeriodo periodo;
 	private Veiculo veiculo;
 	private NotaFiscal nota = new NotaFiscal();
-	private Adiantamento adiantamento = new Adiantamento();
 
 	/*
 	 * private OrdemServico entity; dependencia service com metodo set
@@ -94,7 +89,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	private MaterialService matService;
 	private ParPeriodoService perService;
 	private VeiculoService veiService;
-	private FuncionarioService funService;
 	private NotaFiscalService nfService;
 	
 	List<Receber> listRecCommit = new ArrayList<>();
@@ -219,13 +213,12 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 	// * metodo set /p service
 	public void setServices(OrcamentoService orcService, OrcVirtualService virService,
 			MaterialService matService, ParPeriodoService perService, VeiculoService veiService, 
-			FuncionarioService funService, NotaFiscalService nfService) {
+			NotaFiscalService nfService) {
 		this.orcService = orcService;
 		this.virService = virService;
 		this.matService = matService;
 		this.perService = perService;
 		this.veiService = veiService;
-		this.funService = funService;
 		this.nfService = nfService;
 	}
 
@@ -311,12 +304,9 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 				porPeriodo();
 				updateOsOrcamento();
 				updateKmVeiculo();
-				if (maoObra > 0) {
-					gravaComissaoOS();
-				}
 				classe = "OS Commit ";
 				OSCommitDao osCommit = DaoFactory.createOSCommitDao();
-				osCommit.gravaOS(entity, orcamento, periodo, nota, veiculo, adiantamento, listMatCommit);
+				osCommit.gravaOS(entity, orcamento, periodo, nota, veiculo, maoObra, listMatCommit);
 			}	
 			labelErrorNnfOS.setText("");
 			labelErrorNnfOS.viewOrderProperty();
@@ -497,40 +487,6 @@ public class OrdemServicoCadastroFormController implements Initializable, DataCh
 		} catch (DbException e) {
 			Alerts.showAlert("Erro salvando objeto", classe, e.getMessage(), AlertType.ERROR);
 		}
-	}
-
-	@SuppressWarnings("static-access")
-	private void gravaComissaoOS() {
-		classe = "Adiantamento OS Form ";
-		orcamento = orcService.findById(entity.getOrcamentoOS());
-		Funcionario fun = funService.findById(orcamento.getFuncionario().getCodigoFun());
-		adiantamento.setCodigoFun(fun.getCodigoFun());
-		adiantamento.setNomeFun(fun.getNomeFun());
-		adiantamento.setCargo(fun.getCargo());
-		adiantamento.setSituacao(fun.getSituacao());
-		adiantamento.setMesFun(fun.getMesFun());
-		adiantamento.setAnoFun(fun.getAnoFun());
-		adiantamento.setCargoFun(fun.getCargo().getNomeCargo());
-		adiantamento.setSituacaoFun(fun.getSituacao().getNomeSit());
-		adiantamento.setSalarioFun(fun.getCargo().getSalarioCargo());
-		adiantamento.setComissaoFun(0.00);
-		
-		adiantamento.setNumeroAdi(null);
-		adiantamento.setDataAdi(new Date());
-		adiantamento.percComissao = fun.getCargo().getComissaoCargo();
-		adiantamento.setValeAdi(0.00);
-		adiantamento.setValorAdi(maoObra);
-		adiantamento.setComissaoAdi(0.00);
-		LocalDate dt1 = DataStatic.dateParaLocal(adiantamento.getDataAdi());
-		adiantamento.setMesAdi(DataStatic.mesDaData(dt1));
-		adiantamento.setAnoAdi(DataStatic.anoDaData(dt1));
-		adiantamento.setSalarioAdi(fun.getCargo().getSalarioCargo());
-		adiantamento.setBalcaoAdi(0);
-		adiantamento.setOsAdi(null);
-		adiantamento.setTipoAdi("C");
-		adiantamento.setCargo(fun.getCargo());
-		adiantamento.setSituacao(fun.getSituacao());
-		adiantamento.calculaComissao();
 	}
 
 // *   um for p/ cada listener da lista, eu aciono o metodo onData no DataChangListner...   

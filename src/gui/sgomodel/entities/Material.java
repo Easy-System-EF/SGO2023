@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
-import gui.util.DataStatic;
+import gui.util.Maria;
 
 public class Material implements Serializable {
 
@@ -124,12 +124,12 @@ public class Material implements Serializable {
 			return 0.00;
 		}
 		if (saidaMat != null) {
-			LocalDate dt1 = DataStatic.criaLocalAtual();
+			LocalDate dt1 = Maria.criaLocalAtual();
 			if (dataCadastroMat == null) {
 				setDataCadastroMat(new Date());
 			}
-			LocalDate dt2 = DataStatic.dateParaLocal(dataCadastroMat);
-			long dias = DataStatic.durationPositivo(dt2, dt1).toDays();
+			LocalDate dt2 = Maria.dateParaLocal(dataCadastroMat);
+			long dias = Maria.durationPositivo(dt2, dt1).toDays();
 			int meses = 0;
 			if (dias > 30) {
 				meses = (int) (dias / 30);

@@ -54,7 +54,9 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
 	String linha52 = "";
 	String linha06 = "------------------------------------------------------------------";
 	String linha07 = "";
+	String linhaNada = "";
 
+	String path = "c:\\Dataprol\\WINPRINT\\_Pago.prn";
 	String pathI = "C:\\Arqs\\impr\\Pago.txt";
 
 	Parcela parcela = new Parcela();
@@ -96,11 +98,11 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
 		empresa = empService.findById(numEmp);
 		nomeEmp = empresa.getNomeEmp();
   		grava();
-  		Imprimir.relatorio(pathI);
+  		Imprimir.relatorio(path);
    	}
 
  	public void grava() {
-	 		try	{	BufferedWriter bwP = new BufferedWriter(new FileWriter(pathI));
+	 		try	{	BufferedWriter bwP = new BufferedWriter(new FileWriter(path));
 	 				if (flag == 0) {
  						if (contl == 77) {
  		 					list = listagem(parcela, codFor, codTipo, opcao);	
@@ -112,9 +114,9 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
  	 	 						if (opcao == 'q') {
  	 	 							dtpI = sdf.format(p.getPeriodo().getDtiPeriodo());
  	 	 							dtpF = sdf.format(p.getPeriodo().getDtfPeriodo());
- 	 	 							linha02 = String.format("%s", "Contas Pagas por per�odo: ") +
- 	 	 									String.format("%s", dtpI);
- 					                      	String.format("%s", " a ");
+ 	 	 							linha02 = String.format("%s", "Contas Pagas por período: ") +
+ 	 	 									String.format("%s", dtpI) +
+ 					                      	String.format("%s", " a ") +
  					                      	String.format("%s", dtpF);
  	 	 						}         	
  	 	 						if (opcao == 'g') {
@@ -125,13 +127,23 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
  	 	 									  String.format("%s", p.getTipoConsumo().getNomeTipo());
  	 	 						}
  	 	 					}
- 				 			if (contl > 49 && flag == 0) {
+ 	 	 					if (contl > 63) {
+ 	 	 						if (contl == 77 && flag == 0) {
+									cabecalho();
+ 	 	 						} 
+ 	 	 						if (contl > 63 && flag == 0) {
+									bwP.newLine();
+									bwP.write(".");
+									bwP.newLine();
+									bwP.write(".");
+ 	 	 							cabecalho();
+ 	 	 						}
  				 				bwP.newLine();
- 			 					cabecalho();
   	 							bwP.write(linha01);
   				 				bwP.newLine();
   	 							bwP.write(linha02);
   				 				bwP.newLine();
+  				 				bwP.write(linhaNada);
   				 				bwP.newLine();
   	 							bwP.write(linha03);
   				 				bwP.newLine();
@@ -140,8 +152,6 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
   				 				bwP.write(linha05);
   				 				bwP.newLine();
   	 							bwP.write(linha03);
-  				 				bwP.newLine();
- 		 						contl = 14;
  			 				}
  	 						
 			 				linha51 = String.format("%-40s", p.getFornecedor().getRazaoSocial()) +
@@ -160,26 +170,52 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
 							totJur += p.getJurosPar();
 							totDes += p.getDescontoPar();
 							totPag += p.getPagoPar();
-
+							
+ 				 			if (contl > 63 && flag == 0) {
+		 						bwP.newLine();
+		 						bwP.write(".");
+		 						bwP.newLine();
+		 						bwP.write(".");
+ 			 					cabecalho();
+ 				 				bwP.newLine();
+  	 							bwP.write(linha01);
+  				 				bwP.newLine();
+  	 							bwP.write(linha02);
+  				 				bwP.newLine();
+  				 				bwP.write(linhaNada);
+  				 				bwP.newLine();
+  	 							bwP.write(linha03);
+  				 				bwP.newLine();
+  	 							bwP.write(linha04);
+  				 				bwP.newLine();
+  				 				bwP.write(linha05);
+  				 				bwP.newLine();
+  	 							bwP.write(linha03);
+ 				 			}	
+ 				 			
+ 				 			linha51 = acentos(linha51);
+ 				 			linha52 = acentos(linha52);
+ 				 			linha06 = acentos(linha06);
+ 				 			
+							bwP.newLine();
 							bwP.write(linha51);
 							bwP.newLine();
 							bwP.write(linha52);
 							bwP.newLine();
 							bwP.write(linha06);
-							bwP.newLine();
- 			 				contl += 7;
+ 			 				contl += 3;
 
 		 					if (i == list.size()) {
 		 						flag = 1;
-//		 						linha06 = "-----------------------------Total--------------------------------";
+		 						linha06 = "-----------------------------Total--------------------------------";
 	 	 						linha07 = String.format("%12s%s", df.format(totVlr), esp) +
 				 						  String.format("%12s%s", df.format(totJur), esp) +
 				 						  String.format("%12s%s", df.format(totDes), esp) +
 				 						  String.format("%12s", df.format(totPag));
+								bwP.newLine();
 	 	 						bwP.write(linha06);
 	 	 						bwP.newLine();
  	 	 						bwP.write(linha07);
- 	 	 						bwP.newLine();
  			 				}	
 	 					}
 	 				}
@@ -195,11 +231,19 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
 
 	private void cabecalho() {
 			contf += 01;
+			contl = 7;
 			linha01 = String.format("%-30s", nomeEmp) +
 					  String.format("%s", "Data: ") + 
 					  String.format("%-24s", dth) +
 					  String.format("%s", "Fl- ") +
 					  String.format("%2s", contf);
+			
+			linha01 = acentos(linha01);
+			linha02 = acentos(linha02);
+			linha03 = acentos(linha03);
+			linha04 = acentos(linha04);
+			linha05 = acentos(linha05);
+			linha03 = acentos(linha03);
 	}
 
 	private List <Parcela> listagem(Parcela parcela, Integer codFor, Integer codTipo, char opcao) {
@@ -218,7 +262,33 @@ public class ParcelaImprimePagoController implements Initializable, Serializable
  		return list;
 	}	
 
-	@Override
+ 	public static String acentos(String str) {
+		str = str.replace("â", "a");
+		str = str.replace("ã", "a");
+		str = str.replace("á", "a");
+		str = str.replace("Á", "A");
+		str = str.replace("Â", "A");
+		str = str.replace("Ã", "A");
+		str = str.replace("é", "e");
+		str = str.replace("ê", "e");
+		str = str.replace("É", "E");
+		str = str.replace("Ê", "E");
+		str = str.replace("í", "i");
+		str = str.replace("Í", "I");
+		str = str.replace("ó", "o");
+		str = str.replace("ô", "o");
+		str = str.replace("õ", "o");
+		str = str.replace("Ó", "o");
+		str = str.replace("Ô", "o");
+		str = str.replace("Õ", "o");
+		str = str.replace("ú", "u");
+		str = str.replace("Ú", "u");
+		str = str.replace("ç", "c");
+		str = str.replace("Ç", "C");
+		return str;
+ 	}
+
+ 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	}
 }

@@ -17,7 +17,7 @@ import db.DbIntegrityException;
 import gui.listerneres.DataChangeListener;
 import gui.sgcpmodel.entities.consulta.ParPeriodo;
 import gui.sgcpmodel.services.ParPeriodoService;
-import gui.sgomodel.entities.Adiantamento;
+import gui.sgomodel.entities.Comissao;
 import gui.sgomodel.entities.Grupo;
 import gui.sgomodel.entities.Material;
 import gui.sgomodel.entities.OrcVirtual;
@@ -26,9 +26,8 @@ import gui.sgomodel.entities.OrdemServico;
 import gui.sgomodel.entities.Receber;
 import gui.sgomodel.entities.ReposicaoVeiculo;
 import gui.sgomodel.entities.Veiculo;
-import gui.sgomodel.services.AdiantamentoService;
+import gui.sgomodel.services.ComissaoService;
 import gui.sgomodel.services.EmpresaService;
-import gui.sgomodel.services.FuncionarioService;
 import gui.sgomodel.services.MaterialService;
 import gui.sgomodel.services.NotaFiscalService;
 import gui.sgomodel.services.OrcVirtualService;
@@ -70,7 +69,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 	private OrcVirtualService virService;
 	private MaterialService matService;
 	private VeiculoService veiService;
-	private AdiantamentoService adiService;
+	private ComissaoService comService;
  	
 	@FXML
  	private TableView<OrdemServico> tableViewOrdemServico;
@@ -135,7 +134,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 	 Grupo objGru = new Grupo();
 	 ParPeriodo objPer = new ParPeriodo();
 	 Veiculo objVei = new Veiculo();
-	 Adiantamento adiantamento = new Adiantamento();
+	 Comissao adiantamento = new Comissao();
 	 
 	@FXML
   	public void onBtNewOSAction(ActionEvent event) {
@@ -148,7 +147,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 // injeta a dependencia com set (invers�o de controle de inje�ao)	
  	public void setServices(OrdemServicoService service, ReceberService recService, ReposicaoVeiculoService repService,
  			OrcamentoService orcService, OrcVirtualService virService, MaterialService matService, VeiculoService veiService,
- 			AdiantamentoService adiService) {
+ 			ComissaoService comService) {
  		this.service = service;
  		this.recService = recService;
  		this.repService = repService;
@@ -156,7 +155,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
  		this.virService = virService;
  		this.matService = matService;
  		this.veiService = veiService;
- 		this.adiService = adiService;
+ 		this.comService = comService;
  	}
 
  // inicializar as colunas para iniciar nossa tabela initializeNodes
@@ -231,7 +230,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 // injetando servi�os vindo da tela de formulario form
  				controller.setOrdemEntity(obj, objOrc, objMat, objPer, objVei);
  				controller.setServices(new OrcamentoService(), new OrcVirtualService(), 
- 						new MaterialService(), new ParPeriodoService(), new VeiculoService(), new FuncionarioService(), 
+ 						new MaterialService(), new ParPeriodoService(), new VeiculoService(),  
  						new NotaFiscalService());
  	 			if (obj.getNumeroOS() != null) {
 	 				objOrc = orcService.findById(obj.getOrcamentoOS());
@@ -273,7 +272,8 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
   	 			FXMLLoader loader  = new FXMLLoader(getClass().getResource(absoluteName));
   				Pane pane = loader.load();
   				classe = "OrdemServiço List ";
-  	 			OrdemServicoImprimeController controller = loader.getController();
+  	 			OrdemServicoImpr2Controller controller = loader.getController();
+//  	 			OrdemServicoImprimeController controller = loader.getController();
   	 			controller.setOrdemServico(obj);
   	 			controller.setOSImprime(new OrdemServicoService(),
   	 									new OrcamentoService(), 
@@ -384,7 +384,7 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 							classe = "Reposição OS List ";
 							repService.remove(obj.getNumeroOS());
 							updateOsOrcamento(obj.getOrcamentoOS());
-							updateAdiantamento(obj.getNumeroOS());						
+							updateComissao(obj.getNumeroOS());						
 							classe = "Ordem de serviço List ";
 							service.remove(obj);
 							updateKmVeiculo(obj);
@@ -427,11 +427,11 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		}
 	}
 
-	private void updateAdiantamento(int numOs) {
-		List<Adiantamento> adianto = adiService.findByOs(numOs);
-		for (Adiantamento a : adianto) {
-			if (a.getOsAdi().equals(numOs)) {
-				adiService.remove(a.getNumeroAdi());
+	private void updateComissao(int numOs) {
+		List<Comissao> com = comService.findByOS(numOs);
+		for (Comissao c : com) {
+			if (c.getOSCom().equals(numOs)) {
+				comService.remove(c.getNumeroCom());
 			}	
 		}
 	}
@@ -485,7 +485,8 @@ public class OrdemServicoCadastroListController implements Initializable, DataCh
 		    
 		      setGraphic(button); 
 		      button.setOnAction( 
-		    		  event -> createDialogImprime(obj, objVir, "/gui/sgo/OrdemServicoImprime.fxml",Utils.currentStage(event)));
+		    		  event -> createDialogImprime(obj, objVir, "/gui/sgo/OrdemServicoImpr2.fxml",Utils.currentStage(event)));
+//    		  event -> createDialogImprime(obj, objVir, "/gui/sgo/OrdemServicoImprime.fxml",Utils.currentStage(event)));
 		    }
 		 });  
 	}

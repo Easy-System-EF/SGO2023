@@ -373,23 +373,21 @@ public class BalcaoDaoJDBC implements BalcaoDao {
 	private Funcionario instantiateFuncionario(ResultSet rs) throws SQLException {
 		Funcionario fun = new Funcionario();
 
-		fun.setCodigoFun(rs.getInt("CodigoFun"));
-		fun.setNomeFun(rs.getString("NomeFun"));
-		fun.setEnderecoFun(rs.getString("EnderecoFun"));
-		fun.setBairroFun(rs.getString("BairroFun"));
-		fun.setCidadeFun(rs.getString("CidadeFun"));
-		fun.setUfFun(rs.getString("UfFun"));
-		fun.setCepFun(rs.getString("CepFun"));
-		fun.setDddFun(rs.getInt("DddFun"));
-		fun.setTelefoneFun(rs.getInt("TelefoneFun"));
-		fun.setCpfFun(rs.getString("CpfFun"));
-		fun.setPixFun(rs.getString("PixFun"));
-		fun.setCargoFun(rs.getString("CargoFun"));
-		fun.setSituacaoFun(rs.getString("SituacaoFun"));
-		fun.setComissaoFun(rs.getDouble("ComissaoFun"));
-		fun.setAdiantamentoFun(rs.getDouble("AdiantamentoFun"));
-//		fun.setCargo(objCargo);
-//		fun.setSituacao(objSit);
+ 		fun.setCodigoFun(rs.getInt("CodigoFun"));
+ 		fun.setNomeFun(rs.getString("NomeFun"));	
+ 		fun.setEnderecoFun(rs.getString("EnderecoFun"));
+  		fun.setBairroFun(rs.getString("BairroFun"));
+ 		fun.setCidadeFun(rs.getString("CidadeFun")); 
+ 		fun.setUfFun(rs.getString("UfFun"));
+ 		fun.setCepFun(rs.getString("CepFun"));
+ 		fun.setDddFun(rs.getInt("DddFun"));
+  		fun.setTelefoneFun(rs.getInt("TelefoneFun"));
+   		fun.setCpfFun(rs.getString("CpfFun"));
+   		fun.setPixFun(rs.getString("PixFun"));
+   		fun.setCargoFun(rs.getString("CargoFun"));
+   		fun.setSituacaoFun(rs.getString("SituacaoFun"));
+		fun.setMesFun(rs.getInt("MesFun"));
+		fun.setAnoFun(rs.getInt("AnoFun"));		
 		return fun;
 	}
 }
